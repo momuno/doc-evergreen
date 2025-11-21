@@ -1,6 +1,6 @@
 # Installing doc-evergreen
 
-Complete installation guide for doc-evergreen v0.4.0+
+Complete installation guide for doc-evergreen v0.4.1+
 
 ---
 

@@ -764,9 +764,10 @@ After reading this guide:
 
 ## Version
 
-This guide is for doc-evergreen v0.4.0
+This guide is for doc-evergreen v0.4.1
 
 **Changelog**:
+- v0.4.1: Bug fix - exclude .venv/ and node_modules/ from glob patterns
 - v0.4.0: Standalone tool with .doc-evergreen/ convention, improved CLI
 - v0.3.0: Template-based regeneration, progress feedback, iterative refinement
 - v0.2.0: Chunked generation mode

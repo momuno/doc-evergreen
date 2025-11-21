@@ -54,11 +54,11 @@ class TestPackageConfiguration:
         """
         Given: A valid pyproject.toml
         When: We check the version field
-        Then: It exists and matches v0.4.0
+        Then: It exists and matches v0.4.1
         """
         assert "project" in pyproject_config
         assert "version" in pyproject_config["project"], "Package must have version field"
-        assert pyproject_config["project"]["version"] == "0.4.0", "Version must be '0.4.0' for this release"
+        assert pyproject_config["project"]["version"] == "0.4.1", "Version must be '0.4.1' for this release"
 
     def test_python_version_requirement(self, pyproject_config: dict):
         """
