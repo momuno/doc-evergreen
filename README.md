@@ -10,7 +10,7 @@ Keep your documentation fresh without the manual grind. Define templates once, r
 
 ```bash
 # 1. Get doc-evergreen
-git clone https://github.com/yourusername/doc-evergreen.git
+git clone https://github.com/momuno/doc-evergreen.git
 # OR download from: /home/momuno/AI_MADE_Explorations/doc_evergreen (local dev)
 
 # 2. Install (use pipx - handles virtual env for you)
@@ -126,17 +126,17 @@ Completed 1 iteration
 
 ### Recommended (pipx):
 ```bash
-pipx install git+https://github.com/yourusername/doc-evergreen.git
+pipx install git+https://github.com/momuno/doc-evergreen.git
 ```
 
 ### Standard (pip):
 ```bash
-pip install git+https://github.com/yourusername/doc-evergreen.git
+pip install git+https://github.com/momuno/doc-evergreen.git
 ```
 
 ### Development:
 ```bash
-git clone https://github.com/yourusername/doc-evergreen.git
+git clone https://github.com/momuno/doc-evergreen.git
 cd doc-evergreen
 pip install -e .
 ```
@@ -215,7 +215,7 @@ Store templates anywhere. Convention makes common case simple.
 
 ## Support
 
-- **Issues**: https://github.com/yourusername/doc-evergreen/issues
+- **Issues**: https://github.com/momuno/doc-evergreen/issues
 - **Questions**: See [docs/USER_GUIDE.md](./docs/USER_GUIDE.md)
 
 ---

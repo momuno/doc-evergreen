@@ -51,10 +51,10 @@ doc-evergreen is a standalone installable tool:
 
 ```bash
 # Install with pipx (recommended)
-pipx install git+https://github.com/yourusername/doc-evergreen.git
+pipx install git+https://github.com/momuno/doc-evergreen.git
 
 # Or with pip
-pip install git+https://github.com/yourusername/doc-evergreen.git
+pip install git+https://github.com/momuno/doc-evergreen.git
 
 # Verify installation
 doc-evergreen --help

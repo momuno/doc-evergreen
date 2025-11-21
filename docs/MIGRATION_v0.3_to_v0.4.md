@@ -314,10 +314,10 @@ PYTHONPATH=.. python -m cli regen-doc template.json
 **Issues during migration**:
 - Check this guide's troubleshooting section
 - Review USER_GUIDE.md for v0.4.0 workflows
-- Open issue: https://github.com/yourusername/doc-evergreen/issues
+- Open issue: https://github.com/momuno/doc-evergreen/issues
 
 **Questions**:
-- Discussions: https://github.com/yourusername/doc-evergreen/discussions
+- Discussions: https://github.com/momuno/doc-evergreen/discussions
 
 ---
 

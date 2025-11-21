@@ -15,10 +15,10 @@ Complete installation guide for doc-evergreen v0.4.0+
 pip install --user pipx  # or: apt install pipx
 
 # Install doc-evergreen
-pipx install git+https://github.com/yourusername/doc-evergreen.git
+pipx install git+https://github.com/momuno/doc-evergreen.git
 
 # Or from local clone:
-git clone https://github.com/yourusername/doc-evergreen.git
+git clone https://github.com/momuno/doc-evergreen.git
 pipx install -e ./doc-evergreen
 ```
 
@@ -29,7 +29,7 @@ pipx install -e ./doc-evergreen
 If you're in a virtual environment or sure you want to proceed:
 
 ```bash
-pip install git+https://github.com/yourusername/doc-evergreen.git
+pip install git+https://github.com/momuno/doc-evergreen.git
 ```
 
 ### Development Installation
@@ -37,7 +37,7 @@ pip install git+https://github.com/yourusername/doc-evergreen.git
 For contributing:
 
 ```bash
-git clone https://github.com/yourusername/doc-evergreen.git
+git clone https://github.com/momuno/doc-evergreen.git
 cd doc-evergreen
 
 # Use pipx (recommended)
@@ -187,7 +187,7 @@ alias doc-evergreen='~/.venvs/doc-evergreen/bin/doc-evergreen'
 **Solution**: Reinstall the package:
 ```bash
 pip uninstall doc-evergreen
-pip install git+https://github.com/yourusername/doc-evergreen.git
+pip install git+https://github.com/momuno/doc-evergreen.git
 ```
 
 ### Permission denied
@@ -196,7 +196,7 @@ pip install git+https://github.com/yourusername/doc-evergreen.git
 
 **Solution**: Use --user flag or virtual environment:
 ```bash
-pip install --user git+https://github.com/yourusername/doc-evergreen.git
+pip install --user git+https://github.com/momuno/doc-evergreen.git
 ```
 
 ### Python version too old
@@ -244,7 +244,7 @@ pipx upgrade doc-evergreen
 
 ### pip:
 ```bash
-pip install --upgrade git+https://github.com/yourusername/doc-evergreen.git
+pip install --upgrade git+https://github.com/momuno/doc-evergreen.git
 ```
 
 ### Development installation:
@@ -269,8 +269,8 @@ After installation:
 
 ## Support
 
-- **Issues**: https://github.com/yourusername/doc-evergreen/issues
-- **Discussions**: https://github.com/yourusername/doc-evergreen/discussions
+- **Issues**: https://github.com/momuno/doc-evergreen/issues
+- **Discussions**: https://github.com/momuno/doc-evergreen/discussions
 - **Documentation**: See repository README and guides
 
 ---
