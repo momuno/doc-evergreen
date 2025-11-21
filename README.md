@@ -141,7 +141,16 @@ cd doc-evergreen
 pip install -e .
 ```
 
-See [INSTALLATION.md](./INSTALLATION.md) for troubleshooting.
+### Uninstall:
+```bash
+# If installed with pipx (recommended)
+pipx uninstall doc-evergreen
+
+# If installed with pip
+pip uninstall doc-evergreen
+```
+
+See [INSTALLATION.md](./INSTALLATION.md) for troubleshooting and detailed uninstall instructions.
 
 ---
 

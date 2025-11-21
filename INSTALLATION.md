@@ -128,18 +128,75 @@ doc-evergreen regen-doc readme
 
 ---
 
-## Uninstalling
+## Finding Your Installation
 
-### If installed with pipx:
+Not sure how or where doc-evergreen was installed? Run these commands:
 
 ```bash
+# Find the executable location
+which doc-evergreen
+
+# Check if installed via pipx
+pipx list | grep doc-evergreen
+
+# Check if installed via pip
+pip show doc-evergreen
+```
+
+**Expected outputs:**
+- **pipx**: Shows "package doc-evergreen X.X.X, installed using Python..."
+- **pip**: Shows "Location: /path/to/site-packages"
+- **Not found**: Command not found or no output
+
+---
+
+## Uninstalling
+
+### If installed with pipx (Recommended method):
+
+```bash
+# Uninstall
 pipx uninstall doc-evergreen
+
+# Verify it's gone
+doc-evergreen --version  # Should show "command not found"
 ```
 
 ### If installed with pip:
 
 ```bash
+# Uninstall
 pip uninstall doc-evergreen
+
+# Or if in a virtual environment
+/path/to/venv/bin/pip uninstall doc-evergreen
+
+# Verify it's gone
+doc-evergreen --version  # Should show "command not found"
+```
+
+### If installed with pip -e (editable/development):
+
+```bash
+# From the doc-evergreen directory
+pip uninstall doc-evergreen
+
+# This removes the link but keeps the source code
+# Delete the source directory if you're done with it
+```
+
+### Clean up shell configuration (if needed):
+
+If you added doc-evergreen to your PATH manually, remove these lines from `~/.bashrc` or `~/.zshrc`:
+```bash
+# Remove lines like these if present:
+export PATH="/path/to/doc-evergreen:$PATH"
+alias doc-evergreen='...'
+```
+
+Then reload your shell:
+```bash
+source ~/.bashrc  # or source ~/.zshrc
 ```
 
 ---
