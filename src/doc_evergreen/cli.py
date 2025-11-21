@@ -227,7 +227,7 @@ def init(name: str | None, description: str | None, force: bool):
                         "Explain what it does, its main purpose, and key features. "
                         "Focus on the value it provides."
                     ),
-                    "sources": ["README.md", "**/*.py"],
+                    "sources": ["README.md", "pyproject.toml", "src/**/*.py"],
                 },
                 {
                     "heading": "## Installation",
@@ -243,7 +243,7 @@ def init(name: str | None, description: str | None, force: bool):
                         "Provide usage examples and basic workflows. "
                         "Show common use cases with code examples where helpful."
                     ),
-                    "sources": ["examples/**", "**/*.py", "README.md"],
+                    "sources": ["README.md", "examples/**", "src/**/*.py"],
                 },
                 {
                     "heading": "## Development",
@@ -251,7 +251,7 @@ def init(name: str | None, description: str | None, force: bool):
                         "Document the development workflow. "
                         "Include how to run tests, build the project, and contribute."
                     ),
-                    "sources": ["Makefile", "*.md", "tests/**"],
+                    "sources": ["README.md", "pyproject.toml", "tests/**/*.py"],
                 },
             ],
         }

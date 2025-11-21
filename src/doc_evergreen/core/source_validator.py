@@ -13,6 +13,23 @@ from doc_evergreen.core.template_schema import Template
 
 logger = logging.getLogger(__name__)
 
+# Default directories to exclude from glob patterns
+DEFAULT_EXCLUDES = {
+    ".venv",
+    "venv",
+    "env",
+    ".env",
+    "node_modules",
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "build",
+    "dist",
+    "*.egg-info",
+}
+
 
 class SourceValidationError(Exception):
     """Raised when source validation fails."""
@@ -26,6 +43,33 @@ class SourceValidationResult:
     errors: list[str] = field(default_factory=list)
     section_sources: dict[str, list[Path]] = field(default_factory=dict)
     section_stats: dict[str, dict[str, int]] = field(default_factory=dict)
+
+
+def _should_exclude_path(path: Path, base_dir: Path) -> bool:
+    """Check if a path should be excluded based on default exclusions.
+
+    Args:
+        path: Path to check
+        base_dir: Base directory for relative path calculation
+
+    Returns:
+        True if path should be excluded, False otherwise
+    """
+    try:
+        # Get relative path from base_dir
+        rel_path = path.relative_to(base_dir)
+        # Check each part of the path against exclusions
+        for part in rel_path.parts:
+            if part in DEFAULT_EXCLUDES or any(
+                part.endswith(exclude.lstrip("*"))
+                for exclude in DEFAULT_EXCLUDES
+                if "*" in exclude
+            ):
+                return True
+    except ValueError:
+        # Path is not relative to base_dir, don't exclude
+        pass
+    return False
 
 
 def validate_all_sources(template: Template, base_dir: Path) -> SourceValidationResult:
@@ -49,17 +93,22 @@ def validate_all_sources(template: Template, base_dir: Path) -> SourceValidation
     errors: list[str] = []
 
     def resolve_source_pattern(pattern: str) -> list[Path]:
-        """Resolve a single source pattern with caching."""
+        """Resolve a single source pattern with caching and smart exclusions."""
         if pattern in glob_cache:
             return glob_cache[pattern]
 
         # Try glob pattern first
-        resolved = list(base_dir.glob(pattern))
+        all_matches = list(base_dir.glob(pattern))
 
-        # If no match, try literal path
+        # Filter out excluded paths (virtual envs, node_modules, etc.)
+        resolved = [p for p in all_matches if not _should_exclude_path(p, base_dir)]
+
+        # If no match after filtering, try literal path
         if not resolved:
             literal_path = base_dir / pattern
-            if literal_path.exists():
+            if literal_path.exists() and not _should_exclude_path(
+                literal_path, base_dir
+            ):
                 resolved = [literal_path]
 
         # Cache the result
@@ -140,7 +189,9 @@ def display_validation_report(result: SourceValidationResult) -> None:
         logger.error("❌ Validation failed:\n")
         for error in result.errors:
             logger.error(f"  ERROR: {error}")
-        logger.info("\n  Fix: Check that all source paths exist relative to base directory")
+        logger.info(
+            "\n  Fix: Check that all source paths exist relative to base directory"
+        )
         return
 
     # Show successful validation

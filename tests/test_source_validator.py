@@ -206,7 +206,9 @@ class TestSourceValidation:
 class TestValidationReportDisplay:
     """Test validation report display to user."""
 
-    def test_validation_report_display(self, tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    def test_validation_report_display(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """
         Given: A SourceValidationResult with resolved sources
         When: display_validation_report is called
@@ -254,7 +256,9 @@ class TestValidationReportDisplay:
         # Should show success indicator
         assert "✅" in output or "Found" in output
 
-    def test_validation_report_shows_failures(self, tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    def test_validation_report_shows_failures(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """
         Given: A template with missing sources (validation failed)
         When: display_validation_report is called
@@ -399,3 +403,124 @@ class TestSourceResolverEdgeCases:
         assert result.valid is True
         sources = result.section_sources["Mixed"]
         assert len(sources) == 3
+
+    def test_excludes_virtual_environment_files(self, tmp_path: Path) -> None:
+        """
+        Given: Project with .venv directory containing Python files
+        When: Using **/*.py pattern
+        Then: Only matches project files, not .venv files
+        """
+        # Arrange: Create project structure with .venv
+        (tmp_path / "src").mkdir()
+        (tmp_path / "src" / "main.py").write_text("# Main")
+        (tmp_path / "src" / "utils.py").write_text("# Utils")
+
+        # Create .venv with packages
+        venv_dir = tmp_path / ".venv" / "lib" / "python3.13" / "site-packages"
+        venv_dir.mkdir(parents=True)
+        (venv_dir / "package.py").write_text("# Package")
+        (venv_dir / "module.py").write_text("# Module")
+
+        template = Template(
+            document=Document(
+                title="Test",
+                output="test.md",
+                sections=[
+                    Section(
+                        heading="Code",
+                        prompt="All code",
+                        sources=["**/*.py"],  # Should NOT match .venv files
+                    )
+                ],
+            )
+        )
+
+        # Act: Validate sources
+        result = validate_all_sources(template, base_dir=tmp_path)
+
+        # Assert: Only finds project files, not .venv files
+        assert result.valid is True
+        sources = result.section_sources["Code"]
+        assert len(sources) == 2  # Only main.py and utils.py
+
+        source_names = {s.name for s in sources}
+        assert "main.py" in source_names
+        assert "utils.py" in source_names
+        assert "package.py" not in source_names
+        assert "module.py" not in source_names
+
+    def test_excludes_node_modules(self, tmp_path: Path) -> None:
+        """
+        Given: Project with node_modules directory
+        When: Using **/*.js pattern
+        Then: Only matches project files, not node_modules
+        """
+        # Arrange: Create project with node_modules
+        (tmp_path / "src").mkdir()
+        (tmp_path / "src" / "app.js").write_text("// App")
+
+        node_modules = tmp_path / "node_modules" / "package"
+        node_modules.mkdir(parents=True)
+        (node_modules / "index.js").write_text("// Package")
+
+        template = Template(
+            document=Document(
+                title="Test",
+                output="test.md",
+                sections=[
+                    Section(
+                        heading="Code",
+                        prompt="All code",
+                        sources=["**/*.js"],
+                    )
+                ],
+            )
+        )
+
+        # Act: Validate sources
+        result = validate_all_sources(template, base_dir=tmp_path)
+
+        # Assert: Only finds project files
+        assert result.valid is True
+        sources = result.section_sources["Code"]
+        assert len(sources) == 1
+        assert sources[0].name == "app.js"
+
+    def test_excludes_common_cache_directories(self, tmp_path: Path) -> None:
+        """
+        Given: Project with __pycache__, .pytest_cache, etc.
+        When: Using glob patterns
+        Then: Excludes all cache directories
+        """
+        # Arrange: Create project with various cache dirs
+        (tmp_path / "src").mkdir()
+        (tmp_path / "src" / "main.py").write_text("# Main")
+
+        # Create cache directories
+        for cache_dir in ["__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"]:
+            cache_path = tmp_path / cache_dir
+            cache_path.mkdir()
+            (cache_path / "cached.py").write_text("# Cache")
+
+        template = Template(
+            document=Document(
+                title="Test",
+                output="test.md",
+                sections=[
+                    Section(
+                        heading="Code",
+                        prompt="All code",
+                        sources=["**/*.py"],
+                    )
+                ],
+            )
+        )
+
+        # Act: Validate sources
+        result = validate_all_sources(template, base_dir=tmp_path)
+
+        # Assert: Only finds project files, not cache files
+        assert result.valid is True
+        sources = result.section_sources["Code"]
+        assert len(sources) == 1
+        assert sources[0].name == "main.py"
