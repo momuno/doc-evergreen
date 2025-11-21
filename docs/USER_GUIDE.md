@@ -7,7 +7,6 @@
 ## Table of Contents
 
 - [What is doc-evergreen?](#what-is-doc-evergreen)
-- [Quick Start](#quick-start)
 - [Core Concepts](#core-concepts)
 - [Creating Templates](#creating-templates)
 - [Using the CLI](#using-the-cli)
@@ -16,6 +15,10 @@
 - [Troubleshooting](#troubleshooting)
 - [Advanced Usage](#advanced-usage)
 - [Examples](#examples)
+
+---
+
+**Looking for Quick Start?** See the [README.md](../README.md) for installation and getting started. This guide provides detailed reference documentation.
 
 ---
 
@@ -39,48 +42,6 @@ Define documentation structure once in a template. As your code evolves, regener
 - **Real-time feedback**: Watch progress during generation
 - **Clear errors**: Actionable messages when something's wrong
 
----
-
-## Quick Start
-
-Get productive in 5 minutes.
-
-### Installation
-
-doc-evergreen is a standalone installable tool:
-
-```bash
-# Install with pipx (recommended)
-pipx install git+https://github.com/momuno/doc-evergreen.git
-
-# Or with pip
-pip install git+https://github.com/momuno/doc-evergreen.git
-
-# Verify installation
-doc-evergreen --help
-```
-
-See [INSTALLATION.md](../INSTALLATION.md) for detailed installation instructions.
-
-### Your First Documentation
-
-```bash
-# 1. Navigate to your project
-cd /path/to/your-project
-
-# 2. Initialize (creates .doc-evergreen/readme.json)
-doc-evergreen init
-
-# 3. (Optional) Customize the template
-nano .doc-evergreen/readme.json
-
-# 4. Generate documentation
-doc-evergreen regen-doc readme
-
-# 5. (Optional) Auto-approve mode for CI/CD
-doc-evergreen regen-doc readme --auto-approve
-```
-
 ### The .doc-evergreen/ Convention
 
 doc-evergreen follows a convention-based approach similar to `.github/` or `.vscode/`:
@@ -99,54 +60,6 @@ your-project/
 - Convention over configuration
 - Familiar pattern
 - Short commands: `regen-doc readme` finds `.doc-evergreen/readme.json`
-
-### Create Your First Template
-
-The `init` command creates a starter template, or create `.doc-evergreen/readme.json` manually:
-
-```json
-{
-  "document": {
-    "title": "My Project README",
-    "output": "README.md",
-    "sections": [
-      {
-        "heading": "Overview",
-        "prompt": "Explain what this project does and who it's for",
-        "sources": ["README.md", "pyproject.toml"]
-      },
-      {
-        "heading": "Installation",
-        "prompt": "Provide step-by-step installation instructions",
-        "sources": ["README.md", "setup.py", "pyproject.toml"]
-      }
-    ]
-  }
-}
-```
-
-### Generate Documentation
-
-```bash
-# Generate with preview and approval (short name)
-doc-evergreen regen-doc readme
-
-# Or with full path
-doc-evergreen regen-doc .doc-evergreen/readme.json
-
-# Auto-approve for CI/CD
-doc-evergreen regen-doc readme --auto-approve
-```
-
-### Review and Approve
-
-The tool shows you:
-1. Progress as each section generates
-2. Diff showing exactly what changed
-3. Approval prompt - type 'y' to apply, 'n' to abort
-4. Option to regenerate and refine
-
-**That's it!** You now have AI-maintained documentation.
 
 ---
 

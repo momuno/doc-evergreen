@@ -8,25 +8,62 @@ Keep your documentation fresh without the manual grind. Define templates once, r
 
 ## Quick Start
 
+Get productive in 5 minutes.
+
+### Installation
+
 ```bash
-# 1. Install (pipx handles everything)
+# Install with pipx (recommended)
 pipx install git+https://github.com/momuno/doc-evergreen.git
+
+# Or with pip
+pip install git+https://github.com/momuno/doc-evergreen.git
+
+# Verify installation
+doc-evergreen --help
+```
+
+See [INSTALLATION.md](./INSTALLATION.md) for detailed installation, troubleshooting, and alternative methods.
+
+### Your First Documentation
+
+```bash
+# 1. Navigate to your project
+cd /path/to/your-project
 
 # 2. Set up API key (required for AI generation)
 export ANTHROPIC_API_KEY=your_key_here
 # Get key from: https://console.anthropic.com/
 
-# 3. Bootstrap your project
-cd /your-project
+# 3. Initialize (creates .doc-evergreen/readme.json)
 doc-evergreen init
 
-# 4. Generate docs
+# 4. (Optional) Customize the template
+nano .doc-evergreen/readme.json
+
+# 5. Generate documentation
 doc-evergreen regen-doc readme
+
+# See all available options
+doc-evergreen regen-doc --help
 ```
 
-**Works with any project.** Customize the generated template to fit your needs.
+### Important Options
 
-**Need help?** See [INSTALLATION.md](./INSTALLATION.md) for detailed setup, troubleshooting, and alternative install methods.
+```bash
+# Auto-approve for CI/CD (skips approval prompt)
+doc-evergreen regen-doc readme --auto-approve
+
+# Override output location
+doc-evergreen regen-doc readme --output custom/path.md
+
+# Use full path to template (instead of short name)
+doc-evergreen regen-doc .doc-evergreen/readme.json
+```
+
+**Works with any project.** The generated template is fully customizable.
+
+**Next steps:** See [docs/USER_GUIDE.md](./docs/USER_GUIDE.md) for complete reference documentation.
 
 ---
 
@@ -101,17 +138,14 @@ Completed 1 iteration
 
 ## Documentation
 
-**Start here (5 min read):**
-- This README - Quick overview
-- [INSTALLATION.md](./INSTALLATION.md) - Install instructions & troubleshooting
+**Getting Started:**
+- **README** (this file) - Quick start and overview
+- **[INSTALLATION.md](./INSTALLATION.md)** - Detailed installation, troubleshooting, and uninstall
 
-**Detailed reference (for AI or deep dives):**
-- [docs/USER_GUIDE.md](./docs/USER_GUIDE.md) - Complete workflows (19kb)
-- [docs/TEMPLATES.md](./docs/TEMPLATES.md) - Template creation (17kb)
-- [docs/BEST_PRACTICES.md](./docs/BEST_PRACTICES.md) - Design patterns (21kb)
-
-**Upgrading from v0.3.0?**
-- [docs/MIGRATION_v0.3_to_v0.4.md](./docs/MIGRATION_v0.3_to_v0.4.md) - Breaking changes & migration guide
+**Reference Documentation:**
+- **[docs/USER_GUIDE.md](./docs/USER_GUIDE.md)** - Complete command reference and workflows
+- **[docs/TEMPLATES.md](./docs/TEMPLATES.md)** - Template creation guide
+- **[docs/BEST_PRACTICES.md](./docs/BEST_PRACTICES.md)** - Design patterns and best practices
 
 ---
 
