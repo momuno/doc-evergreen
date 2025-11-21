@@ -28,7 +28,7 @@ doc-evergreen init
 doc-evergreen regen-doc readme
 ```
 
-**That's it.** Zero configuration, works with any project.
+**Works with any project.** Customize the generated template to fit your needs.
 
 **Prerequisites:**
 - Python 3.11+
