@@ -170,22 +170,30 @@ your-project/
 
 ### Initialize a project
 ```bash
-doc-evergreen init [--name "Project Name"] [--force]
+doc-evergreen init
+doc-evergreen init --name "Project Name"
+doc-evergreen init --force  # Overwrite existing
 ```
 
 Creates `.doc-evergreen/readme.json` starter template.
 
-### Regenerate documentation
+### Regenerate documentation (Main Command)
 ```bash
 doc-evergreen regen-doc <template-name>
 doc-evergreen regen-doc <template-name> --auto-approve
 doc-evergreen regen-doc <template-name> --output custom/path.md
 ```
 
+**This is the primary command you'll use.**
+
 Supports:
-- Short names: `readme` → `.doc-evergreen/readme.json`
-- Full paths: `templates/api.json`
-- Absolute paths: `/path/to/template.json`
+- **Short names**: `readme` → `.doc-evergreen/readme.json`
+- **Full paths**: `templates/api.json`
+- **Absolute paths**: `/path/to/template.json`
+
+### Legacy Commands
+
+The `doc-update` command still exists for backwards compatibility but `regen-doc` is preferred as it provides change preview and approval workflow.
 
 ---
 

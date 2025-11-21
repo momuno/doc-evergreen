@@ -1,4 +1,4 @@
-# doc_evergreen User Guide
+# doc-evergreen User Guide
 
 **AI-powered documentation that stays in sync with your code**
 
@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-- [What is doc_evergreen?](#what-is-doc_evergreen)
+- [What is doc-evergreen?](#what-is-doc-evergreen)
 - [Quick Start](#quick-start)
 - [Core Concepts](#core-concepts)
 - [Creating Templates](#creating-templates)
@@ -19,9 +19,9 @@
 
 ---
 
-## What is doc_evergreen?
+## What is doc-evergreen?
 
-doc_evergreen is a template-based documentation generator that uses AI to keep your documentation in sync with your evolving codebase.
+doc-evergreen is a template-based documentation generator that uses AI to keep your documentation in sync with your evolving codebase.
 
 ### The Problem It Solves
 
@@ -540,7 +540,7 @@ project/
 │   ├── readme.json        # Main README
 │   ├── api-docs.json      # API documentation
 │   └── contributing.json  # Contribution guide
-├── examples/              # Example templates (from doc_evergreen)
+├── examples/              # Example templates (from doc-evergreen)
 │   ├── simple.json
 │   └── nested.json
 └── docs/
@@ -726,7 +726,7 @@ Configuration content...
 
 ### Template Variables
 
-Currently, doc_evergreen uses simple JSON structure without variable interpolation. If you need dynamic content, handle it in prompts:
+Currently, doc-evergreen uses simple JSON structure without variable interpolation. If you need dynamic content, handle it in prompts:
 
 ```json
 {
@@ -751,7 +751,7 @@ doc-evergreen regen-doc --output docs/README-v2.md templates/readme.json
 
 ## Examples
 
-doc_evergreen includes several example templates:
+doc-evergreen includes several example templates:
 
 ### Simple Template (`examples/simple.json`)
 
@@ -805,7 +805,7 @@ doc_evergreen includes several example templates:
 ### Self-Documenting (`templates/self_documenting.json`)
 
 **What it demonstrates**:
-- doc_evergreen documenting itself
+- doc-evergreen documenting itself
 - Meta-documentation pattern
 - Feature showcasing
 
@@ -851,9 +851,10 @@ After reading this guide:
 
 ## Version
 
-This guide is for doc_evergreen v0.3.0
+This guide is for doc-evergreen v0.4.0
 
 **Changelog**:
+- v0.4.0: Standalone tool with .doc-evergreen/ convention, improved CLI
 - v0.3.0: Template-based regeneration, progress feedback, iterative refinement
 - v0.2.0: Chunked generation mode
 - v0.1.0: Initial proof of concept

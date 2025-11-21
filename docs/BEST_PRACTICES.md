@@ -1,4 +1,4 @@
-# doc_evergreen Best Practices
+# doc-evergreen Best Practices
 
 **Patterns and principles for effective template-based documentation**
 
@@ -204,7 +204,7 @@ doc-evergreen regen-doc /path/to/shared/templates/readme.json
 **Example**:
 ```json
 {
-  "prompt": "List the top 5 features of doc_evergreen. For each: (1) Feature name and description, (2) User benefit, (3) Usage example. Use engaging language."
+  "prompt": "List the top 5 features of doc-evergreen. For each: (1) Feature name and description, (2) User benefit, (3) Usage example. Use engaging language."
 }
 ```
 
@@ -633,7 +633,7 @@ du -sh src/api/*.py | awk '{sum+=$1} END {print sum}'
 
 ### Cache Awareness
 
-doc_evergreen doesn't cache yet, so:
+doc-evergreen doesn't cache yet, so:
 - Expect generation to take time for first run
 - Subsequent runs with same sources take similar time
 - Plan for 5-10 seconds per section
@@ -661,7 +661,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup Python
         uses: actions/setup-python@v2
-      - name: Install doc_evergreen
+      - name: Install doc-evergreen
         run: pip install doc-evergreen
       - name: Regenerate docs
         run: regen-doc --auto-approve templates/readme.json

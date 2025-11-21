@@ -77,25 +77,32 @@ def resolve_template_path(name: str) -> Path:
 def cli():
     """doc-evergreen - AI-powered documentation generation.
 
-    Works with ANY project. Run from your project root directory.
+    \b
+    Works with ANY project.
+    Run from your project root directory.
     Templates reference sources relative to project root (cwd).
 
+    \b
     Installation:
       pip install -e /path/to/doc-evergreen
       # or
       pipx install /path/to/doc-evergreen
 
+    \b
     Quick Start:
       cd /path/to/your-project
-      doc-evergreen regen-doc template.json
+      doc-evergreen regen-doc readme
 
+    \b
     How it works:
       - Run from project root (your cwd)
       - Sources in templates are relative to cwd
       - Output files written relative to cwd
       - Template can be stored anywhere
 
-    Documentation: See TEMPLATES.md for template creation guide
+    \b
+    Documentation:
+      See TEMPLATES.md for template creation guide
     """
     pass
 
@@ -114,18 +121,23 @@ def cli():
     help="Override output path from template",
 )
 def doc_update(template_path: str, mode: str, output: str | None):
-    """Generate/update documentation from JSON template.
+    """[LEGACY] Generate/update documentation from JSON template.
+
+    \b
+    NOTE: This command is legacy. Use 'regen-doc' instead.
+          'regen-doc' supports the .doc-evergreen/ convention
+          and provides change preview with approval.
 
     \b
     Examples:
       # Generate using single-shot mode (default)
-      doc-update template.json
+      doc-evergreen doc-update template.json
 
       # Generate using chunked mode (section-by-section)
-      doc-update --mode chunked template.json
+      doc-evergreen doc-update --mode chunked template.json
 
       # Override output path
-      doc-update --output custom.md template.json
+      doc-evergreen doc-update --output custom.md template.json
     """
     # 1. Parse template
     try:
@@ -177,6 +189,7 @@ def doc_update(template_path: str, mode: str, output: str | None):
 def init(name: str | None, description: str | None, force: bool):
     """Initialize doc-evergreen in current project.
 
+    \b
     Creates .doc-evergreen/ directory with starter readme.json template.
 
     \b
@@ -260,7 +273,9 @@ def init(name: str | None, description: str | None, force: bool):
 def regen_doc(template_name: str, auto_approve: bool, output: str | None):
     """Regenerate documentation from template with change preview.
 
-    Supports short template names (finds in .doc-evergreen/) or full paths.
+    \b
+    Supports short template names (finds in .doc-evergreen/)
+    or full paths.
 
     \b
     Workflow:
@@ -284,6 +299,7 @@ def regen_doc(template_name: str, auto_approve: bool, output: str | None):
       # Override output location
       doc-evergreen regen-doc --output custom/path.md readme
 
+    \b
     See TEMPLATES.md for template creation guide.
     """
     # 1. Resolve template path (convention or explicit)

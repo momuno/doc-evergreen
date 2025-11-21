@@ -1,6 +1,6 @@
 # Template Guide
 
-This guide explains how to create and use JSON templates for generating documentation with doc_evergreen.
+This guide explains how to create and use JSON templates for generating documentation with doc-evergreen.
 
 ## What is a Template?
 
