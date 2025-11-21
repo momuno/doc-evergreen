@@ -9,33 +9,24 @@ Keep your documentation fresh without the manual grind. Define templates once, r
 ## Quick Start
 
 ```bash
-# 1. Get doc-evergreen
-git clone https://github.com/momuno/doc-evergreen.git
+# 1. Install (pipx handles everything)
+pipx install git+https://github.com/momuno/doc-evergreen.git
 
-# 2. Install (use pipx - handles virtual env for you)
-cd doc-evergreen
-pipx install -e .
-
-# 3. Set up API key (required for AI generation)
+# 2. Set up API key (required for AI generation)
 export ANTHROPIC_API_KEY=your_key_here
 # Get key from: https://console.anthropic.com/
 
-# 4. Bootstrap your project
+# 3. Bootstrap your project
 cd /your-project
 doc-evergreen init
 
-# 5. Generate docs
+# 4. Generate docs
 doc-evergreen regen-doc readme
 ```
 
 **Works with any project.** Customize the generated template to fit your needs.
 
-**Prerequisites:**
-- Python 3.11+
-- Anthropic API key (for AI generation)
-- pipx (handles installation): `pip install pipx`
-
-See [INSTALLATION.md](./INSTALLATION.md) for detailed setup.
+**Need help?** See [INSTALLATION.md](./INSTALLATION.md) for detailed setup, troubleshooting, and alternative install methods.
 
 ---
 
