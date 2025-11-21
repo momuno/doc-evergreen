@@ -253,19 +253,21 @@ doc-evergreen regen-doc /path/to/shared/templates/readme.json
 
 ```json
 {
-  "heading": "Memory Module",
+  "heading": "Authentication Module",
+  "prompt": "Document authentication features",
   "sources": [
-    "../amplifier/memory/README.md",
-    "../amplifier/memory/*.py",
-    "../tests/test_memory.py"
+    "src/auth/README.md",
+    "src/auth/*.py",
+    "tests/test_auth.py"
   ]
 },
 {
-  "heading": "Search Module",
+  "heading": "Database Module",
+  "prompt": "Document database layer",
   "sources": [
-    "../amplifier/search/README.md",
-    "../amplifier/search/*.py",
-    "../tests/test_search.py"
+    "src/database/README.md",
+    "src/database/*.py",
+    "tests/test_database.py"
   ]
 }
 ```

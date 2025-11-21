@@ -269,7 +269,7 @@ README.md should have:
 "sources": ["src/**/*.py", "docs/**/*.md"]
 
 // Module-specific
-"sources": ["amplifier/memory/*.py", "amplifier/memory/README.md"]
+"sources": ["src/auth/*.py", "src/auth/README.md"]
 ```
 
 **Important**: Paths are **relative to template location**. Use `../` to go up:
@@ -716,7 +716,7 @@ Configuration content...
 
 **Specific module documentation**:
 ```json
-"sources": ["amplifier/*/README.md"]  // All module READMEs
+"sources": ["src/*/README.md"]  // All module READMEs
 ```
 
 **Excluding patterns** (at directory level):
@@ -789,13 +789,13 @@ doc-evergreen includes several example templates:
 - Developer tools
 - Command reference generation
 
-### Multi-Component Library (`templates/amplifier_readme.json`)
+### Multi-Component Library Example
 
 **What it demonstrates**:
 - Multiple module documentation
 - Cross-referencing
 - Complex project structure
-- 9 comprehensive sections
+- 8-10 comprehensive sections
 
 **When to use**:
 - Multi-package projects
@@ -821,8 +821,8 @@ doc-evergreen includes several example templates:
 ### Documentation
 
 - **TEMPLATES.md**: Complete template creation guide
+- **BEST_PRACTICES.md**: Design patterns and best practices
 - **USER_GUIDE.md**: This document - end-to-end usage
-- **Sprint planning docs**: `ai_working/doc_evergreen/sprints/` - design decisions
 
 ### Command Help
 

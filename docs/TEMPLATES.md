@@ -174,13 +174,13 @@ Doc-evergreen uses Python's `glob` module, supporting standard glob syntax:
 
 ```json
 // All Python files in a directory
-"sources": ["amplifier/memory/*.py"]
+"sources": ["src/models/*.py"]
 
 // All files recursively in a directory
-"sources": ["amplifier/memory/**/*"]
+"sources": ["src/models/**/*"]
 
 // Specific file types across multiple directories
-"sources": ["amplifier/*/README.md"]
+"sources": ["src/*/README.md"]
 ```
 
 #### Advanced Patterns
@@ -218,23 +218,23 @@ If you run from `doc_evergreen/` directory:
 
 ```json
 {
-  "sources": ["../amplifier/README.md"]  // → Parent dir amplifier/README.md
+  "sources": ["README.md"]  // → Project root README
 }
 ```
 
-**Best Practice**: Paths relative to doc_evergreen/ root (where you run `make regen-doc`):
+**Best Practice**: Paths relative to project root (where you run commands from):
 
 ```
-doc_evergreen/           ← You run make from here (cwd)
-├── templates/
+your-project/            ← You run commands from here (cwd)
+├── .doc-evergreen/
 │   └── readme.json
 ├── README.md            ← Use "README.md"
 ├── src/
 │   ├── main.py          ← Use "src/**/*.py"
 │   └── utils/
 │       └── helper.py    ← Matched by "src/**/*.py"
-├── amplifier/           ← Parent dir
-│   └── README.md        ← Use "../amplifier/README.md"
+└── docs/
+    └── api.md           ← Use "docs/api.md"
 ```
 
 ### Common Source Patterns
@@ -271,12 +271,12 @@ doc_evergreen/           ← You run make from here (cwd)
 
 ```json
 {
-  "heading": "Memory Module",
-  "prompt": "Document the memory system architecture and usage",
+  "heading": "Authentication Module",
+  "prompt": "Document the authentication system architecture and usage",
   "sources": [
-    "../amplifier/memory/README.md",   // Module docs
-    "../amplifier/memory/*.py",        // Module implementation
-    "../tests/test_memory.py"          // Usage examples
+    "src/auth/README.md",              // Module docs
+    "src/auth/*.py",                   // Module implementation
+    "tests/test_auth.py"               // Usage examples
   ]
 }
 ```
@@ -341,14 +341,14 @@ doc_evergreen/           ← You run make from here (cwd)
 
 **Solutions**:
 ```json
-// Check pattern is relative to template
-"sources": ["../src/*.py"]  // Not "src/*.py" if template is in templates/
+// Check pattern is relative to cwd (where you run the command)
+"sources": ["src/*.py"]  // Relative to project root
 
 // Verify files exist
-"sources": ["../README.md"]  // ls ../README.md from template directory
+"sources": ["README.md"]  // ls README.md from project root
 
 // Use more specific patterns
-"sources": ["../amplifier/memory/*.py"]  // Not "../*.py"
+"sources": ["src/auth/*.py"]  // Not "src/**/*.py" if too broad
 ```
 
 #### Wrong files are being used
@@ -362,15 +362,15 @@ doc_evergreen/           ← You run make from here (cwd)
 **Solutions**:
 ```json
 // Bad: Too broad
-"sources": ["../**/*.py"]  // Matches EVERYTHING
+"sources": ["**/*.py"]  // Matches EVERYTHING
 
 // Good: Specific
-"sources": ["../amplifier/memory/**/*.py"]
+"sources": ["src/auth/**/*.py"]
 
 // Better: Curated list
 "sources": [
-  "../amplifier/memory/core.py",
-  "../amplifier/memory/store.py"
+  "src/auth/core.py",
+  "src/auth/validators.py"
 ]
 ```
 
@@ -521,12 +521,13 @@ See `examples/nested.json` for a hierarchical template with:
 
 **Use case**: Comprehensive documentation for larger projects
 
-### Production Template
+### Complex Project Template
 
-See `templates/amplifier_readme.json` for a real-world example with:
-- 9 top-level sections
+For a real-world example, create a comprehensive template with:
+- 8-10 top-level sections
 - Multiple source files per section
 - Detailed prompts for consistent output
+- Nested sections for hierarchical docs
 
 **Use case**: Maintaining complex project documentation
 
@@ -637,6 +638,5 @@ Common issues:
 
 ## Additional Resources
 
-- **Sprint 8 Documentation**: See `ai_working/doc_evergreen/sprints/v0.3.0-test-case-basic-regen/SPRINT_08_TEMPLATE_PARSER.md` for implementation details
 - **Schema Reference**: See `doc_evergreen/core/template_schema.py` for data structures
 - **CLI Help**: Run `regen-doc --help` for command options
