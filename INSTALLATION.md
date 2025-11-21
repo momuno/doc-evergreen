@@ -92,13 +92,6 @@ echo 'export ANTHROPIC_API_KEY=your_key_here' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-**Option 3: Project-specific** (.env file)
-```bash
-# In your project directory
-echo 'ANTHROPIC_API_KEY=your_key_here' > .env
-# (doc-evergreen will load from .env if present)
-```
-
 **Verify API key is set:**
 ```bash
 echo $ANTHROPIC_API_KEY  # Should show your key
@@ -292,8 +285,8 @@ pip install -e .
 
 After installation:
 
-1. **Read the User Guide**: See `USER_GUIDE.md` for complete usage documentation
-2. **Review Best Practices**: See `BEST_PRACTICES.md` for template design patterns
+1. **Read the User Guide**: See `docs/USER_GUIDE.md` for complete workflows
+2. **Review Best Practices**: See `docs/BEST_PRACTICES.md` for template design patterns
 3. **Check Examples**: See `examples/` directory for template examples
 4. **Join the Community**: Report issues, request features, contribute
 
@@ -303,8 +296,8 @@ After installation:
 
 - **Issues**: https://github.com/momuno/doc-evergreen/issues
 - **Discussions**: https://github.com/momuno/doc-evergreen/discussions
-- **Documentation**: See repository README and guides
+- **Documentation**: See repository README and docs/
 
 ---
 
-**Installation takes <2 minutes. First doc generation in <5 minutes. Zero configuration needed.**
+**Installation takes <2 minutes. First doc generation in <5 minutes.**
