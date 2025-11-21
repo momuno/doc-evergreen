@@ -16,17 +16,26 @@ git clone https://github.com/momuno/doc-evergreen.git
 cd doc-evergreen
 pipx install -e .
 
-# 3. Bootstrap your project
+# 3. Set up API key (required for AI generation)
+export ANTHROPIC_API_KEY=your_key_here
+# Get key from: https://console.anthropic.com/
+
+# 4. Bootstrap your project
 cd /your-project
 doc-evergreen init
 
-# 4. Generate docs
+# 5. Generate docs
 doc-evergreen regen-doc readme
 ```
 
 **That's it.** Zero configuration, works with any project.
 
-**Don't have pipx?** `pip install pipx` or see [INSTALLATION.md](./INSTALLATION.md#pip-externally-managed-environment-error)
+**Prerequisites:**
+- Python 3.11+
+- Anthropic API key (for AI generation)
+- pipx (handles installation): `pip install pipx`
+
+See [INSTALLATION.md](./INSTALLATION.md) for detailed setup.
 
 ---
 

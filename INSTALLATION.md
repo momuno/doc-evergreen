@@ -66,10 +66,42 @@ Usage: doc-evergreen [OPTIONS] COMMAND [ARGS]...
   ...
 ```
 
-Check version:
+---
 
+## Set Up API Key (Required)
+
+doc-evergreen uses Anthropic's Claude for AI generation. You need an API key:
+
+### Get API Key
+
+1. Go to https://console.anthropic.com/
+2. Sign up or log in
+3. Create an API key
+
+### Configure API Key
+
+**Option 1: Environment variable** (recommended for testing)
 ```bash
-doc-evergreen --version  # (if version command added)
+export ANTHROPIC_API_KEY=your_key_here
+```
+
+**Option 2: Add to shell profile** (permanent)
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+echo 'export ANTHROPIC_API_KEY=your_key_here' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Option 3: Project-specific** (.env file)
+```bash
+# In your project directory
+echo 'ANTHROPIC_API_KEY=your_key_here' > .env
+# (doc-evergreen will load from .env if present)
+```
+
+**Verify API key is set:**
+```bash
+echo $ANTHROPIC_API_KEY  # Should show your key
 ```
 
 ---
