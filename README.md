@@ -11,10 +11,10 @@ Keep your documentation fresh without the manual grind. Define templates once, r
 ```bash
 # 1. Get doc-evergreen
 git clone https://github.com/momuno/doc-evergreen.git
-# OR download from: /home/momuno/AI_MADE_Explorations/doc_evergreen (local dev)
 
 # 2. Install (use pipx - handles virtual env for you)
-pipx install -e /path/to/doc-evergreen
+cd doc-evergreen
+pipx install -e .
 
 # 3. Bootstrap your project
 cd /your-project
