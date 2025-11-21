@@ -60,7 +60,7 @@ pip install git+https://github.com/momuno/doc-evergreen.git
 doc-evergreen --help
 ```
 
-See [INSTALLATION.md](./INSTALLATION.md) for detailed installation instructions.
+See [INSTALLATION.md](../INSTALLATION.md) for detailed installation instructions.
 
 ### Your First Documentation
 
@@ -81,8 +81,6 @@ doc-evergreen regen-doc readme
 doc-evergreen regen-doc readme --auto-approve
 ```
 
-**That's it!** Zero configuration, works with any project.
-
 ### The .doc-evergreen/ Convention
 
 doc-evergreen follows a convention-based approach similar to `.github/` or `.vscode/`:
@@ -98,13 +96,13 @@ your-project/
 
 **Benefits:**
 - Templates travel with project
-- Zero configuration needed
+- Convention over configuration
 - Familiar pattern
-- Short commands: `regen-doc readme` instead of full paths
+- Short commands: `regen-doc readme` finds `.doc-evergreen/readme.json`
 
 ### Create Your First Template
 
-Create `templates/readme.json`:
+The `init` command creates a starter template, or create `.doc-evergreen/readme.json` manually:
 
 ```json
 {
@@ -130,11 +128,14 @@ Create `templates/readme.json`:
 ### Generate Documentation
 
 ```bash
-# Generate with preview and approval
-regen-doc templates/readme.json
+# Generate with preview and approval (short name)
+doc-evergreen regen-doc readme
+
+# Or with full path
+doc-evergreen regen-doc .doc-evergreen/readme.json
 
 # Auto-approve for CI/CD
-regen-doc --auto-approve templates/readme.json
+doc-evergreen regen-doc readme --auto-approve
 ```
 
 ### Review and Approve
@@ -286,7 +287,7 @@ project/
 
 ```bash
 # Generate and review
-regen-doc templates/readme.json
+doc-evergreen regen-doc templates/readme.json
 
 # Review the diff carefully
 # Approve if good, reject if needs work
@@ -307,7 +308,7 @@ Regenerate documentation from a template.
 
 **Syntax**:
 ```bash
-regen-doc [OPTIONS] TEMPLATE_PATH
+doc-evergreen regen-doc [OPTIONS] TEMPLATE_PATH
 ```
 
 **Options**:
@@ -318,13 +319,13 @@ regen-doc [OPTIONS] TEMPLATE_PATH
 
 ```bash
 # Standard workflow with review
-regen-doc templates/readme.json
+doc-evergreen regen-doc templates/readme.json
 
 # Auto-approve for automation
-regen-doc --auto-approve templates/readme.json
+doc-evergreen regen-doc --auto-approve templates/readme.json
 
 # Override output location
-regen-doc --output custom/path.md templates/readme.json
+doc-evergreen regen-doc --output custom/path.md templates/readme.json
 ```
 
 ### Progress Feedback
@@ -740,10 +741,10 @@ Temporarily generate to different location:
 
 ```bash
 # Test template without overwriting production docs
-regen-doc --output test/README.md templates/readme.json
+doc-evergreen regen-doc --output test/README.md templates/readme.json
 
 # Generate multiple variants
-regen-doc --output docs/README-v2.md templates/readme.json
+doc-evergreen regen-doc --output docs/README-v2.md templates/readme.json
 ```
 
 ---
@@ -826,7 +827,7 @@ doc_evergreen includes several example templates:
 ### Command Help
 
 ```bash
-regen-doc --help
+doc-evergreen regen-doc --help
 ```
 
 ### Issues
