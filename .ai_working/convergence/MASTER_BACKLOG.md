@@ -4,7 +4,7 @@
 
 **Philosophy**: Nothing is lost. Ideas wait here until the right "reconsider when" conditions are met.
 
-**Last Updated**: 2025-11-20
+**Last Updated**: 2025-11-24
 
 ---
 
@@ -17,7 +17,8 @@
 | **Problem B Deferred** | 13 features | From chunked-generation convergence |
 | **Test Case Deferred** | 21 features | From test-case-basic-regen convergence |
 | **Standalone Tool Deferred** | 15 features | From 2025-11-20 standalone-tool convergence |
-| **Total Backlog** | 72 features | Available for future releases |
+| **Transcript Ideas** | 14 features | From 2025-11-19 conversation with Marc |
+| **Total Backlog** | 86 features | Available for future releases |
 
 ---
 
@@ -650,6 +651,153 @@ Features move from backlog to active development when:
 
 ---
 
+### Transcript Ideas (from 2025-11-19 conversation)
+
+**Origin**: Discussion with Marc about doc-evergreen evolution
+**Convergence**: 2025-11-24-transcript-ideas
+
+#### 81. Update Existing Documentation (UC2)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Regenerate existing docs when source files change, preserving stable sections
+**Why Valuable**: Keep docs in sync with code without manual tracking
+**Complexity**: High (requires change detection, section mapping, stability tracking)
+**Reconsider When**:
+- MVP used successfully for 5+ initial doc creations
+- Users manually update docs and wish they could automate it
+- Code changes and docs drift out of sync
+
+#### 82. Include Existing Content in Regeneration (UC2 - Update Flow)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: When regenerating a section, include its current content as context for LLM
+**Why Valuable**: Prevents unnecessary changes, maintains writing style, improves stability
+**Complexity**: Medium (section extraction, prompt engineering)
+**Reconsider When**:
+- Update flow exists but produces too much churn
+- Regenerated sections lose valuable context or style
+- Users complain about unnecessary rewrites
+
+#### 83. Relevance Check Before Regeneration (UC2 - Update Flow)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Check if code changes actually affect a doc section before regenerating it
+**Why Valuable**: Reduces unnecessary updates, saves API calls, maintains stability
+**Complexity**: Medium (requires source-to-section mapping, heuristics)
+**Reconsider When**:
+- Update flow generates too many false-positive updates
+- API costs become significant due to unnecessary regenerations
+- Users want more control over what gets updated
+
+#### 84. Content Hash Change Detection (UC2 - Update Flow)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Track content hashes to detect when source files actually changed meaningfully
+**Why Valuable**: Trigger updates only when content changes, not just timestamps
+**Complexity**: Low (hash comparison, git integration)
+**Reconsider When**:
+- Update flow exists but triggers on irrelevant changes
+- Need to distinguish formatting changes from content changes
+- Want to track "what changed" not just "did it change"
+
+#### 85. Selective Section Regeneration (UC2 - Update Flow)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Regenerate only affected sections of a doc, not the entire document
+**Why Valuable**: Faster updates, less API cost, better stability
+**Complexity**: Medium (section-to-source mapping, incremental updates)
+**Reconsider When**:
+- Full doc regeneration causes too much churn
+- API costs from regenerating entire docs become high
+- Users want surgical updates to specific sections
+
+#### 86. Stability Tracking for Sections (UC2 - Update Flow)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Don't regenerate sections that were recently updated (cooldown period)
+**Why Valuable**: Prevents constant churn, respects recent human edits
+**Complexity**: Medium (timestamp tracking, cooldown logic, override mechanism)
+**Reconsider When**:
+- Update flow exists but churns too frequently
+- Need to balance freshness with stability
+- Users manually edit sections and want them protected temporarily
+
+#### 87. Map Code Changes to Affected Sections (UC2 - Update Flow)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Analyze git changes and determine which doc sections they affect
+**Why Valuable**: Smart selective updates, reduced unnecessary regeneration
+**Complexity**: High (requires section-to-source mapping, change analysis)
+**Reconsider When**:
+- Selective regeneration exists but affects too many sections
+- Need intelligent "what changed affects what docs" logic
+- Users want automated impact analysis
+
+#### 88. Generate Template FROM Existing Documentation (Parking Lot)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Reverse direction - extract template from well-written existing docs
+**Why Valuable**: Onboard existing docs into the system, learn from good examples
+**Complexity**: High (structure extraction, section identification, LLM-based analysis)
+**Reconsider When**:
+- Users have existing high-quality docs they want to maintain with doc_evergreen
+- Want to capture organizational documentation standards
+- Need to bootstrap templates from examples rather than from scratch
+
+#### 89. Cross-Repo Context Gathering (Cross-Repo)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Gather context from multiple repositories for documentation generation
+**Why Valuable**: Enables high-level docs that reference multiple projects
+**Complexity**: High (multi-repo cloning, context coordination, version alignment)
+**Reconsider When**:
+- Working in microservices or multi-repo architectures
+- Need architectural docs spanning multiple projects
+- Want to document cross-project dependencies
+
+#### 90. Update High-Level Doc When Source Changes (Cross-Repo)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Detect changes in authoritative source repo and trigger updates in referencing repos
+**Why Valuable**: Keeps cross-repo documentation synchronized automatically
+**Complexity**: High (cross-repo change detection, webhook integration, dependency tracking)
+**Reconsider When**:
+- Cross-repo docs exist and drift out of sync frequently
+- Multiple repos reference shared authoritative sources
+- Need automated propagation of changes across project boundaries
+
+#### 91. Git Integration for Change Detection (UC2 - Implementation)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Use git history to detect what files changed since last doc generation
+**Why Valuable**: Trigger updates based on actual changes, not manual tracking
+**Complexity**: Medium (git API, commit tracking, file change analysis)
+**Reconsider When**:
+- Update flow needs automated change detection
+- Want to use version control as source of truth for changes
+- Need "what changed since last run" logic
+
+#### 92. Incremental Context for Changed Files (UC2 - Implementation)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Gather context only for files that changed, not entire project
+**Why Valuable**: Faster context gathering, reduced API calls for updates
+**Complexity**: Medium (requires section-to-source mapping, incremental gathering)
+**Reconsider When**:
+- Full context gathering for updates is too slow or expensive
+- Want to optimize update performance
+- Need to scale to larger projects
+
+#### 93. Section-to-Source Mapping (UC2 - Implementation)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Track which source files/functions are referenced by each doc section
+**Why Valuable**: Enables selective updates, relevance checking, impact analysis
+**Complexity**: High (requires analysis during generation, metadata storage, maintenance)
+**Reconsider When**:
+- Any selective update feature is needed
+- Want to answer "what docs are affected by this code change"
+- Need intelligent update decisions
+
+#### 94. Template Storage Strategy (Implementation)
+**Origin**: 2025-11-19-transcript-ideas
+**What**: Decide if templates are separate files or regenerated from existing docs
+**Why Valuable**: Architectural decision affecting update flow and template management
+**Complexity**: Low (design decision, affects implementation approach)
+**Reconsider When**:
+- Implementing any template-based feature
+- Choosing between "template as source" vs "template as artifact"
+- Need to decide template update/versioning strategy
+
+---
+
 ## 📝 Using This Backlog
 
 ### When MVP Completes
@@ -705,6 +853,6 @@ This backlog embodies:
 
 ---
 
-**Last Review**: 2025-11-19
-**Next Review**: After v0.3.0 complete (Test Case - Basic Regeneration)
+**Last Review**: 2025-11-24
+**Next Review**: After v0.4.0 usage (Standalone Tool - Basic Usage)
 **Review Trigger**: When any "Reconsider When" condition is met
