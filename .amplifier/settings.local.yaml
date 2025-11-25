@@ -1,0 +1,10 @@
+profile:
+  active: dev
+config:
+  providers:
+  - module: provider-anthropic
+    config:
+      default_model: claude-sonnet-4-5
+      api_key: ${ANTHROPIC_API_KEY}
+      priority: 1
+    source: git+https://github.com/microsoft/amplifier-module-provider-anthropic@main

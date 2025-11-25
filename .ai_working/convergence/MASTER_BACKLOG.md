@@ -12,13 +12,14 @@
 
 | Category | Count | Notes |
 |----------|-------|-------|
-| **Implemented** | 18 features | Sprints 1-7 (v0.1.0-v0.2.0), Sprints 8-10 (v0.3.0) |
+| **Implemented** | 18 features | Sprints 1-7 (v0.1.0-v0.2.0), Sprints 8-10 (v0.3.0), v0.4.0-v0.4.1 |
 | **Problem A Deferred** | 23 features | From template-system convergence |
 | **Problem B Deferred** | 13 features | From chunked-generation convergence |
 | **Test Case Deferred** | 21 features | From test-case-basic-regen convergence |
 | **Standalone Tool Deferred** | 15 features | From 2025-11-20 standalone-tool convergence |
 | **Transcript Ideas** | 14 features | From 2025-11-19 conversation with Marc |
-| **Total Backlog** | 86 features | Available for future releases |
+| **Template Library Deferred** | 12 features | From 2025-11-24 template-library convergence |
+| **Total Backlog** | 98 features | Available for future releases |
 
 ---
 
@@ -51,16 +52,100 @@
 - [x] Real-world template examples
 - [x] Integration testing (70 tests)
 
-### Standalone Tool (v0.4.0 - Convention-Based - Sprint 11+)
-- [ ] Proper Python package (pyproject.toml + entry point)
-- [ ] Convention-based discovery (cwd = project root)
-- [ ] Template directory convention (`.doc-evergreen/`)
-- [ ] Init command (bootstrap projects)
-- [ ] Updated documentation for standalone usage
+### Standalone Tool (v0.4.0 - Convention-Based)
+- [x] Proper Python package (pyproject.toml + entry point)
+- [x] Convention-based discovery (cwd = project root)
+- [x] Template directory convention (`.doc-evergreen/`)
+- [x] Init command (bootstrap projects)
+- [x] Updated documentation for standalone usage
+
+### Bug Fixes (v0.4.1)
+- [x] Critical: Glob patterns excluding .venv and node_modules
+- [x] Smart default exclusions for non-project directories
+- [x] Init command generates focused source patterns
 
 ---
 
 ## 🔄 Active Deferred Features
+
+### Template Library Deferred (from 2025-11-24 convergence)
+
+**Convergence**: [2025-11-24-template-library](./2025-11-24-template-library/)
+**Version Planned**: v0.5.0 (Template Library & Prompt Quality)
+
+#### 1. Smart Template Suggestions (AI-Powered)
+- **Reconsider When**: Template library (v0.5.0) exists and patterns emerge for which templates work for which repos
+- **Effort**: 2-3 days
+- **Value**: AI analyzes repo and suggests best template with reasoning
+- **Notes**: Needs template library as foundation first
+
+#### 2. Multi-Variant Generation
+- **Reconsider When**: Template library exists and users still uncertain which to use
+- **Effort**: 3-4 days
+- **Value**: Generate 3 versions simultaneously, compare side-by-side
+- **Notes**: Increases API costs (3x), needs good templates first
+
+#### 3. Selective Section Regeneration
+- **Reconsider When**: Full doc regeneration is slow (>2 minutes) or users frequently want to update just one section
+- **Effort**: 2-3 days
+- **Value**: Regenerate only specific sections, faster and more controlled
+- **Notes**: Requires section-to-source mapping, separate focus area
+
+#### 4. Stability Mode (Variation Reduction)
+- **Reconsider When**: Template improvements (v0.5.0) don't reduce variation enough, or users get wildly different output with same template
+- **Effort**: 2-3 days
+- **Value**: Include current content in prompts to minimize unnecessary changes
+- **Notes**: Needs research on variation root cause first
+
+#### 5. Template Validation/Pre-flight Check
+- **Reconsider When**: Template library usage reveals common mistakes, or clear patterns emerge (">X sources = too long")
+- **Effort**: 1-2 days
+- **Value**: Warn about potential issues before generation
+- **Notes**: Needs usage data to establish heuristics
+
+#### 6. Interactive Template Builder (Wizard)
+- **Reconsider When**: Template library doesn't cover user needs or users struggle to customize templates
+- **Effort**: 2-3 days
+- **Value**: CLI wizard asks questions and builds custom template
+- **Notes**: May not be better than picking from library
+
+#### 7. Template Versioning
+- **Reconsider When**: Template format changes break old templates
+- **Effort**: 1-2 days
+- **Value**: Version compatibility management
+- **Notes**: Format is stable, no breaking changes anticipated
+
+#### 8. Smart Change Detection (Source Tracking)
+- **Reconsider When**: Selective regeneration exists and users manually track which sections to update
+- **Effort**: 2-3 days
+- **Value**: Track which sources changed, auto-determine which sections need updating
+- **Notes**: Requires selective regeneration (Feature #3) first
+
+#### 9. Output Length Feedback (Post-Generation)
+- **Reconsider When**: Template improvements aren't sufficient or length issues persist
+- **Effort**: 1 day
+- **Value**: Show per-section statistics and suggest improvements after generation
+- **Notes**: Reactive rather than proactive (better to fix templates)
+
+#### 10. Template Marketplace / Sharing
+- **Reconsider When**: Multiple projects use similar templates or users ask "where can I find templates for X?"
+- **Effort**: 1-2 weeks
+- **Value**: Community template sharing and discovery
+- **Notes**: Infrastructure needed, unclear if templates are reusable across projects
+
+#### 11. CI/CD Template Auto-Update
+- **Reconsider When**: Tool is production-stable (1.0+) and users manually regenerate after every commit
+- **Effort**: 2-3 days
+- **Value**: Automatically regenerate docs in CI, create PR
+- **Notes**: Requires stability mode for predictability
+
+#### 12. Performance Optimization (Caching, Parallelization)
+- **Reconsider When**: Generation takes >30s per section consistently or API costs become significant
+- **Effort**: 2-3 days
+- **Value**: Faster regeneration, lower costs
+- **Notes**: No evidence of performance issues currently
+
+---
 
 ### Standalone Tool Deferred (from 2025-11-20 convergence)
 
@@ -854,5 +939,24 @@ This backlog embodies:
 ---
 
 **Last Review**: 2025-11-24
-**Next Review**: After v0.4.0 usage (Standalone Tool - Basic Usage)
+**Next Review**: After v0.5.0 usage (Template Library & Prompt Quality)
 **Review Trigger**: When any "Reconsider When" condition is met
+
+---
+
+## 🎯 v0.5.0 Feature Scope (ACTIVE)
+
+**Convergence**: [2025-11-24-template-library](./2025-11-24-template-library/)
+**Status**: Ready for sprint planning
+**Theme**: Better Templates, Better Defaults
+
+### Core Features (5 features)
+1. **Template Library** - 6 template types (readme-concise/standard/detailed, api-docs, architecture, contributing)
+2. **Improved Prompt Engineering** - Length control, scope constraints, style guidance
+3. **Template Selection Guidance** - Interactive `init` with clear choices
+4. **Remove Mode Confusion** - Drop single-shot mode, embrace chunked-only
+5. **Best Practices Documentation** - Comprehensive template creation guide
+
+**Effort**: 7.5-10.5 days (1.5-2 weeks core), 3 weeks conservative
+**Deferred**: 12 features with clear reconsider conditions
+**Issues Closed**: ISSUE-009 (single-shot), ISSUE-008 (mode clarity)
