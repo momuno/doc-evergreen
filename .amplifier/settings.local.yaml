@@ -5,6 +5,7 @@ config:
   - module: provider-anthropic
     config:
       default_model: claude-sonnet-4-5
+      beta_headers: "context-1m-2025-08-07"  # Enable 1M token context window
       api_key: ${ANTHROPIC_API_KEY}
       priority: 1
     source: git+https://github.com/microsoft/amplifier-module-provider-anthropic@main
