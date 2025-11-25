@@ -1,0 +1,467 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "NEW_README Meta-Documentation Template",
+  "description": "Documents the prompts, principles, and source files used to generate each section of NEW_README.md from first principles",
+  "version": "1.0.0",
+  "generatedDate": "2025-11-25",
+  "approach": "Problem-solution narrative with progressive disclosure and modern README best practices",
+  "designPrinciples": [
+    "Lead with the problem, not features",
+    "Show, don't tell (visual diagrams, concrete examples)",
+    "Progressive disclosure (Quick Start → Deep Dive)",
+    "Scannable structure (tables, emojis, white space)",
+    "Actionable content (every section has 'what to do')",
+    "Real-world examples (not foo/bar abstractions)",
+    "User perspective (written for the person using it)",
+    "Complete journey (idea → shipped software)",
+    "FAQ pre-empts questions",
+    "Clear CTAs (call to action)"
+  ],
+  "sections": [
+    {
+      "sectionName": "Title & Tagline",
+      "lineNumbers": "1-7",
+      "prompt": "Create a compelling title and tagline that: (1) States what this is ('Convergent Development'), (2) Promises transformation ('endless exploration → shipped software'), (3) Hints at target audience ('divergent thinking'), (4) Add badges for version, Python requirement, and license to establish credibility.",
+      "sourceFiles": [
+        "pyproject.toml - Extract version (2.0.0), Python requirement (3.11+), license (MIT)",
+        "pyproject.toml - Extract repository URL for badge links"
+      ],
+      "designPrinciples": [
+        "Hook readers in first 5 seconds",
+        "Promise transformation (before → after)",
+        "Badges signal quality and maintenance"
+      ],
+      "regenerationNotes": "Update version from pyproject.toml. Keep tagline focused on user transformation, not technical features."
+    },
+    {
+      "sectionName": "The Problem",
+      "lineNumbers": "11-21",
+      "prompt": "Articulate the core problem this solves from the user's perspective. Start with empathy ('You're a divergent thinker'), describe the pain (100 ideas but need to ship 3), pose 4 critical questions the reader is asking themselves, end with the false dichotomy most methodologies present (creative OR systematic).",
+      "sourceFiles": [
+        "context/workflows/CONVERGENCE_PROCESS.md - Understand the divergent→convergent challenge",
+        "pyproject.toml - Note 'Transform divergent exploration into focused implementation' capability"
+      ],
+      "designPrinciples": [
+        "Empathy first (speak to the reader's experience)",
+        "Make it personal ('You', not 'developers')",
+        "Identify the false dichotomy",
+        "Problem before solution"
+      ],
+      "regenerationNotes": "Don't list features here. Focus purely on the reader's pain and frustration. The problem section should resonate emotionally."
+    },
+    {
+      "sectionName": "The Solution",
+      "lineNumbers": "25-34",
+      "prompt": "Present the solution as a visual journey with emojis showing the complete flow. Keep it to one sentence of prose plus a visual diagram. End with the three key numbers: 4 workflows, 11 agents, 1 methodology.",
+      "sourceFiles": [
+        "context/workflows/README.md - Extract overall workflow flow",
+        "agents/ - Count total agents (11)",
+        "context/workflows/ - Count workflows (4: CONVERGENCE, SPRINT_PLANNING, TDD_CYCLE, ISSUE_CAPTURE)"
+      ],
+      "designPrinciples": [
+        "Visual first (ASCII diagram with emojis)",
+        "Show transformation (→ arrows)",
+        "Keep prose minimal",
+        "End with concrete numbers (builds credibility)"
+      ],
+      "regenerationNotes": "Update agent count if agents are added/removed. Keep the visual flow diagram simple and scannable."
+    },
+    {
+      "sectionName": "Quick Start - Installation",
+      "lineNumbers": "38-52",
+      "prompt": "Provide 3-step installation with clear comments. (1) Install collection with full repository URL, (2) Install beads with explanation of why it's REQUIRED, (3) Verification commands. Use numbered comments in bash code block.",
+      "sourceFiles": [
+        "pyproject.toml - Repository URL, dependencies (beads-project>=0.1.0)",
+        "pyproject.toml - Collection requires foundation ^1.0.0"
+      ],
+      "designPrinciples": [
+        "3 steps maximum for quick start",
+        "Comments explain the 'why'",
+        "Verification step builds confidence",
+        "Copy-pasteable commands"
+      ],
+      "regenerationNotes": "Keep this section brief. Goal is 'running in 2 minutes'. Save explanations for later sections."
+    },
+    {
+      "sectionName": "Quick Start - Your First Convergence Session",
+      "lineNumbers": "54-70",
+      "prompt": "Show the first real command a user would run with a concrete example (not abstract). Include: (1) Profile activation, (2) Real example prompt ('documentation tool'), (3) What the agent will do (4 phases with clear outcomes), (4) What you get at the end.",
+      "sourceFiles": [
+        "profiles/convergent-dev.md - Profile name for 'amplifier profile use' command",
+        "context/workflows/CONVERGENCE_PROCESS.md - The 4 phases (DIVERGE, CAPTURE, CONVERGE, DEFER)",
+        "agents/convergence-architect.md - How the agent guides the process"
+      ],
+      "designPrinciples": [
+        "Concrete example (not 'foo project')",
+        "Show the exact commands to run",
+        "Preview what happens next",
+        "Promise a clear result"
+      ],
+      "regenerationNotes": "Use a realistic, relatable example. 'Documentation tool' works because everyone has documentation. Avoid abstract examples."
+    },
+    {
+      "sectionName": "How It Works - The Complete Cycle",
+      "lineNumbers": "74-97",
+      "prompt": "Create an ASCII art diagram showing all 4 workflows interconnected in a cycle. Show inputs, outputs, and how they feed into each other. Use box drawing characters for visual structure. Include emoji for key steps (🔴🟢🔵 for TDD).",
+      "sourceFiles": [
+        "context/workflows/CONVERGENCE_PROCESS.md - Workflow 1 details",
+        "context/workflows/SPRINT_PLANNING.md - Workflow 2 details",
+        "context/workflows/TDD_CYCLE.md - Workflow 3 details (RED-GREEN-REFACTOR)",
+        "context/workflows/ISSUE_CAPTURE.md - Workflow 4 details",
+        "context/workflows/README.md - How workflows connect in a cycle"
+      ],
+      "designPrinciples": [
+        "Visual diagram speaks louder than prose",
+        "Show the cycle (not linear)",
+        "Clear inputs and outputs",
+        "Emoji for visual anchors"
+      ],
+      "regenerationNotes": "This diagram is critical. Keep it clean and scannable. Test it renders correctly in different terminals/viewers."
+    },
+    {
+      "sectionName": "How It Works - Individual Workflows (1-4)",
+      "lineNumbers": "99-175",
+      "prompt": "For each of the 4 workflows, create a subsection with: (1) H3 heading with emoji and transformation (X → Y), (2) Command to run, (3) 'What happens' with numbered or bulleted steps, (4) Output section listing concrete files/artifacts, (5) Time estimate. Use consistent structure across all 4.",
+      "sourceFiles": [
+        "context/workflows/CONVERGENCE_PROCESS.md - Convergence workflow details, outputs, duration",
+        "context/workflows/SPRINT_PLANNING.md - Sprint planning workflow details",
+        "context/workflows/TDD_CYCLE.md - TDD workflow with RED-GREEN-REFACTOR cycle",
+        "context/workflows/ISSUE_CAPTURE.md - Issue tracking workflow details",
+        "context/commands/1-converge.md - Command syntax",
+        "context/commands/2-plan-sprints.md - Command syntax",
+        "context/commands/3-tdd-cycle.md - Command syntax with sprint number parameter",
+        "context/commands/4-capture-issues.md - Command syntax with project name parameter"
+      ],
+      "designPrinciples": [
+        "Consistent structure (easier to scan)",
+        "Concrete outputs (filenames, not 'documentation')",
+        "Time estimates set expectations",
+        "Commands are copy-pasteable"
+      ],
+      "regenerationNotes": "Keep each workflow to ~20 lines. Focus on actionable steps. Save deep details for workflow documentation files."
+    },
+    {
+      "sectionName": "The Eleven Agents",
+      "lineNumbers": "177-211",
+      "prompt": "Create 4 categorized tables of agents with columns: Agent (bold name), Role (one-line description), When to Use (actionable guidance). Categories: Workflow Orchestrators (4), Implementation & Architecture (3), Tracking & Organization (2), Cleanup & Maintenance (2). Extract role from first paragraph of each agent file.",
+      "sourceFiles": [
+        "agents/convergence-architect.md - Purpose and role",
+        "agents/sprint-planner.md - Purpose and role",
+        "agents/tdd-specialist.md - Purpose and role",
+        "agents/issue-capturer.md - Purpose and role",
+        "agents/zen-architect.md - Purpose and role",
+        "agents/modular-builder.md - Purpose and role",
+        "agents/bug-hunter.md - Purpose and role",
+        "agents/beads-expert.md - Purpose and role (ONLY agent for beads)",
+        "agents/backlog-organizer.md - Purpose and role",
+        "agents/post-task-cleanup.md - Purpose and role",
+        "agents/post-sprint-cleanup.md - Purpose and role"
+      ],
+      "designPrinciples": [
+        "Tables are more scannable than prose",
+        "Categorization helps understanding",
+        "'When to Use' makes it actionable",
+        "Keep descriptions to one line"
+      ],
+      "regenerationNotes": "Verify agent count matches agents/ directory. Add/remove categories as agents change. Preserve ONLY note for beads-expert."
+    },
+    {
+      "sectionName": "Commands Reference",
+      "lineNumbers": "213-227",
+      "prompt": "Create a quick-reference table of all commands with columns: Command (no prefix), Purpose (one-line), Typical Use (when you'd run it). Include all commands from context/commands/ directory. Add note about prefix.",
+      "sourceFiles": [
+        "context/commands/0-help.md - Help command purpose",
+        "context/commands/1-converge.md - Converge command purpose",
+        "context/commands/2-plan-sprints.md - Sprint planning command purpose",
+        "context/commands/3-tdd-cycle.md - TDD command purpose and parameters",
+        "context/commands/4-capture-issues.md - Issue capture command purpose",
+        "context/commands/status.md - Status command purpose"
+      ],
+      "designPrinciples": [
+        "Quick reference (scannable table)",
+        "Sequential numbering shows workflow order",
+        "'Typical Use' adds context"
+      ],
+      "regenerationNotes": "Update if commands are added/removed. Keep purposes brief (one line each). Preserve the workflow sequence (0-4 + status)."
+    },
+    {
+      "sectionName": "Real-World Example: Building 'doc-evergreen'",
+      "lineNumbers": "229-308",
+      "prompt": "Walk through a complete 8-10 day journey building a realistic project. Structure as Day 1, Day 2, Days 3-5, etc. Show: (1) Actual commands run, (2) What happened (commented), (3) Concrete numbers (23 features explored, 3 converged, 20 deferred), (4) Actual outputs, (5) Total time. Use a relatable example project.",
+      "sourceFiles": [
+        "context/workflows/CONVERGENCE_PROCESS.md - Typical convergence duration and outputs",
+        "context/workflows/SPRINT_PLANNING.md - Typical sprint structure (2-5 sprints)",
+        "context/workflows/TDD_CYCLE.md - Sprint implementation duration",
+        "context/workflows/ISSUE_CAPTURE.md - Issue tracking process"
+      ],
+      "designPrinciples": [
+        "Real project (not abstract)",
+        "Day-by-day breakdown (shows progression)",
+        "Actual commands (copy-pasteable)",
+        "Concrete numbers (builds credibility)",
+        "Total timeline at end (sets expectations)"
+      ],
+      "regenerationNotes": "Use a project everyone can relate to (documentation, CLI tool, etc.). Show realistic timelines. Include both success and issues discovered."
+    },
+    {
+      "sectionName": "Architecture: The Beads Relay Pattern",
+      "lineNumbers": "310-347",
+      "prompt": "Explain the relay pattern with: (1) Why beads matters (problems with markdown), (2) What beads provides (benefits), (3) ASCII diagram of relay flow (Domain Agent → Coordinator → beads-expert → Beads DB), (4) Key principle (only beads-expert touches beads), (5) Benefits list, (6) Priority system table.",
+      "sourceFiles": [
+        "agents/beads-expert.md - Relay pattern description and responsibilities",
+        "context/workflows/CONVERGENCE_PROCESS.md - How deferred features flow to beads",
+        "context/workflows/ISSUE_CAPTURE.md - How issues flow to beads with priorities",
+        "pyproject.toml - Beads dependency and relay pattern in capabilities"
+      ],
+      "designPrinciples": [
+        "Explain the 'why' before the 'how'",
+        "Visual diagram for architecture",
+        "Clear principle (single responsibility)",
+        "Priority table for reference"
+      ],
+      "regenerationNotes": "This is a key architectural pattern. Keep the diagram clear. Update priority table if priority system changes."
+    },
+    {
+      "sectionName": "Philosophy",
+      "lineNumbers": "349-380",
+      "prompt": "List the 4 core philosophical principles from foundation collection. Each gets: (1) H3 heading with number, (2) 3-5 bullet points explaining the principle with concrete practices. Principles: Ruthless Simplicity, Value-First Delivery, Test-Driven Development, Trust in Emergence.",
+      "sourceFiles": [
+        "@foundation:context/IMPLEMENTATION_PHILOSOPHY.md - Ruthless simplicity, emergence, principles",
+        "@foundation:context/MODULAR_DESIGN_PHILOSOPHY.md - Bricks and studs, modular design",
+        "context/workflows/TDD_CYCLE.md - TDD principles and practices",
+        "context/workflows/SPRINT_PLANNING.md - Value-first sequencing principles"
+      ],
+      "designPrinciples": [
+        "Philosophy grounds the methodology",
+        "Concrete practices (not abstract)",
+        "Numbered for easy reference",
+        "Consistent formatting"
+      ],
+      "regenerationNotes": "These principles should align with foundation collection. Don't add new principles without foundation alignment."
+    },
+    {
+      "sectionName": "Requirements",
+      "lineNumbers": "382-395",
+      "prompt": "Two subsections: (1) Software - list Python version, Amplifier, Foundation, Beads with version constraints from pyproject.toml, (2) Skills - list 3-4 soft requirements (command line, domain knowledge, willingness to defer).",
+      "sourceFiles": [
+        "pyproject.toml - requires-python (>=3.11), dependencies (beads-project>=0.1.0)",
+        "pyproject.toml - tool.amplifier.collection.requires (foundation ^1.0.0)"
+      ],
+      "designPrinciples": [
+        "Software requirements are factual",
+        "Skills requirements set expectations",
+        "Keep skills list short"
+      ],
+      "regenerationNotes": "Update versions from pyproject.toml. Skills section can evolve based on user feedback."
+    },
+    {
+      "sectionName": "Project Structure",
+      "lineNumbers": "397-431",
+      "prompt": "Show the directory tree structure created after running convergent-dev. Use ASCII tree format. Include: (1) Project root, (2) .amplifier/convergent-dev/ subdirectories (convergence/, sprints/), (3) Example dated directories, (4) src/ and tests/ for code, (5) .beads/ directory. After tree, show 4 example beads query commands.",
+      "sourceFiles": [
+        "context/workflows/CONVERGENCE_PROCESS.md - Output directory structure (.amplifier/convergent-dev/convergence/)",
+        "context/workflows/SPRINT_PLANNING.md - Sprint directory structure (.amplifier/convergent-dev/sprints/)",
+        "agents/beads-expert.md - Beads directory location and query examples"
+      ],
+      "designPrinciples": [
+        "Tree structure is visual",
+        "Show actual filenames (not placeholders)",
+        "Include query examples (makes beads tangible)",
+        "Explain what gets gitignored"
+      ],
+      "regenerationNotes": "Update if directory structure changes. Add more query examples if new beads patterns emerge."
+    },
+    {
+      "sectionName": "Tips for Success",
+      "lineNumbers": "433-468",
+      "prompt": "Organize tips by workflow phase with H3 headings: During Convergence, During Sprint Planning, During TDD, During Issue Tracking. Extract best practices from workflow documentation. Use bullet points. Make each tip actionable (imperative voice).",
+      "sourceFiles": [
+        "context/workflows/CONVERGENCE_PROCESS.md - Convergence best practices",
+        "context/workflows/SPRINT_PLANNING.md - Sprint planning best practices",
+        "context/workflows/TDD_CYCLE.md - TDD best practices (test first, minimal code, refactor)",
+        "context/workflows/ISSUE_CAPTURE.md - Issue tracking best practices"
+      ],
+      "designPrinciples": [
+        "Organized by phase (easy to find)",
+        "Actionable (imperative verbs)",
+        "Based on workflow documentation",
+        "Keep each tip to one line"
+      ],
+      "regenerationNotes": "These should align with workflow docs. Add tips based on common user mistakes or questions."
+    },
+    {
+      "sectionName": "FAQ",
+      "lineNumbers": "470-502",
+      "prompt": "Answer 5 common questions users might have. Format as H3 questions, prose answers. Questions: (1) What if I don't want beads?, (2) Can I skip TDD?, (3) What if backlog is huge?, (4) How to find deferred features?, (5) Non-software projects?. Keep answers honest and pragmatic.",
+      "sourceFiles": [
+        "pyproject.toml - Beads as required dependency",
+        "context/workflows/TDD_CYCLE.md - TDD as core methodology",
+        "agents/backlog-organizer.md - Handling large backlogs",
+        "agents/beads-expert.md - Querying deferred features"
+      ],
+      "designPrinciples": [
+        "Pre-empt common questions",
+        "Honest answers (not marketing)",
+        "Provide alternatives where possible",
+        "Include examples in answers"
+      ],
+      "regenerationNotes": "Update based on actual user questions. Add new FAQs as patterns emerge. Remove FAQs that no one asks."
+    },
+    {
+      "sectionName": "Contributing",
+      "lineNumbers": "504-512",
+      "prompt": "Include standard Microsoft open-source contributing section with NOTE about not currently accepting contributions. Include CLA link and Code of Conduct reference. Keep this section largely unchanged.",
+      "sourceFiles": [
+        "CODE_OF_CONDUCT.md - Reference for conduct policies",
+        "CONTRIBUTING.md (if exists) - Contribution guidelines"
+      ],
+      "designPrinciples": [
+        "Standard Microsoft boilerplate",
+        "Clear about contribution status",
+        "Legal requirements (CLA)"
+      ],
+      "regenerationNotes": "Update when contribution policy changes. This is largely static content.",
+      "staticContent": true
+    },
+    {
+      "sectionName": "License",
+      "lineNumbers": "514-518",
+      "prompt": "Simple license section referencing LICENSE file. Keep brief.",
+      "sourceFiles": [
+        "LICENSE - License details"
+      ],
+      "staticContent": true
+    },
+    {
+      "sectionName": "Support",
+      "lineNumbers": "520-526",
+      "prompt": "Brief support section with references to SUPPORT.md and SECURITY.md files.",
+      "sourceFiles": [
+        "SUPPORT.md - Support information",
+        "SECURITY.md - Security policy"
+      ],
+      "staticContent": true
+    },
+    {
+      "sectionName": "Trademarks",
+      "lineNumbers": "528-530",
+      "prompt": "Standard Microsoft trademark disclaimer. Keep unchanged.",
+      "sourceFiles": [],
+      "staticContent": true
+    },
+    {
+      "sectionName": "Closing CTA",
+      "lineNumbers": "532-537",
+      "prompt": "End with bold call to action: 'Ready to transform...' followed by the exact commands to get started. Make it copy-pasteable. This is the final push to action.",
+      "sourceFiles": [
+        "profiles/convergent-dev.md - Profile activation command",
+        "context/commands/1-converge.md - Starting command pattern"
+      ],
+      "designPrinciples": [
+        "End with action, not passive content",
+        "Echo the transformation promise from opening",
+        "Provide exact commands to run",
+        "Make it feel achievable"
+      ],
+      "regenerationNotes": "This should mirror the opening promise. Keep it energizing and action-oriented."
+    }
+  ],
+  "regenerationInstructions": {
+    "overview": "To regenerate NEW_README.md from scratch, follow the problem-solution narrative structure with progressive disclosure.",
+    "steps": [
+      "1. Start with empathy and problem articulation (not features)",
+      "2. Show visual transformation (problem → solution)",
+      "3. Get user to Quick Start as fast as possible (< 100 lines)",
+      "4. Progressively disclose: workflows → agents → deep dive",
+      "5. Use real-world example to make it tangible",
+      "6. Explain architecture only after showing value",
+      "7. End with FAQ, legal, and strong CTA",
+      "8. Throughout: show don't tell, use visuals, be actionable"
+    ],
+    "structuralPrinciples": [
+      "Hook (problem) → Promise (solution) → Quick Win (Quick Start) → Deep Dive (How It Works) → Proof (Example) → Trust (Architecture, Philosophy) → Action (CTA)",
+      "Every section should be self-contained but build on previous",
+      "Use consistent formatting within categories (workflows, agents, tips)",
+      "Progressive disclosure: essential info first, details later",
+      "Visual hierarchy: H2 for major sections, H3 for subsections, tables for reference"
+    ],
+    "verificationChecks": [
+      "Agent count matches: ls agents/*.md | wc -l = 11",
+      "Command count matches: ls context/commands/*.md | wc -l = 6",
+      "Workflow count = 4 (CONVERGENCE, SPRINT_PLANNING, TDD_CYCLE, ISSUE_CAPTURE)",
+      "Version matches pyproject.toml",
+      "Python requirement matches pyproject.toml (>=3.11)",
+      "Repository URLs match pyproject.toml",
+      "Dependencies match pyproject.toml",
+      "All commands are copy-pasteable and correct",
+      "All directory paths match actual structure",
+      "All agent names exist in agents/ directory"
+    ]
+  },
+  "comparisonToOriginalREADME": {
+    "structuralDifferences": [
+      "NEW: Starts with problem (empathy) vs original starts with features",
+      "NEW: Progressive disclosure (Quick Start at line 38) vs original (Quick Start at line 32)",
+      "NEW: Visual cycle diagram with ASCII art vs original uses emoji flow",
+      "NEW: Agent tables with 'When to Use' column vs original uses 3 separate tables",
+      "NEW: Complete 8-day example vs original uses 2-week summary",
+      "NEW: FAQ section (not in original)",
+      "NEW: Closing CTA vs original ends with trademarks"
+    ],
+    "contentDifferences": [
+      "NEW: Problem-solution narrative vs feature list",
+      "NEW: 'You're a divergent thinker' opening vs 'Transform divergent exploration'",
+      "NEW: Real-world example with day-by-day breakdown vs overview example",
+      "NEW: Beads relay pattern explained with why/how vs just architecture description",
+      "NEW: Tips organized by workflow phase vs mixed tips",
+      "NEW: Badges in header (version, Python, license) vs no badges",
+      "NEW: 'When to Use' for agents vs just keywords"
+    ],
+    "philosophyDifferences": [
+      "NEW: User-centric (solve reader's problem) vs product-centric (list features)",
+      "NEW: Show transformation (before → after) vs describe capabilities",
+      "NEW: Progressive disclosure (earn attention) vs comprehensive upfront",
+      "NEW: Narrative structure (journey) vs reference structure (catalog)"
+    ]
+  },
+  "whenToUseThisREADME": [
+    "You want to attract new users who don't know they need this",
+    "Your audience is divergent thinkers struggling with convergence",
+    "You want emotional engagement (empathy, transformation)",
+    "You prioritize quick wins over comprehensive reference",
+    "Your project's value comes from solving a felt problem",
+    "You want to guide users through a journey, not provide a reference"
+  ],
+  "whenToUseOriginalREADME": [
+    "Your audience already knows they want convergent development",
+    "Users need comprehensive reference documentation",
+    "You prefer feature lists over narratives",
+    "Documentation-heavy, tutorial-light is your style",
+    "You want traditional open-source README structure"
+  ],
+  "automationPotential": {
+    "fullyAutomatable": [
+      "Agent count and categorization (parse agents/*.md)",
+      "Command list and purposes (parse context/commands/*.md)",
+      "Version, Python requirement, dependencies (parse pyproject.toml)",
+      "Workflow count (count context/workflows/*.md excluding README)",
+      "Badge URLs and values (parse pyproject.toml)",
+      "Directory structure tree (generate from file system conventions)"
+    ],
+    "semiAutomatable": [
+      "Agent descriptions and 'When to Use' (extract from agent frontmatter/first paragraph)",
+      "Workflow step-by-step (parse structured markdown from workflow docs)",
+      "Tips by phase (extract from workflow docs)",
+      "Priority system table (parse from beads-expert.md)",
+      "Philosophy principles (extract from foundation context files)"
+    ],
+    "manuallyMaintained": [
+      "Problem statement (requires understanding user pain)",
+      "Solution tagline (marketing/positioning)",
+      "Real-world example (requires judgment on realistic scenario)",
+      "FAQ questions and answers (based on user feedback)",
+      "Closing CTA (motivational writing)",
+      "Visual diagrams (ASCII art requires human design)"
+    ]
+  }
+}

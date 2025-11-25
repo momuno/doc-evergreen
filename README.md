@@ -234,7 +234,7 @@ Now that doc-evergreen is installed:
 3. **Learn advanced features** - See [docs/USER_GUIDE.md](./docs/USER_GUIDE.md) for complete reference
 4. **Explore templates** - Read [docs/TEMPLATES.md](./docs/TEMPLATES.md) for template creation guide
 
-For detailed installation options and advanced troubleshooting, see [INSTALLATION.md](./INSTALLATION.md).
+For detailed installation options and advanced troubleshooting, see [docs/INSTALLATION.md](./docs/INSTALLATION.md).
 
 # Usage
 
