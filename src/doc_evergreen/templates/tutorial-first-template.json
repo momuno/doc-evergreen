@@ -1,0 +1,50 @@
+{
+  "_meta": {
+    "name": "tutorial-first-template",
+    "description": "Learn to create your first doc-evergreen template",
+    "use_case": "You want to create custom templates for your projects",
+    "quadrant": "tutorial",
+    "estimated_lines": "300-500 lines"
+  },
+  "document": {
+    "title": "Creating Your First Template",
+    "output": "docs/FIRST_TEMPLATE.md",
+    "sections": [
+      {
+        "heading": "# Your First Template Tutorial",
+        "prompt": "Write a welcoming introduction (3-4 paragraphs) explaining: (1) What you'll learn in this tutorial, (2) Prerequisites (just doc-evergreen installed), (3) What you'll build (a simple README template), (4) Time estimate (15 minutes). Be encouraging and beginner-friendly.",
+        "sources": ["README.md", "docs/**"]
+      },
+      {
+        "heading": "## Understanding Template Structure",
+        "prompt": "Explain template anatomy (4-5 paragraphs): (1) Template JSON format, (2) The _meta section (name, description, quadrant), (3) The document section (title, output, sections), (4) How sections work (heading, prompt, sources). Use concrete examples. Keep it practical.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**"]
+      },
+      {
+        "heading": "## Step 1: Create Your Template File",
+        "prompt": "Step-by-step creation guide (5-6 paragraphs): (1) Where to put template file, (2) Start with basic structure, (3) Add metadata fields, (4) Add first section, (5) Test your template, (6) What success looks like. Include exact commands and code snippets.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**", "README.md"]
+      },
+      {
+        "heading": "## Step 2: Write Effective Prompts",
+        "prompt": "Prompt engineering tips (4-5 paragraphs): (1) Be specific about length, (2) Give structure hints, (3) Specify what to include/exclude, (4) Test and iterate. Include before/after examples. Keep it actionable.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**"]
+      },
+      {
+        "heading": "## Step 3: Select Sources",
+        "prompt": "Source selection guide (3-4 paragraphs): (1) Match sources to section purpose, (2) Use specific files over globs, (3) Avoid overwhelming the LLM, (4) Common patterns. Show examples.",
+        "sources": ["docs/**", "README.md"]
+      },
+      {
+        "heading": "## Testing Your Template",
+        "prompt": "How to test (3-4 paragraphs): (1) Run init with your template, (2) Review output, (3) Iterate on prompts, (4) When it's ready. Include commands and expected results.",
+        "sources": ["README.md", "docs/**"]
+      },
+      {
+        "heading": "## Next Steps",
+        "prompt": "What to explore next (2-3 paragraphs): More advanced templates, sharing templates, best practices guide. Point to resources. Keep it motivating.",
+        "sources": ["docs/**", "README.md"]
+      }
+    ]
+  }
+}

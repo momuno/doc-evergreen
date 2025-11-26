@@ -1,0 +1,40 @@
+{
+  "_meta": {
+    "name": "reference-cli",
+    "description": "Complete CLI command reference",
+    "use_case": "You need comprehensive command documentation",
+    "quadrant": "reference",
+    "estimated_lines": "400-600 lines"
+  },
+  "document": {
+    "title": "CLI Reference",
+    "output": "docs/CLI_REFERENCE.md",
+    "sections": [
+      {
+        "heading": "# CLI Reference",
+        "prompt": "Overview of CLI tool (2-3 paragraphs): Purpose, installation, general usage pattern. Keep factual and concise.",
+        "sources": ["src/**/cli.py", "README.md", "pyproject.toml"]
+      },
+      {
+        "heading": "## Global Options",
+        "prompt": "Document global flags/options available for all commands (list format). For each option: name, type, default, description. Be precise and complete. Group related options.",
+        "sources": ["src/**/cli.py"]
+      },
+      {
+        "heading": "## Commands",
+        "prompt": "Comprehensive command reference (one subsection per command). For each command document: (1) Synopsis with syntax, (2) Description, (3) All options with types and defaults, (4) Exit codes, (5) Two example usages (basic and advanced). Be thorough and structured. Present in alphabetical order.",
+        "sources": ["src/**/cli.py", "README.md"]
+      },
+      {
+        "heading": "## Configuration Files",
+        "prompt": "Document configuration file formats (3-4 paragraphs per file type). Cover: file location, format (JSON/YAML/TOML), all available fields with types and defaults, examples. Be complete and precise.",
+        "sources": ["src/**/config.py", "*.json", "*.yaml", "*.toml"]
+      },
+      {
+        "heading": "## Environment Variables",
+        "prompt": "List all environment variables (table format). Columns: Variable name, Description, Type, Default. Order alphabetically. Include variables that affect behavior.",
+        "sources": ["src/**/*.py"]
+      }
+    ]
+  }
+}

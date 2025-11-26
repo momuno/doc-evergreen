@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "name": "howto-ci-integration",
+    "description": "Integrate doc-evergreen into CI/CD pipelines",
+    "use_case": "You want automated documentation updates in CI/CD",
+    "quadrant": "howto",
+    "estimated_lines": "300-500 lines"
+  },
+  "document": {
+    "title": "CI/CD Integration Guide",
+    "output": "docs/CI_INTEGRATION.md",
+    "sections": [
+      {
+        "heading": "# CI/CD Integration",
+        "prompt": "Overview of CI integration (3-4 paragraphs): (1) Why automate documentation, (2) Common CI platforms supported, (3) Basic workflow pattern, (4) Prerequisites. Be practical and clear.",
+        "sources": ["README.md", ".github/workflows/**", "docs/**"]
+      },
+      {
+        "heading": "## GitHub Actions Integration",
+        "prompt": "Complete GitHub Actions setup (6-8 paragraphs): (1) Create workflow file, (2) Install doc-evergreen, (3) Run documentation generation, (4) Commit changes back, (5) Permissions needed, (6) Example workflow YAML. Include full working example. Be thorough.",
+        "sources": [".github/workflows/**", "README.md", "docs/**"]
+      },
+      {
+        "heading": "## GitLab CI Integration",
+        "prompt": "Complete GitLab CI setup (5-6 paragraphs): (1) Add to .gitlab-ci.yml, (2) Install dependencies, (3) Run generation, (4) Push changes, (5) Example configuration. Include working example.",
+        "sources": ["README.md", "docs/**"]
+      },
+      {
+        "heading": "## Triggering Documentation Updates",
+        "prompt": "When to run (4-5 paragraphs): (1) On code changes, (2) On release, (3) Scheduled updates, (4) Manual triggers, (5) Best practices. Be specific about triggers and conditions.",
+        "sources": [".github/workflows/**", "docs/**"]
+      },
+      {
+        "heading": "## Handling Generated Changes",
+        "prompt": "Managing output (3-4 paragraphs): (1) Auto-commit strategies, (2) PR vs direct commit, (3) Reviewing changes, (4) Avoiding conflicts. Be practical about workflow.",
+        "sources": [".github/workflows/**", "docs/**", "README.md"]
+      },
+      {
+        "heading": "## Troubleshooting CI Issues",
+        "prompt": "Common problems and solutions (4-5 paragraphs): (1) Authentication issues, (2) Missing files, (3) Failed generation, (4) Permission errors. Include fixes.",
+        "sources": ["README.md", "docs/**"]
+      }
+    ]
+  }
+}

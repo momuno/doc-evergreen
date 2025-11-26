@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "name": "howto-contributing-guide",
+    "description": "Contributing guidelines for developers",
+    "use_case": "You need clear contributor documentation",
+    "quadrant": "howto",
+    "estimated_lines": "300-500 lines"
+  },
+  "document": {
+    "title": "Contributing Guide",
+    "output": "CONTRIBUTING.md",
+    "sections": [
+      {
+        "heading": "# How to Contribute",
+        "prompt": "Explain the contribution workflow (4-5 paragraphs): (1) Overview of contribution types welcomed, (2) Fork and clone steps, (3) Branch naming convention, (4) Commit message format, (5) PR process. Be specific and procedural. Include exact commands.",
+        "sources": ["CONTRIBUTING.md", "README.md", ".github/**"]
+      },
+      {
+        "heading": "## Development Setup",
+        "prompt": "Step-by-step development environment setup (5-6 paragraphs): (1) Prerequisites with versions, (2) Installation commands in order, (3) Running tests, (4) Code formatting tools, (5) Pre-commit hooks if used, (6) Common troubleshooting. Focus on common path, note platform differences if critical.",
+        "sources": ["README.md", "pyproject.toml", "setup.py", ".github/workflows/**"]
+      },
+      {
+        "heading": "## Testing Your Changes",
+        "prompt": "How to test changes before submitting (3-4 paragraphs): (1) Running test suite, (2) Adding new tests, (3) Manual testing recommendations, (4) CI checks that will run. Include commands and expected output.",
+        "sources": ["tests/**/*.py", "pyproject.toml", ".github/workflows/**"]
+      },
+      {
+        "heading": "## Code Standards",
+        "prompt": "Code quality expectations (3-4 paragraphs): (1) Code style (formatter/linter used), (2) Documentation requirements, (3) Test coverage expectations, (4) Review process. Be clear about must-haves vs nice-to-haves.",
+        "sources": ["pyproject.toml", ".pre-commit-config.yaml", "CONTRIBUTING.md"]
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 """
 Sprint 5: CLI Interface for Template-Based Documentation Generation
 
-Supports both single-shot and chunked generation modes with section-level prompts.
+Supports section-by-section documentation generation with explicit prompts.
 """
 
 import asyncio
@@ -18,11 +18,125 @@ from doc_evergreen.core.template_schema import Template
 from doc_evergreen.core.template_schema import parse_template
 from doc_evergreen.core.template_schema import validate_template
 
-# Import Generator for single-shot mode (fallback to ChunkedGenerator if not available)
-try:
-    from doc_evergreen.single_generator import Generator
-except ImportError:
-    Generator = ChunkedGenerator  # type: ignore[misc,assignment]
+
+def _get_output_path(template_meta) -> str:
+    """Extract output path from template for display.
+    
+    Note: This is a display helper. Actual output path comes from loading full template.
+    For --list, we show a representative path based on template type.
+    
+    Args:
+        template_meta: TemplateMetadata instance
+        
+    Returns:
+        Representative output path string for display
+    """
+    # Common patterns based on template name
+    if template_meta.name.startswith("tutorial-quickstart"):
+        return "QUICKSTART.md"
+    elif template_meta.name.startswith("howto-contributing"):
+        return "CONTRIBUTING.md"
+    elif template_meta.name.startswith("howto-ci"):
+        return "docs/CI_INTEGRATION.md"
+    elif template_meta.name.startswith("howto-custom"):
+        return "docs/PROMPT_GUIDE.md"
+    elif template_meta.name.startswith("reference-cli"):
+        return "docs/CLI_REFERENCE.md"
+    elif template_meta.name.startswith("reference-api"):
+        return "docs/API.md"
+    elif template_meta.name.startswith("explanation-architecture"):
+        return "docs/ARCHITECTURE.md"
+    elif template_meta.name.startswith("explanation-concepts"):
+        return "docs/CONCEPTS.md"
+    elif template_meta.name.startswith("tutorial-first"):
+        return "docs/FIRST_TEMPLATE.md"
+    else:
+        return "README.md"  # Default fallback
+
+
+def interactive_template_selection(registry) -> str | None:
+    """Display interactive template menu and get user selection.
+    
+    Shows templates organized by Divio documentation quadrants with emoji
+    indicators. User can select by number (1-9) or quit with 'q'.
+    
+    Args:
+        registry: TemplateRegistry instance
+        
+    Returns:
+        Template name (e.g., "tutorial-quickstart") if selected
+        None if user quits
+        
+    Example:
+        >>> from doc_evergreen.template_registry import TemplateRegistry
+        >>> registry = TemplateRegistry()
+        >>> # User would see interactive menu
+        >>> name = interactive_template_selection(registry)
+    """
+    # Get all templates
+    templates = registry.list_templates()
+    
+    if not templates:
+        click.echo("No templates available in registry.")
+        return None
+    
+    # Group templates by quadrant
+    quadrants = {
+        "tutorial": [],
+        "howto": [],
+        "reference": [],
+        "explanation": [],
+    }
+    
+    for template in templates:
+        if template.quadrant in quadrants:
+            quadrants[template.quadrant].append(template)
+    
+    # Build display with numbering
+    click.echo("\n? What type of documentation do you want to create?\n")
+    
+    template_map = {}  # Maps number to template name
+    current_number = 1
+    
+    # Define quadrant display info
+    quadrant_info = {
+        "tutorial": ('📚 TUTORIALS (Learning-oriented - "Take me on a journey")', "tutorial"),
+        "howto": ('🎯 HOW-TO GUIDES (Goal-oriented - "Show me how to...")', "howto"),
+        "reference": ('📖 REFERENCE (Information-oriented - "Tell me facts")', "reference"),
+        "explanation": ('💡 EXPLANATION (Understanding-oriented - "Help me understand")', "explanation"),
+    }
+    
+    # Display templates by quadrant
+    for quadrant_key in ["tutorial", "howto", "reference", "explanation"]:
+        if quadrants[quadrant_key]:
+            display_name, _ = quadrant_info[quadrant_key]
+            click.echo(f"{display_name}")
+            
+            for template in quadrants[quadrant_key]:
+                # Format: "  1. template-name - Description (200-400 lines)"
+                click.echo(f"  {current_number}. {template.name} - {template.description} ({template.estimated_lines})")
+                template_map[str(current_number)] = template.name
+                current_number += 1
+            
+            click.echo()  # Blank line between quadrants
+    
+    # Get user input with validation loop
+    while True:
+        try:
+            choice = click.prompt("Choose [1-9] or 'q' to quit", type=str, show_default=False)
+            
+            # Handle quit
+            if choice.lower() == 'q':
+                return None
+            
+            # Validate number choice
+            if choice in template_map:
+                return template_map[choice]
+            else:
+                click.echo(f"Invalid choice. Please enter a number between 1 and {len(template_map)} or 'q' to quit.")
+        except click.Abort:
+            # User pressed Ctrl+C
+            return None
 
 
 def resolve_template_path(name: str) -> Path:
@@ -110,17 +224,11 @@ def cli():
 @cli.command("doc-update")
 @click.argument("template_path", type=click.Path(exists=True))
 @click.option(
-    "--mode",
-    type=click.Choice(["single", "chunked"]),
-    default="single",
-    help="Generation mode: single-shot or section-by-section",
-)
-@click.option(
     "--output",
     type=click.Path(),
     help="Override output path from template",
 )
-def doc_update(template_path: str, mode: str, output: str | None):
+def doc_update(template_path: str, output: str | None):
     """[LEGACY] Generate/update documentation from JSON template.
 
     \b
@@ -130,11 +238,8 @@ def doc_update(template_path: str, mode: str, output: str | None):
 
     \b
     Examples:
-      # Generate using single-shot mode (default)
+      # Generate documentation
       doc-evergreen doc-update template.json
-
-      # Generate using chunked mode (section-by-section)
-      doc-evergreen doc-update --mode chunked template.json
 
       # Override output path
       doc-evergreen doc-update --output custom.md template.json
@@ -146,8 +251,8 @@ def doc_update(template_path: str, mode: str, output: str | None):
         click.echo(f"Error: {e}", err=True)
         raise click.Abort()
 
-    # 2. Validate template based on mode
-    validation = validate_template(template, mode=mode)
+    # 2. Validate template
+    validation = validate_template(template)
     if not validation.valid:
         click.echo(f"Error: {validation.errors[0]}", err=True)
         raise click.Abort()
@@ -155,12 +260,8 @@ def doc_update(template_path: str, mode: str, output: str | None):
     # 3. Determine base_dir (current working directory = project root)
     base_dir = Path.cwd()
 
-    # 4. Route to appropriate generator
-    if mode == "chunked":
-        generator = ChunkedGenerator(template, base_dir)
-    else:
-        # Use single-shot Generator
-        generator = Generator(template, base_dir)
+    # 4. Create generator (always use ChunkedGenerator)
+    generator = ChunkedGenerator(template, base_dir)
 
     # 5. Generate documentation (async)
     try:
@@ -183,87 +284,188 @@ def doc_update(template_path: str, mode: str, output: str | None):
 
 
 @cli.command("init")
-@click.option("--name", help="Project name (default: directory name)")
-@click.option("--description", help="Project description")
-@click.option("--force", is_flag=True, help="Overwrite existing template")
-def init(name: str | None, description: str | None, force: bool):
-    """Initialize doc-evergreen in current project.
-
-    \b
-    Creates .doc-evergreen/ directory with starter readme.json template.
-
+@click.option("--list", "list_templates", is_flag=True, help="List all available templates with descriptions")
+@click.option("--template", help="Template name (e.g., tutorial-quickstart)")
+@click.option("--yes", is_flag=True, help="Skip all confirmation prompts")
+@click.option("--force", is_flag=True, help="Overwrite existing template without asking")
+@click.option("--name", help="[DEPRECATED] Project name - use template customization instead")
+@click.option("--description", help="[DEPRECATED] Project description - use template customization instead")
+def init(
+    list_templates: bool,
+    template: str | None,
+    yes: bool,
+    force: bool,
+    name: str | None,
+    description: str | None,
+):
+    """Initialize doc-evergreen with a template.
+    
+    By default, shows an interactive menu to help you choose the right template
+    based on your documentation needs. Templates are organized by the Divio
+    Documentation System (Tutorials, How-to Guides, Reference, Explanation).
+    
     \b
     Examples:
-      doc-evergreen init
-      doc-evergreen init --name "My Project"
-      doc-evergreen init --force  # Overwrite existing
+    
+        # Interactive selection (recommended)
+        $ doc-evergreen init
+        
+        # List all templates
+        $ doc-evergreen init --list
+        
+        # Use specific template
+        $ doc-evergreen init --template tutorial-quickstart
+        
+        # Non-interactive with default
+        $ doc-evergreen init --yes
     """
-    # Determine project name
-    if name is None:
-        name = Path.cwd().name
+    from doc_evergreen.template_registry import TemplateRegistry, TemplateNotFoundError
+    
+    # Import TemplateValidationError at the top if needed later
+    from doc_evergreen.template_registry import TemplateValidationError
+
+    # Initialize registry
+    registry = TemplateRegistry()
+
+    # Handle --list flag
+    if list_templates:
+        templates = registry.list_templates()
+        
+        if not templates:
+            click.echo("No templates available in registry.")
+            click.echo("\nTemplates will be added in Sprint 1.3.")
+            return
+        
+        click.echo("\nAvailable templates (grouped by Divio quadrant):\n")
+        
+        # Group templates by quadrant with enhanced display
+        quadrants = {
+            "tutorial": ("📚 TUTORIALS", 'Learning-oriented - "Take me on a journey"'),
+            "howto": ("🎯 HOW-TO GUIDES", 'Goal-oriented - "Show me how to..."'),
+            "reference": ("📖 REFERENCE", 'Information-oriented - "Tell me facts"'),
+            "explanation": ("💡 EXPLANATION", 'Understanding-oriented - "Help me understand"')
+        }
+        
+        # Display templates by quadrant
+        for quadrant_key, (emoji_title, description) in quadrants.items():
+            # Get templates for this quadrant
+            quadrant_templates = [t for t in templates if t.quadrant == quadrant_key]
+            
+            if quadrant_templates:
+                click.echo(f"{emoji_title} ({description})")
+                for template in quadrant_templates:
+                    click.echo(f"  {template.name}")
+                    click.echo(f"    {template.description}")
+                    click.echo(f"    Output: {_get_output_path(template)} | Estimated: {template.estimated_lines}")
+                    click.echo(f"    Use when: {template.use_case}")
+                    click.echo()  # Blank line between templates
+                click.echo()  # Blank line between quadrants
+        
+        click.echo("💡 Tip: Not sure which to use? Run 'doc-evergreen init' for interactive selection.\n")
+        return
+
+    # Determine template name
+    # Priority: --template flag > --name flag (deprecated) > interactive selection > default
+    if template:
+        # User specified template via --template flag
+        template_name = template
+    elif name:
+        # Legacy --name flag (deprecated but supported)
+        click.echo("Warning: --name is deprecated, use --template instead")
+        template_name = name
+    elif yes:
+        # --yes without --template: use default (skip interactive)
+        template_name = "tutorial-quickstart"
+    else:
+        # Interactive mode - show menu and get selection
+        template_name = interactive_template_selection(registry)
+        
+        # User cancelled
+        if template_name is None:
+            click.echo("Cancelled.")
+            return
+
+    # Load template from registry
+    try:
+        template_with_meta = registry.load_template(template_name)
+    except TemplateNotFoundError as e:
+        click.echo(f"Error: {e}", err=True)
+        click.echo("\nRun 'doc-evergreen init --list' to see available templates.", err=True)
+        raise click.Abort()
+    except TemplateValidationError as e:
+        click.echo(f"Error: {e}", err=True)
+        raise click.Abort()
+
+    # Show template info
+    meta = template_with_meta.meta
+    click.echo(f"Template: {meta.name}")
+    click.echo(f"Description: {meta.description}")
+    click.echo(f"Use case: {meta.use_case}")
+    click.echo(f"Quadrant: {meta.quadrant}")
+    click.echo(f"Estimated lines: {meta.estimated_lines}")
+    click.echo()
+
+    # Determine output path
+    doc_dir = Path.cwd() / ".doc-evergreen"
+    template_path = doc_dir / f"{template_name}.json"
 
     # Check if template already exists
-    doc_dir = Path.cwd() / ".doc-evergreen"
-    template_path = doc_dir / "readme.json"
-
+    already_confirmed = False
     if template_path.exists() and not force:
-        click.echo(f"Error: Template already exists at {template_path}", err=True)
-        click.echo("Use --force to overwrite", err=True)
-        raise click.Abort()
+        click.echo(f"Template already exists: {template_path}", err=True)
+        if not yes and not click.confirm("Overwrite existing template?"):
+            click.echo("Aborted", err=True)
+            raise click.Abort()
+        already_confirmed = True  # User confirmed overwrite, don't ask again
+
+    # Ask for confirmation (unless --yes or already confirmed overwrite)
+    if not yes and not already_confirmed:
+        if not click.confirm(f"\nWrite template to {template_path}?"):
+            click.echo("Aborted")
+            return
 
     # Create .doc-evergreen/ directory
     doc_dir.mkdir(exist_ok=True)
 
-    # Generate starter template
-    starter_template = {
+    # Write template to file
+    template_json = {
+        "_meta": {
+            "name": meta.name,
+            "description": meta.description,
+            "use_case": meta.use_case,
+            "quadrant": meta.quadrant,
+            "estimated_lines": meta.estimated_lines,
+        },
         "document": {
-            "title": f"{name} Documentation",
-            "output": "README.md",
-            "sections": [
-                {
-                    "heading": "# Overview",
-                    "prompt": (
-                        "Provide a concise overview of this project. "
-                        "Explain what it does, its main purpose, and key features. "
-                        "Focus on the value it provides."
-                    ),
-                    "sources": ["README.md", "pyproject.toml", "src/**/*.py"],
-                },
-                {
-                    "heading": "## Installation",
-                    "prompt": (
-                        "Explain how to install and set up this project. "
-                        "Include prerequisites, installation commands, and any configuration needed."
-                    ),
-                    "sources": ["pyproject.toml", "setup.py", "requirements.txt", "README.md"],
-                },
-                {
-                    "heading": "## Usage",
-                    "prompt": (
-                        "Provide usage examples and basic workflows. "
-                        "Show common use cases with code examples where helpful."
-                    ),
-                    "sources": ["README.md", "examples/**", "src/**/*.py"],
-                },
-                {
-                    "heading": "## Development",
-                    "prompt": (
-                        "Document the development workflow. "
-                        "Include how to run tests, build the project, and contribute."
-                    ),
-                    "sources": ["README.md", "pyproject.toml", "tests/**/*.py"],
-                },
-            ],
-        }
+            "title": template_with_meta.template.document.title,
+            "output": template_with_meta.template.document.output,
+            "sections": _sections_to_dict(template_with_meta.template.document.sections),
+        },
     }
 
-    # Write template
-    template_path.write_text(json.dumps(starter_template, indent=2))
+    template_path.write_text(json.dumps(template_json, indent=2))
 
     click.echo(f"✅ Created: {template_path}")
     click.echo(f"\nNext steps:")
     click.echo(f"  1. Review and customize {template_path}")
-    click.echo(f"  2. Run: doc-evergreen regen-doc readme")
+    click.echo(f"  2. Run: doc-evergreen regen-doc {template_name}")
+
+
+def _sections_to_dict(sections) -> list[dict]:
+    """Convert Section objects to dictionaries for JSON serialization."""
+    result = []
+    for section in sections:
+        section_dict = {
+            "heading": section.heading,
+        }
+        if section.prompt is not None:
+            section_dict["prompt"] = section.prompt
+        if section.sources:
+            section_dict["sources"] = section.sources
+        if section.sections:
+            section_dict["sections"] = _sections_to_dict(section.sections)
+        result.append(section_dict)
+    return result
 
 
 @cli.command("regen-doc")
