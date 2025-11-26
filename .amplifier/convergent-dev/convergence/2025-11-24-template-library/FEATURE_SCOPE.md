@@ -1,7 +1,7 @@
 # Feature Scope: Template Library & Prompt Quality
 
 **Version**: v0.5.0
-**Date**: 2025-11-24
+**Date**: 2025-11-24 (Updated: 2025-11-25 with Divio framework)
 **Theme**: Better Templates, Better Defaults
 
 ---
@@ -10,134 +10,219 @@
 
 **Problem**: Users struggle to create good templates. The default `init` template produces docs that are too long (996 lines), and users don't know what prompts work best for different types of documentation.
 
-**Solution**: Provide a library of proven templates with well-engineered prompts, and improve the default `init` experience to guide users toward appropriate templates.
+**Solution**: Provide a library of proven templates organized around the **Divio Documentation System** (four quadrants: Tutorials, How-to Guides, Reference, Explanation), with well-engineered prompts tailored to each documentation type.
+
+**Framework**: [Divio Documentation System](https://docs.divio.com/documentation-system/) - industry-proven approach that organizes documentation into four distinct purposes.
 
 ---
 
 ## Core Features (5 features)
 
-### 1. Template Library with Multiple Document Types
+### 1. Template Library Organized by Divio Quadrants
 
-**What**: Expand `init` to support multiple template types, each optimized for different documentation needs.
+**What**: Expand `init` to support multiple template types organized around the **Divio Documentation System** - four distinct purposes that users naturally think in: learning, goal-solving, information lookup, and understanding.
+
+**The Divio Four Quadrants**:
+```
+                  Learning-oriented  │ Understanding-oriented
+                 ──────────────────────────────────────────────
+                  TUTORIALS          │ EXPLANATION
+                  "Teach me"         │ "Help me understand"
+                 ──────────────────────────────────────────────
+                  HOW-TO GUIDES      │ REFERENCE
+                  "Show me how"      │ "Tell me facts"
+```
 
 **User Experience**:
 ```bash
-# List available templates
+# List available templates (organized by quadrant)
 doc-evergreen init --list
-# Output:
-# Available templates:
-#   readme-concise    - Brief README (300-500 lines)
-#   readme-standard   - Standard README (current default)
-#   readme-detailed   - Comprehensive README (800+ lines)
-#   api-docs          - API documentation
-#   architecture      - Architecture/design docs
-#   contributing      - Contributing guidelines
+
+# Interactive mode shows quadrant-organized menu (see Feature #3)
+doc-evergreen init
 
 # Initialize with specific template
-doc-evergreen init --template readme-concise
-doc-evergreen init --template api-docs
+doc-evergreen init --template tutorial-quickstart
+doc-evergreen init --template howto-ci-integration
+doc-evergreen init --template reference-api
+doc-evergreen init --template explanation-architecture
 ```
 
-**Templates to Include**:
-1. **readme-concise** - Brief, focused README (300-500 lines)
-   - Sections: Overview, Quick Start, Key Features, Links
-   - Optimized prompts for conciseness
-   - Minimal sources (README.md, pyproject.toml, main entry point)
+**Templates to Include** (organized by quadrant):
 
-2. **readme-standard** - Balanced README (500-700 lines)
-   - Sections: Overview, Installation, Usage, Development
-   - Current default behavior but with improved prompts
-   - Standard source selection
+#### TUTORIALS Quadrant (Learning-oriented - "Teach me")
+Teaching users by doing. Hand-holding, step-by-step, must work reliably for complete beginners.
 
-3. **readme-detailed** - Comprehensive README (800+ lines)
-   - Sections: Overview, Features, Installation, Usage, API Reference, Development, Contributing
-   - Detailed prompts for thoroughness
-   - Broad source selection
+1. **tutorial-quickstart** - Get started in 5 minutes
+   - Sections: Prerequisites, Step 1/2/3, What You've Learned, Next Steps
+   - Prompts: Concrete steps, immediate results, encouragement
+   - Sources: README.md, main entry point, basic config
+   - Length: 200-400 lines
 
-4. **api-docs** - API documentation
-   - Sections: API Overview, Endpoints/Classes, Examples, Error Handling
-   - Sources focus on code files (src/**/*.py)
-   - Prompts optimized for technical reference
+2. **tutorial-first-template** - Create your first doc template (hands-on)
+   - Sections: Setup, Create Template, Generate Doc, Review Output, Next Steps
+   - Prompts: Learning by doing, explain while building
+   - Sources: README.md, .doc-evergreen examples, template schema
+   - Length: 300-500 lines
 
-5. **architecture** - Architecture/design documentation
-   - Sections: Overview, Design Decisions, Component Architecture, Data Flow
-   - Sources: README, main code files, config files
-   - Prompts focus on high-level design
+#### HOW-TO GUIDES Quadrant (Goal-oriented - "Show me how")
+Recipes for experienced users who know what they want to achieve. Assumes basic knowledge.
 
-6. **contributing** - Contributing guidelines
-   - Sections: Getting Started, Development Setup, Code Style, PR Process
-   - Sources: README, tests, CI config
-   - Prompts focus on developer onboarding
+3. **howto-ci-integration** - Integrate with CI/CD pipeline
+   - Sections: Overview, GitHub Actions Setup, GitLab CI Setup, Testing
+   - Prompts: Step-by-step recipes, practical examples
+   - Sources: README.md, CI config files, automation docs
+   - Length: 300-500 lines
+
+4. **howto-custom-prompts** - Write effective custom prompts
+   - Sections: Prompt Basics, Length Control, Examples, Testing
+   - Prompts: Problem-solution format, actionable advice
+   - Sources: README.md, template examples, prompt engineering docs
+   - Length: 400-600 lines
+
+5. **howto-contributing-guide** - Create contributing guidelines
+   - Sections: Getting Started, Dev Setup, Code Style, PR Process, Testing
+   - Prompts: Onboarding focus, practical workflows
+   - Sources: README.md, tests, CI config, development docs
+   - Length: 500-700 lines
+
+#### REFERENCE Quadrant (Information-oriented - "Tell me facts")
+Dry technical descriptions for quick lookup. Code-determined structure, no fluff.
+
+6. **reference-cli** - Complete CLI command reference
+   - Sections: Commands, Options, Examples, Exit Codes
+   - Prompts: Technical descriptions, complete parameter lists
+   - Sources: CLI code, help text, command implementations
+   - Length: 400-600 lines
+
+7. **reference-api** - API reference documentation
+   - Sections: API Overview, Classes/Functions, Parameters, Returns, Examples
+   - Prompts: Technical reference style, complete signatures
+   - Sources: src/**/*.py, docstrings, type hints
+   - Length: 600-1000 lines (depends on API size)
+
+#### EXPLANATION Quadrant (Understanding-oriented - "Help me understand")
+Context, "why", design decisions. Discusses alternatives and broadens understanding.
+
+8. **explanation-architecture** - Architecture and design decisions
+   - Sections: Overview, Design Philosophy, Component Architecture, Trade-offs
+   - Prompts: Discuss "why", explain alternatives, provide context
+   - Sources: README.md, main code files, design docs, ADRs
+   - Length: 500-800 lines
+
+9. **explanation-concepts** - Deep dive into key concepts
+   - Sections: Problem Context, How It Works, Design Rationale, Alternatives
+   - Prompts: Educational, contextual, discusses trade-offs
+   - Sources: README.md, relevant code, documentation
+   - Length: 400-700 lines
 
 **Acceptance Criteria**:
-- [ ] `doc-evergreen init --list` shows all available templates
+- [ ] `doc-evergreen init --list` shows all templates organized by Divio quadrants
 - [ ] `doc-evergreen init --template <name>` generates correct template
-- [ ] Each template produces appropriately-sized documentation
-- [ ] Templates have well-engineered prompts tested for quality
-- [ ] Default behavior (`doc-evergreen init`) prompts user to choose or defaults to readme-concise
-- [ ] Documentation explains each template and when to use it
+- [ ] Each template follows Divio principles for its quadrant
+- [ ] Templates have well-engineered prompts tailored to their quadrant type
+- [ ] Default behavior (`doc-evergreen init`) shows quadrant-organized interactive menu
+- [ ] Documentation explains Divio framework and when to use each quadrant
+- [ ] Each quadrant has at least 2 templates (proving the framework)
 
-**Effort Estimate**: 3-4 days
-- Day 1: Template structure and CLI changes (6-8 hours)
-- Day 2: Create and test 3 README variants (6-8 hours)
-- Day 3: Create api-docs, architecture, contributing templates (6-8 hours)
-- Day 4: Testing, refinement, documentation (4-6 hours)
+**Phased Implementation**:
+
+**Phase 1 (Sprint 1)**: Foundation + One Per Quadrant (4 templates)
+- Build quadrant-aware template infrastructure
+- Create one template per quadrant to prove framework:
+  - `tutorial-quickstart` (Tutorials)
+  - `howto-contributing-guide` (How-to)
+  - `reference-cli` (Reference)
+  - `explanation-architecture` (Explanation)
+
+**Phase 2 (Sprint 2)**: Expand Library (5 more templates)
+- Add additional templates across quadrants:
+  - `tutorial-first-template` (Tutorials)
+  - `howto-ci-integration`, `howto-custom-prompts` (How-to)
+  - `reference-api` (Reference)
+  - `explanation-concepts` (Explanation)
+
+**Effort Estimate**: 4-5 days
+- Day 1: Quadrant-aware infrastructure + CLI changes (6-8 hours)
+- Day 2: Phase 1 - Create 4 templates (one per quadrant) (6-8 hours)
+- Day 3: Phase 2 - Create 5 additional templates (6-8 hours)
+- Day 4-5: Testing all templates, refinement (8-12 hours)
 
 ---
 
-### 2. Improved Prompt Engineering for Length Control
+### 2. Improved Prompt Engineering with Divio Principles
 
-**What**: Re-engineer all template prompts to produce appropriately-sized output with better quality and focus.
+**What**: Re-engineer all template prompts to follow Divio quadrant characteristics - each quadrant has distinct prompt patterns, tone, and expectations.
 
-**Problem**: Current default template produces 996-line READMEs. Prompts don't guide LLM on appropriate length or detail level.
+**Problem**: Current default template produces 996-line READMEs. Prompts don't guide LLM on appropriate length, tone, or style based on documentation purpose.
 
-**Solution**: 
-- Add length guidance to prompts: "Be concise (2-3 paragraphs)" or "Provide comprehensive detail"
-- Add style guidance: "Focus on essentials", "Include examples but keep brief"
-- Add scope constraints: "Cover only X, Y, Z - do not include..."
+**Solution**: Tailor prompts to Divio quadrant characteristics:
 
-**Example Improved Prompts**:
+**Divio-Informed Prompt Patterns by Quadrant**:
 
-**Before** (generates 996 lines):
+**TUTORIALS** - Learning-oriented prompts:
 ```json
 {
-  "heading": "## Installation",
-  "prompt": "Explain how to install and set up this project. Include prerequisites, installation commands, and any configuration needed."
+  "heading": "## Step 1: Install the Tool",
+  "prompt": "Write beginner-friendly installation instructions (2-3 paragraphs). Use second person ('you will'). Include: (1) Prerequisites with versions, (2) Single installation command with explanation, (3) How to verify it worked with expected output. Be encouraging. Assume no prior knowledge. Show concrete results immediately."
 }
 ```
+- Style: Friendly, encouraging, hand-holding
+- Length: Step-focused, immediate results
+- Tone: "Follow these steps and you'll succeed"
 
-**After** (generates ~100-150 lines):
+**HOW-TO GUIDES** - Goal-oriented prompts:
 ```json
 {
-  "heading": "## Installation",
-  "prompt": "Provide concise installation instructions (3-5 paragraphs). Include: (1) Prerequisites (Python version, API keys), (2) Primary installation method with command, (3) Verification step. Be brief and actionable. Do not include troubleshooting or alternative methods unless essential."
+  "heading": "## Integrate with GitHub Actions",
+  "prompt": "Provide a recipe for CI/CD integration (3-5 paragraphs). Focus on the goal: automated doc updates. Include: (1) Workflow file example, (2) Key configuration options, (3) Testing the integration. Be practical and direct. Assume reader knows basics. Allow for slight variations."
 }
 ```
+- Style: Recipe-like, practical, direct
+- Length: Problem-solution focused
+- Tone: "Here's how to achieve X"
 
-**Prompt Engineering Principles**:
-1. **Explicit length guidance**: "2-3 paragraphs", "Brief overview", "Comprehensive with examples"
-2. **Scope constraints**: "Include only X, Y, Z", "Focus on common cases", "Do not include edge cases"
-3. **Style guidance**: "Be concise", "Actionable and practical", "Technical reference style"
-4. **Structure hints**: "List format", "Code examples", "Step-by-step"
+**REFERENCE** - Information-oriented prompts:
+```json
+{
+  "heading": "## Commands",
+  "prompt": "Document all CLI commands in technical reference style. For each command, provide: (1) Name and signature, (2) Description (1 sentence), (3) Parameters with types and defaults, (4) Brief usage example. Be dry and complete. No explanations of concepts. Structured like a dictionary entry."
+}
+```
+- Style: Dry, technical, complete
+- Length: Code-determined, comprehensive
+- Tone: "Here are the facts"
+
+**EXPLANATION** - Understanding-oriented prompts:
+```json
+{
+  "heading": "## Why Section-by-Section Generation?",
+  "prompt": "Explain the design rationale for chunked generation (4-6 paragraphs). Discuss: (1) The problem it solves, (2) How it works at a high level, (3) Alternative approaches considered, (4) Trade-offs made. Be discursive and contextual. This is about understanding 'why', not 'how to'. Assume reader wants to think deeply."
+}
+```
+- Style: Discursive, contextual, thoughtful
+- Length: Concept-focused, thorough
+- Tone: "Let me help you understand why"
 
 **Acceptance Criteria**:
-- [ ] readme-concise template produces 300-500 line docs consistently
-- [ ] readme-standard template produces 500-700 line docs
-- [ ] readme-detailed template produces 800-1000 line docs
-- [ ] All prompts include explicit length/scope guidance
-- [ ] Prompts tested on multiple projects for consistency
-- [ ] Documentation includes prompt engineering best practices guide
+- [ ] Each quadrant has distinct prompt engineering patterns documented
+- [ ] Tutorial prompts produce encouraging, step-by-step content (200-500 lines)
+- [ ] How-to prompts produce practical recipes (300-600 lines)
+- [ ] Reference prompts produce dry, complete technical docs (400-1000 lines)
+- [ ] Explanation prompts produce contextual, discursive content (400-800 lines)
+- [ ] All prompts tested on multiple projects for consistency
+- [ ] TEMPLATE_BEST_PRACTICES.md explains prompt patterns per quadrant
 
 **Effort Estimate**: 2-3 days
-- Day 1: Research and design prompt patterns (4-6 hours)
-- Day 2: Rewrite all template prompts (6-8 hours)
-- Day 3: Test across multiple projects, refine (6-8 hours)
+- Day 1: Research Divio principles and design prompt patterns per quadrant (4-6 hours)
+- Day 2: Rewrite all template prompts with quadrant-specific patterns (6-8 hours)
+- Day 3: Test across multiple projects, refine based on output (6-8 hours)
 
 ---
 
-### 3. Template Selection Guidance in CLI
+### 3. Template Selection Guidance with Divio Quadrants
 
-**What**: Improve `init` command to guide users toward the right template for their needs.
+**What**: Improve `init` command to guide users using the Divio framework - helping them think about their documentation purpose first.
 
 **User Experience**:
 ```bash
@@ -145,37 +230,51 @@ doc-evergreen init --template api-docs
 doc-evergreen init
 
 # Output:
-? What type of documentation do you want to create?
-  1. Brief README (recommended for most projects)
-  2. Standard README (balanced detail)
-  3. Detailed README (comprehensive)
-  4. API Documentation
-  5. Architecture Documentation
-  6. Contributing Guidelines
-  
-Choose [1-6] or 'q' to quit: 1
+? What type of documentation do you need?
 
-✓ Created .doc-evergreen/readme.json (readme-concise template)
+📚 TUTORIALS (Learning-oriented - "Teach me")
+  1. Quickstart Tutorial - Get started in 5 minutes
+  2. First Template Tutorial - Create your first doc template
+
+🎯 HOW-TO GUIDES (Goal-oriented - "Show me how")
+  3. CI/CD Integration - Integrate with pipelines
+  4. Custom Prompts - Write effective prompts
+  5. Contributing Guide - Create contribution guidelines
+
+📖 REFERENCE (Information-oriented - "Tell me facts")
+  6. CLI Reference - Complete command reference
+  7. API Reference - API documentation
+
+💡 EXPLANATION (Understanding-oriented - "Help me understand")
+  8. Architecture Overview - Design decisions and components
+  9. Concepts Deep-Dive - Understanding key concepts
+
+Choose [1-9] or 'q' to quit: 1
+
+✓ Created .doc-evergreen/quickstart.json (tutorial-quickstart template)
 
 Next steps:
-  1. Review .doc-evergreen/readme.json
-  2. Run: doc-evergreen regen-doc readme
+  1. Review .doc-evergreen/quickstart.json
+  2. Run: doc-evergreen regen-doc quickstart
+  3. Learn more about the Divio framework: docs/TEMPLATE_BEST_PRACTICES.md
 ```
 
 **Non-interactive mode** (for CI/scripts):
 ```bash
-doc-evergreen init --template readme-concise --yes
+doc-evergreen init --template tutorial-quickstart --yes
 ```
 
 **Acceptance Criteria**:
-- [ ] `init` without args enters interactive mode
-- [ ] Interactive mode shows clear descriptions of each template
+- [ ] `init` without args enters interactive mode with quadrant-organized menu
+- [ ] Each quadrant has clear emoji marker and description
+- [ ] Templates grouped visually by quadrant
 - [ ] `--template` flag for non-interactive use
-- [ ] `--list` shows all templates with descriptions
-- [ ] Help text guides users on template selection
-- [ ] Default choice is clearly marked (readme-concise)
+- [ ] `--list` shows all templates organized by quadrant
+- [ ] Help text explains Divio framework briefly
+- [ ] Exit message suggests learning more about the framework
 
-**Effort Estimate**: 1 day (6-8 hours)
+**Effort Estimate**: 1-1.5 days (6-10 hours)
+- Increased slightly to account for quadrant-aware UI design
 
 ---
 
@@ -220,58 +319,80 @@ doc-evergreen regen-doc readme  # Just works (chunked)
 
 ---
 
-### 5. Template Best Practices Documentation
+### 5. Template Best Practices Documentation with Divio Framework
 
-**What**: Create comprehensive guide on template creation, prompt engineering, and source selection.
+**What**: Create comprehensive guide teaching the Divio Documentation System and how to apply it with doc-evergreen.
 
 **Content** (new file: `docs/TEMPLATE_BEST_PRACTICES.md`):
 
-1. **Template Design Principles**
-   - When to use each template type
-   - How to structure sections
-   - Source selection strategies
+1. **Understanding the Divio Documentation System**
+   - The four quadrants explained (Tutorials, How-to, Reference, Explanation)
+   - When to use each quadrant
+   - How users think about their documentation needs
+   - Why mixing quadrants creates confusion
 
-2. **Prompt Engineering Guide**
-   - Length control techniques
-   - Style guidance patterns
-   - Scope constraint examples
-   - Common pitfalls and solutions
+2. **Template Design by Quadrant**
+   - Tutorial templates: Learning-oriented characteristics
+   - How-to templates: Goal-oriented characteristics
+   - Reference templates: Information-oriented characteristics
+   - Explanation templates: Understanding-oriented characteristics
+   - Section structure patterns per quadrant
+   - Source selection strategies per quadrant
 
-3. **Real-World Examples**
-   - Show before/after prompts
+3. **Prompt Engineering by Quadrant**
+   - Tutorial prompts: Encouraging, step-by-step, concrete
+   - How-to prompts: Recipe-like, practical, direct
+   - Reference prompts: Dry, complete, technical
+   - Explanation prompts: Discursive, contextual, exploratory
+   - Length control techniques per quadrant
+   - Common pitfalls per quadrant
+
+4. **Real-World Examples**
+   - Show before/after prompts for each quadrant
    - Explain why certain prompts work better
-   - Common templates for different project types
+   - Template examples for different project types
+   - Case study: Migrating from mixed to Divio-organized docs
 
-4. **Troubleshooting**
-   - Output too long? → Tighten prompts
-   - Output too vague? → Add specificity
-   - Output off-topic? → Add scope constraints
+5. **Troubleshooting**
+   - Output doesn't match expected quadrant tone? → Review prompt patterns
+   - Users confused about which template to use? → Explain quadrant purposes
+   - Output too long/short? → Adjust prompt detail level per quadrant
+   - Content feels off-topic? → Check if wrong quadrant was chosen
 
 **Acceptance Criteria**:
-- [ ] TEMPLATE_BEST_PRACTICES.md created
-- [ ] Covers all 4 content areas above
-- [ ] Includes 5+ real examples with explanations
+- [ ] TEMPLATE_BEST_PRACTICES.md created with comprehensive Divio coverage
+- [ ] Covers all 5 content areas above
+- [ ] Includes detailed examples for each quadrant
+- [ ] Visual diagram of Divio quadrants included
 - [ ] Referenced from USER_GUIDE.md and README.md
+- [ ] Links to official Divio documentation system site
 - [ ] Includes lessons learned from v0.5.0 development
 
-**Effort Estimate**: 1-2 days
-- Day 1: Write guide with examples (6-8 hours)
-- Day 2: Review, refine, integrate with docs (4-6 hours)
+**Effort Estimate**: 2-3 days
+- Day 1: Write Divio framework explanation and quadrant details (6-8 hours)
+- Day 2: Write prompt engineering guide per quadrant with examples (6-8 hours)
+- Day 3: Review, add diagrams, refine, integrate with docs (4-6 hours)
 
 ---
 
 ## Total Effort Estimate
 
 **Feature Breakdown**:
-1. Template Library: 3-4 days
-2. Prompt Engineering: 2-3 days
-3. Template Selection UX: 1 day
+1. Template Library (Divio-organized, 9 templates): 4-5 days
+2. Prompt Engineering (per quadrant): 2-3 days
+3. Template Selection UX (quadrant-aware): 1-1.5 days
 4. Mode Cleanup: 0.5 days
-5. Documentation: 1-2 days
+5. Documentation (Divio framework guide): 2-3 days
 
-**Total: 7.5-10.5 days (1.5-2 weeks)**
+**Total: 10-13 days (2-2.5 weeks)**
 
-**Conservative: 3 weeks** (with testing, refinement, real-world validation)
+**Conservative: 3.5 weeks** (with testing, refinement, real-world validation across quadrants)
+
+**Note**: Slightly increased from original estimate due to:
+- More templates (9 vs 6)
+- Quadrant-aware infrastructure
+- Additional documentation explaining Divio framework
+- Testing across all four quadrant types
 
 ---
 
@@ -279,23 +400,31 @@ doc-evergreen regen-doc readme  # Just works (chunked)
 
 After v0.5.0 ships, users should:
 
-1. **Find the right template easily**
-   - `init` guides them to appropriate template
-   - Template library covers common doc types
+1. **Understand their documentation needs using Divio framework**
+   - Users can identify which quadrant they need (Tutorial, How-to, Reference, or Explanation)
+   - `init` guides them with clear quadrant descriptions
+   - Template library covers all four quadrants
 
-2. **Get appropriately-sized output**
-   - readme-concise: 300-500 lines (not 996!)
-   - Other templates: predictable, appropriate length
+2. **Get output that matches their quadrant's purpose**
+   - Tutorial templates: Encouraging, step-by-step, beginner-friendly (200-500 lines)
+   - How-to templates: Practical recipes for experienced users (300-600 lines)
+   - Reference templates: Dry, complete technical reference (400-1000 lines)
+   - Explanation templates: Contextual, discursive understanding (400-800 lines)
 
-3. **Understand prompt engineering**
-   - Best practices guide teaches them
-   - Template examples show good patterns
+3. **Create their own templates with Divio principles**
+   - Best practices guide teaches Divio framework
+   - Template examples demonstrate quadrant characteristics
+   - Users understand prompt patterns per quadrant
 
 4. **No mode confusion**
    - One mode, no misleading options
    - Clear, simple workflow
 
-**If all 4 work → v0.5.0 is successful**
+5. **Apply Divio framework beyond doc-evergreen**
+   - Users understand broader documentation organization principles
+   - Can structure their entire documentation using Divio quadrants
+
+**If all 5 work → v0.5.0 is successful and teaches valuable framework**
 
 ---
 
@@ -328,18 +457,39 @@ After v0.5.0 ships, users should:
 
 ## Notes
 
-**Why these 5 features?**
-- Address user's #1 pain point: "Don't know what template to use"
-- Address user's #2 pain point: "Output too long"
+**Why these 5 features with Divio framework?**
+- Address user's #1 pain point: "Don't know what template to use" → Divio provides principled organization
+- Address user's #2 pain point: "Output too long" → Quadrant-specific prompts control length naturally
 - Clean up technical debt (mode confusion)
-- Preserve learning (best practices doc)
+- Teach valuable framework (Divio) that applies beyond doc-evergreen
+- Industry-proven approach widely adopted across documentation projects
+
+**Why Divio over ad-hoc organization?**
+- **User-centric**: Users naturally think in terms of learning vs solving vs looking up vs understanding
+- **Clear boundaries**: Each quadrant has distinct purpose, preventing scope creep and confusion
+- **Expandable**: Easy to add templates to the right quadrant without reorganizing
+- **Teachable**: Well-documented framework users can apply elsewhere
+- **Proven**: Used by Django, Gatsby, and many major projects
+
+**Key Divio Insight**: Documentation problems often come from mixing quadrants
+- Tutorials that explain concepts → Confusing for beginners
+- How-to guides that teach basics → Frustrating for experienced users
+- Reference that provides opinions → Unreliable for lookup
+- Explanation that instructs → Misses the "why"
 
 **What we're NOT doing** (deferred):
-- Smart AI template suggestions (complex, unproven)
+- Smart AI template suggestions (complex, unproven - but Divio makes this easier later)
 - Multi-variant generation (interesting but not essential)
 - Selective regeneration (valuable but separate focus)
 - Stability mode (needs more research on variation causes)
+- Mixed-purpose templates (violates Divio principles)
 
-**Next version candidates** (based on these foundations):
-- v0.6.0: Smart template suggestions (using template library as base)
-- v0.7.0: Selective regeneration (using improved templates)
+**Next version candidates** (based on Divio foundations):
+- v0.6.0: Smart template suggestions using Divio quadrant classification
+- v0.7.0: Selective regeneration with quadrant-aware section detection
+- v0.8.0: Template marketplace organized by Divio quadrants
+
+**Divio Resources**:
+- Official site: https://docs.divio.com/documentation-system/
+- Used by: Django, Gatsby, Cloudflare, NumPy, and many others
+- Also known as: "The Grand Unified Theory of Documentation"

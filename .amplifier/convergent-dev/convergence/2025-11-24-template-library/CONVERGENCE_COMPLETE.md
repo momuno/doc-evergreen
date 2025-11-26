@@ -1,8 +1,8 @@
 # Convergence Complete: Template Library & Prompt Quality
 
-**Date**: 2025-11-24
+**Date**: 2025-11-24 (Updated: 2025-11-25 with Divio framework adoption)
 **Version**: v0.5.0
-**Duration**: Deep user interview + focused scope definition (90 minutes)
+**Duration**: Deep user interview + focused scope definition (90 minutes) + Framework adoption (45 minutes)
 
 ---
 
@@ -12,7 +12,9 @@ Successfully converged from user pain points to focused feature scope for v0.5.0
 
 **Theme**: Better Templates, Better Defaults
 
-**Core Insight**: Users struggle with template creation and default templates produce poor results (996-line READMEs). Solution: Provide library of proven templates with well-engineered prompts.
+**Core Insight**: Users struggle with template creation and default templates produce poor results (996-line READMEs). Solution: Provide library of proven templates organized around the **Divio Documentation System** with well-engineered prompts tailored to each documentation type.
+
+**UPDATE 2025-11-25**: Adopted the [Divio Documentation System](https://docs.divio.com/documentation-system/) as the organizing principle for the template library. This industry-proven framework organizes documentation into four quadrants (Tutorials, How-to Guides, Reference, Explanation) based on user needs and purposes.
 
 ---
 
@@ -107,6 +109,23 @@ Organized pain points into 17 potential features across 4 categories:
 - Need stability research first
 - Better templates = less need for selective updates
 **Trade-off**: Users still experience full-doc regeneration, but improved templates make it acceptable
+
+### Decision 5: Adopt Divio Documentation System (UPDATE 2025-11-25)
+**Choice**: Organize templates around Divio's four quadrants (Tutorials, How-to, Reference, Explanation) vs ad-hoc organization
+**Rationale**:
+- User suggested reviewing Divio framework during sprint planning
+- Industry-proven approach used by Django, Gatsby, and major projects
+- User-centric: people naturally think in terms of learning vs solving vs looking up vs understanding
+- Clear boundaries prevent mixing documentation purposes (a common source of poor docs)
+- Teachable framework that applies beyond doc-evergreen
+- More principled than length-based organization (concise/standard/detailed)
+**Impact**:
+- 9 templates organized in 4 quadrants (vs original 6 ad-hoc templates)
+- Quadrant-aware CLI interface
+- Prompt engineering tailored to each quadrant's characteristics
+- Documentation teaches Divio framework
+- Slightly increased effort: 10-13 days (vs 7.5-10.5) but much stronger foundation
+**Trade-off**: More upfront structure, but provides clearer guidance and scales better
 
 ---
 
@@ -332,19 +351,69 @@ After v0.5.0 ships, users should be able to:
 
 ---
 
-**Convergence Status**: ✅ **COMPLETE**
+**Convergence Status**: ✅ **COMPLETE** (Updated 2025-11-25 with Divio framework)
 
-**Ready for**: Sprint planning with convergent-dev:sprint-planner agent
+**Ready for**: Sprint implementation with updated Divio-based plans
 
-**User Approval**: ✅ Confirmed via conversation
+**User Approval**: 
+- ✅ Original convergence confirmed via conversation (2025-11-24)
+- ✅ Divio framework adoption confirmed (2025-11-25): "yes, lets update the convergence sprint docs to reflect this new info"
 
-**Next Command**: 
-```bash
-# Use convergent-dev workflow
-amplifier profile use convergent-dev:convergent-dev
-amplifier run "Create sprint plan for v0.5.0 template library"
-```
+**Sprint Planning Status**: ✅ **COMPLETE** (Updated 2025-11-25)
+- Original sprint plans created: `.amplifier/convergent-dev/sprints/v0.5.0-template-library/`
+- Now being updated with Divio-based template organization
+
+---
+
+## UPDATE 2025-11-25: Divio Framework Adoption
+
+**Context**: During sprint planning review, user shared Divio Documentation System as reference for template organization.
+
+**Decision Made**: Adopt Divio framework as organizing principle for template library.
+
+**Key Changes to Feature Scope**:
+1. **Template Organization**: 9 templates in 4 Divio quadrants (vs 6 ad-hoc templates)
+   - Tutorials: tutorial-quickstart, tutorial-first-template
+   - How-to: howto-ci-integration, howto-custom-prompts, howto-contributing-guide
+   - Reference: reference-cli, reference-api
+   - Explanation: explanation-architecture, explanation-concepts
+
+2. **Prompt Engineering**: Tailored to quadrant characteristics
+   - Tutorial prompts: Encouraging, step-by-step, beginner-friendly
+   - How-to prompts: Recipe-like, practical, goal-focused
+   - Reference prompts: Dry, technical, complete
+   - Explanation prompts: Discursive, contextual, understanding-focused
+
+3. **CLI Experience**: Quadrant-organized interactive menu
+   - Visual grouping by quadrant with emoji markers
+   - Clear descriptions of each quadrant's purpose
+   - Helps users choose based on their needs
+
+4. **Documentation**: TEMPLATE_BEST_PRACTICES.md teaches Divio framework
+   - Comprehensive guide to all four quadrants
+   - When to use each quadrant type
+   - Prompt engineering patterns per quadrant
+
+**Impact on Timeline**:
+- Original estimate: 7.5-10.5 days (3 weeks conservative)
+- Updated estimate: 10-13 days (3.5 weeks conservative)
+- Reason: More templates, quadrant-aware infrastructure, framework documentation
+
+**Why This Improves the Release**:
+- Industry-proven framework (Django, Gatsby, NumPy use it)
+- User-centric organization (matches how users think)
+- Scalable (clear place for new templates)
+- Teachable (valuable beyond doc-evergreen)
+- Prevents common documentation anti-patterns (mixing quadrants)
+
+**Philosophy Alignment**:
+- ✅ Still ruthlessly simple (clear boundaries, not complex)
+- ✅ Trust in emergence (proven framework, not invented here)
+- ✅ Present-moment focus (solves real problems with established solution)
+- ✅ Value-first (teaches valuable framework while solving user pain)
 
 ---
 
 **Remember**: This is a convergence document. The feature scope may evolve during implementation based on learnings. That's expected and healthy. The key is we have clear starting point, user validation, and ruthless focus.
+
+The Divio framework adoption is a strengthening refinement, not scope creep - it provides better organization for the same core goal: help users create and use good documentation templates.
