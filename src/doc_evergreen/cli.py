@@ -191,96 +191,42 @@ def resolve_template_path(name: str) -> Path:
 def cli():
     """doc-evergreen - AI-powered documentation generation.
 
-    \b
-    Works with ANY project.
-    Run from your project root directory.
-    Templates reference sources relative to project root (cwd).
-
-    \b
-    Installation:
-      pip install -e /path/to/doc-evergreen
-      # or
-      pipx install /path/to/doc-evergreen
+    Generate documentation from templates organized by the Divio Documentation
+    System (Tutorials, How-to Guides, Reference, Explanation).
 
     \b
     Quick Start:
-      cd /path/to/your-project
-      doc-evergreen regen-doc readme
+      # Interactive template selection (recommended)
+      doc-evergreen init
+
+      # List all available templates
+      doc-evergreen init --list
+
+      # Use a specific template
+      doc-evergreen init --template tutorial-quickstart
+
+      # Generate documentation
+      doc-evergreen regen-doc <template-name>
 
     \b
-    How it works:
-      - Run from project root (your cwd)
-      - Sources in templates are relative to cwd
-      - Output files written relative to cwd
-      - Template can be stored anywhere
+    Available Templates:
+      📚 Tutorials: tutorial-quickstart, tutorial-first-template
+      🎯 How-To Guides: howto-contributing-guide, howto-ci-integration, howto-custom-prompts
+      📖 Reference: reference-cli, reference-api
+      💡 Explanation: explanation-architecture, explanation-concepts
 
     \b
-    Documentation:
-      See TEMPLATES.md for template creation guide
+    How It Works:
+      1. Run 'init' to choose a template (creates .doc-evergreen/)
+      2. Run 'regen-doc' to generate documentation from your codebase
+      3. Templates automatically analyze your project and create docs
+
+    \b
+    Learn More:
+      docs/TEMPLATE_BEST_PRACTICES.md - Create custom templates
+      docs/USER_GUIDE.md - Complete user guide
     """
     pass
-
-
-@cli.command("doc-update")
-@click.argument("template_path", type=click.Path(exists=True))
-@click.option(
-    "--output",
-    type=click.Path(),
-    help="Override output path from template",
-)
-def doc_update(template_path: str, output: str | None):
-    """[LEGACY] Generate/update documentation from JSON template.
-
-    \b
-    NOTE: This command is legacy. Use 'regen-doc' instead.
-          'regen-doc' supports the .doc-evergreen/ convention
-          and provides change preview with approval.
-
-    \b
-    Examples:
-      # Generate documentation
-      doc-evergreen doc-update template.json
-
-      # Override output path
-      doc-evergreen doc-update --output custom.md template.json
-    """
-    # 1. Parse template
-    try:
-        template = parse_template(Path(template_path))
-    except ValueError as e:
-        click.echo(f"Error: {e}", err=True)
-        raise click.Abort()
-
-    # 2. Validate template
-    validation = validate_template(template)
-    if not validation.valid:
-        click.echo(f"Error: {validation.errors[0]}", err=True)
-        raise click.Abort()
-
-    # 3. Determine base_dir (current working directory = project root)
-    base_dir = Path.cwd()
-
-    # 4. Create generator (always use ChunkedGenerator)
-    generator = ChunkedGenerator(template, base_dir)
-
-    # 5. Generate documentation (async)
-    try:
-        result = asyncio.run(generator.generate())
-    except Exception as e:
-        click.echo(f"Generation failed: {e}", err=True)
-        raise click.Abort()
-
-    # 6. Determine output path
-    output_path = Path(output) if output else Path(template.document.output)
-
-    # 7. Check if output exists and prompt for confirmation
-    if output_path.exists() and not click.confirm(f"Overwrite {output_path}?"):
-        click.echo("Aborted")
-        return
-
-    # 8. Write output
-    output_path.write_text(result)
-    click.echo(f"Generated: {output_path}")
 
 
 @cli.command("init")
