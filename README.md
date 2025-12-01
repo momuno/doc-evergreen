@@ -499,18 +499,6 @@ doc-evergreen regen-doc readme --output custom/path.md
 doc-evergreen regen-doc .doc-evergreen/readme.json
 ```
 
-### `doc-evergreen doc-update` (Legacy)
-
-**Note:** This command is deprecated. Use `regen-doc` instead for the improved workflow with change previews and approval.
-
-```bash
-# Legacy command (still works)
-doc-evergreen doc-update template.json
-
-# Prefer new command
-doc-evergreen regen-doc readme
-```
-
 ## Template Resolution
 
 Doc-evergreen resolves template names using a convention-based approach:

@@ -189,42 +189,21 @@ def resolve_template_path(name: str) -> Path:
 
 @click.group()
 def cli():
-    """doc-evergreen - AI-powered documentation generation.
-
-    Generate documentation from templates organized by the Divio Documentation
-    System (Tutorials, How-to Guides, Reference, Explanation).
+    """Generate documentation from templates organized by the Divio Documentation System.
 
     \b
     Quick Start:
       # Interactive template selection (recommended)
-      doc-evergreen init
-
+      $ doc-evergreen init
+      
       # List all available templates
-      doc-evergreen init --list
-
+      $ doc-evergreen init --list
+      
       # Use a specific template
-      doc-evergreen init --template tutorial-quickstart
-
+      $ doc-evergreen init --template tutorial-quickstart
+      
       # Generate documentation
-      doc-evergreen regen-doc <template-name>
-
-    \b
-    Available Templates:
-      📚 Tutorials: tutorial-quickstart, tutorial-first-template
-      🎯 How-To Guides: howto-contributing-guide, howto-ci-integration, howto-custom-prompts
-      📖 Reference: reference-cli, reference-api
-      💡 Explanation: explanation-architecture, explanation-concepts
-
-    \b
-    How It Works:
-      1. Run 'init' to choose a template (creates .doc-evergreen/)
-      2. Run 'regen-doc' to generate documentation from your codebase
-      3. Templates automatically analyze your project and create docs
-
-    \b
-    Learn More:
-      docs/TEMPLATE_BEST_PRACTICES.md - Create custom templates
-      docs/USER_GUIDE.md - Complete user guide
+      $ doc-evergreen regen-doc <template-name>
     """
     pass
 
