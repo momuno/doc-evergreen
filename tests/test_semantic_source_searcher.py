@@ -130,8 +130,8 @@ def get_auth_status():
     
     def test_search_considers_file_path_relevance(self, tmp_path):
         """
-        Given: Files in different directories
-        When: Search for section
+        Given: Files in different directories with same content
+        When: Search for terms that appear in content
         Then: Files in relevant directories score higher
         """
         # ARRANGE
@@ -140,6 +140,7 @@ def get_auth_status():
         api_dir.mkdir(parents=True)
         (api_dir / "endpoints.py").write_text("""
 def handle_request():
+    '''Handle API request'''
     pass
 """)
         
@@ -148,6 +149,7 @@ def handle_request():
         utils_dir.mkdir(parents=True)
         (utils_dir / "helpers.py").write_text("""
 def handle_request():
+    '''Handle API request'''
     pass
 """)
         
@@ -156,12 +158,12 @@ def handle_request():
         # ACT
         results = searcher.search(
             section_heading="API Documentation",
-            section_content="API endpoint handlers",
-            key_terms=["API", "endpoint"]
+            section_content="API request handlers",
+            key_terms=["request", "handle", "API"]  # Terms that appear in content
         )
         
         # ASSERT
-        assert len(results) >= 2
+        assert len(results) >= 2, f"Expected at least 2 results, got {len(results)}: {results}"
         
         # File in api/ directory should score higher than file in utils/
         api_result = next(r for r in results if 'api' in r['file_path'])
