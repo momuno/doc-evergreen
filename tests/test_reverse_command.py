@@ -56,8 +56,7 @@ Set up your config file.
         
         # ACT
         runner = CliRunner()
-        with runner.isolated_filesystem(temp_dir=tmp_path):
-            result = runner.invoke(cli, ['reverse', str(readme)])
+        result = runner.invoke(cli, ['reverse', str(readme)])
         
         # ASSERT
         assert result.exit_code == 0
@@ -65,7 +64,8 @@ Set up your config file.
         
         # Verify template file was created
         template_dir = tmp_path / ".doc-evergreen" / "templates"
-        template_file = template_dir / "my-project-reversed.json"
+        # Template name is from filename, not title: README.md -> readme-reversed.json
+        template_file = template_dir / "readme-reversed.json"
         
         assert template_file.exists(), f"Template not found at {template_file}"
         
@@ -92,12 +92,11 @@ Set up your config file.
         
         # ACT
         runner = CliRunner()
-        with runner.isolated_filesystem(temp_dir=tmp_path):
-            result = runner.invoke(cli, [
-                'reverse',
-                str(readme),
-                '--output', str(custom_output)
-            ])
+        result = runner.invoke(cli, [
+            'reverse',
+            str(readme),
+            '--output', str(custom_output)
+        ])
         
         # ASSERT
         assert result.exit_code == 0
@@ -115,8 +114,7 @@ Set up your config file.
         
         # ACT
         runner = CliRunner()
-        with runner.isolated_filesystem(temp_dir=tmp_path):
-            result = runner.invoke(cli, ['reverse', str(readme)])
+        result = runner.invoke(cli, ['reverse', str(readme)])
         
         # ASSERT
         assert result.exit_code == 0
@@ -184,22 +182,22 @@ How to contribute.
         
         # ACT
         runner = CliRunner()
-        with runner.isolated_filesystem(temp_dir=tmp_path):
-            result = runner.invoke(cli, ['reverse', str(readme)])
+        result = runner.invoke(cli, ['reverse', str(readme)])
         
         # ASSERT - Command succeeded
         assert result.exit_code == 0
         
         # ASSERT - Template exists and is valid
         template_dir = tmp_path / ".doc-evergreen" / "templates"
-        template_file = template_dir / "complete-project-reversed.json"
+        # Template name from filename: README.md -> readme-reversed.json
+        template_file = template_dir / "readme-reversed.json"
         assert template_file.exists()
         
         with open(template_file) as f:
             template = json.load(f)
         
         # Verify complete structure
-        assert template['_meta']['name'] == 'complete-project-reversed'
+        assert template['_meta']['name'] == 'readme-reversed'
         assert template['_meta']['quadrant'] == 'explanation'
         
         doc = template['document']
@@ -248,13 +246,13 @@ API docs.
         
         # ACT
         runner = CliRunner()
-        with runner.isolated_filesystem(temp_dir=tmp_path):
-            result = runner.invoke(cli, ['reverse', str(readme)])
+        result = runner.invoke(cli, ['reverse', str(readme)])
         
         # ASSERT
         assert result.exit_code == 0
         
-        template_file = tmp_path / ".doc-evergreen" / "templates" / "project-reversed.json"
+        # Template name from filename: README.md -> readme-reversed.json
+        template_file = tmp_path / ".doc-evergreen" / "templates" / "readme-reversed.json"
         with open(template_file) as f:
             template = json.load(f)
         

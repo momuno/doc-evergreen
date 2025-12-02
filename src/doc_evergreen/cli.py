@@ -589,5 +589,127 @@ def regen_doc(template_name: str, auto_approve: bool, output: str | None):
     click.echo(f"\nCompleted {iteration} {iteration_word}")
 
 
+@cli.command("reverse")
+@click.argument("doc_path", type=click.Path(exists=True))
+@click.option("--output", "-o", type=click.Path(), help="Output path for generated template")
+def reverse(doc_path: str, output: str | None):
+    """Generate template from existing documentation.
+    
+    Analyzes document structure, discovers source files, and creates
+    a template.json file that can be used with the regen-doc command.
+    
+    Example:
+        doc-evergreen reverse README.md
+        doc-evergreen reverse docs/API.md --output custom-template.json
+    """
+    from pathlib import Path
+    from doc_evergreen.reverse import DocumentParser, NaiveSourceDiscoverer, TemplateAssembler
+    
+    doc_path_obj = Path(doc_path)
+    
+    # Validate file exists
+    if not doc_path_obj.exists():
+        click.echo(f"❌ Error: {doc_path} does not exist", err=True)
+        raise click.Abort()
+    
+    # Determine project root (parent of document)
+    project_root = doc_path_obj.parent
+    
+    click.echo(f"🔍 Analyzing {doc_path_obj.name}...")
+    
+    # Step 1: Parse document structure
+    try:
+        with open(doc_path_obj) as f:
+            content = f.read()
+        
+        parser = DocumentParser()
+        parsed_doc = parser.parse(content)
+        
+        section_count = len(parsed_doc['sections'])
+        click.echo(f"📝 Found {section_count} section{'' if section_count == 1 else 's'}")
+    except Exception as e:
+        click.echo(f"❌ Error parsing document: {e}", err=True)
+        raise click.Abort()
+    
+    # Step 2: Discover sources for each section
+    click.echo(f"🔎 Discovering source files...")
+    
+    try:
+        discoverer = NaiveSourceDiscoverer(project_root=project_root)
+        source_mappings = {}
+        total_sources = 0
+        
+        for idx, section in enumerate(parsed_doc['sections']):
+            sources = discoverer.discover(
+                section_heading=section['heading'],
+                section_content=section.get('content', '')
+            )
+            source_mappings[idx] = sources
+            total_sources += len(sources)
+            
+            # Discover for nested subsections
+            _discover_subsections(section, (idx,), discoverer, source_mappings)
+        
+        click.echo(f"✅ Found {total_sources} source file{'' if total_sources == 1 else 's'}")
+    except Exception as e:
+        click.echo(f"❌ Error discovering sources: {e}", err=True)
+        raise click.Abort()
+    
+    # Step 3: Assemble template
+    click.echo(f"🔧 Generating template...")
+    
+    try:
+        assembler = TemplateAssembler()
+        template = assembler.assemble(
+            parsed_doc=parsed_doc,
+            source_mappings=source_mappings,
+            output_filename=doc_path_obj.name
+        )
+        
+        # Determine output path
+        if output:
+            output_path = Path(output)
+        else:
+            # Default: .doc-evergreen/templates/{name}-reversed.json
+            template_name = template['_meta']['name']
+            output_path = project_root / ".doc-evergreen" / "templates" / f"{template_name}.json"
+        
+        # Save template
+        assembler.save(template, output_path)
+        
+        click.echo(f"✅ Template generated: {output_path}")
+        click.echo("\nNext steps:")
+        click.echo(f"1. Review: cat {output_path}")
+        click.echo(f"2. Test: doc-evergreen regen-doc {output_path}")
+        click.echo(f"3. Refine prompts and sources as needed")
+        
+    except Exception as e:
+        click.echo(f"❌ Error generating template: {e}", err=True)
+        raise click.Abort()
+
+
+def _discover_subsections(section: dict, parent_index: tuple, discoverer, source_mappings: dict):
+    """Recursively discover sources for subsections.
+    
+    Args:
+        section: Section dictionary with potential subsections
+        parent_index: Parent section index tuple (e.g., (0,) or (0, 1))
+        discoverer: NaiveSourceDiscoverer instance
+        source_mappings: Dictionary to populate with source mappings
+    """
+    subsections = section.get('subsections', [])
+    for sub_idx, subsection in enumerate(subsections):
+        nested_index = (*parent_index, sub_idx)
+        
+        sources = discoverer.discover(
+            section_heading=subsection['heading'],
+            section_content=subsection.get('content', '')
+        )
+        source_mappings[nested_index] = sources
+        
+        # Recurse for deeper nesting
+        _discover_subsections(subsection, nested_index, discoverer, source_mappings)
+
+
 if __name__ == "__main__":
     cli()
