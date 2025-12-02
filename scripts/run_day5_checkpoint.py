@@ -196,7 +196,10 @@ def main():
         print(f"ERROR: Anthropic API key not found at {claude_key_path}")
         sys.exit(1)
     
+    # Parse API key (handle both "sk-ant-..." and "CLAUDE_API_KEY=sk-ant-..." formats)
     claude_api_key = claude_key_path.read_text().strip()
+    if "=" in claude_api_key:
+        claude_api_key = claude_api_key.split("=", 1)[1].strip()
     
     # OpenAI API key (optional)
     openai_api_key = os.getenv("OPENAI_API_KEY")
