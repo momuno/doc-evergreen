@@ -121,7 +121,6 @@
     "Created 12 test cases covering major sections of AGENT_AUTHORING.md",
     "Skipped minor sections like 'Summary' and 'Best Practices' duplicates",
     "Focus on sections with clear implementation mappings",
-    "Some sections (Working Examples, Common Patterns) map to the doc itself since they're illustrative",
     "CLI Commands section is tricky - the library provides APIs, actual CLI is in separate repo"
   ]
 }
