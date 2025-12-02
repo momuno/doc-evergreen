@@ -198,20 +198,23 @@ def main():
     
     claude_api_key = claude_key_path.read_text().strip()
     
-    # OpenAI API key
+    # OpenAI API key (optional)
     openai_api_key = os.getenv("OPENAI_API_KEY")
-    if not openai_api_key:
-        print("ERROR: OPENAI_API_KEY environment variable not set")
-        sys.exit(1)
-    
     openai_model = os.getenv("OPENAI_MODEL", "gpt-4")
     
     # Create LLM clients
     clients = [
         ("Claude Sonnet 4.5", AnthropicLLMClient("claude-sonnet-4-20250514", claude_api_key)),
         ("Claude Opus 4", AnthropicLLMClient("claude-opus-4-20250514", claude_api_key)),
-        (f"OpenAI {openai_model}", OpenAILLMClient(openai_model, openai_api_key))
     ]
+    
+    # Add OpenAI if API key is available
+    if openai_api_key:
+        clients.append((f"OpenAI {openai_model}", OpenAILLMClient(openai_model, openai_api_key)))
+        print(f"✅ Will test 3 models (including OpenAI {openai_model})")
+    else:
+        print(f"⚠️ OPENAI_API_KEY not set - will test 2 Anthropic models only")
+        print(f"   To test OpenAI, set: export OPENAI_API_KEY=your-key")
     
     # Run evaluation for each model
     all_results = {}
