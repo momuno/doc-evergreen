@@ -192,3 +192,97 @@ Content for second section."""
         assert result['sections'][0]['content'] == 'Content for first section.'
         assert result['sections'][1]['heading'] == 'Second Section'
         assert result['sections'][1]['content'] == 'Content for second section.'
+
+    def test_parse_deeply_nested_subsections_h3_to_h6(self):
+        """
+        Given: Markdown with H1, H2, and deeply nested H3-H6 subsections
+        When: Parser extracts structure
+        Then: Returns hierarchical structure with up to 6 levels of nesting
+        """
+        # ARRANGE
+        markdown = """# Technical Documentation
+
+## Architecture
+
+High-level architecture overview.
+
+### Backend Services
+
+The backend consists of multiple services.
+
+#### API Gateway
+
+Handles incoming requests and routing.
+
+##### Authentication Service
+
+Validates user credentials and tokens.
+
+###### JWT Token Handler
+
+Manages JWT token creation and validation.
+
+##### Rate Limiting
+
+Controls request throttling.
+
+#### Database Layer
+
+Manages data persistence.
+
+### Frontend Components
+
+User interface components."""
+        parser = DocumentParser()
+        
+        # ACT
+        result = parser.parse(markdown)
+        
+        # ASSERT
+        assert result['title'] == 'Technical Documentation'
+        assert len(result['sections']) == 1
+        
+        # H2: Architecture
+        section = result['sections'][0]
+        assert section['heading'] == 'Architecture'
+        assert section['content'] == 'High-level architecture overview.'
+        assert len(section['subsections']) == 2
+        
+        # H3: Backend Services
+        backend = section['subsections'][0]
+        assert backend['heading'] == 'Backend Services'
+        assert backend['content'] == 'The backend consists of multiple services.'
+        assert len(backend['subsections']) == 2
+        
+        # H4: API Gateway
+        api_gateway = backend['subsections'][0]
+        assert api_gateway['heading'] == 'API Gateway'
+        assert api_gateway['content'] == 'Handles incoming requests and routing.'
+        assert len(api_gateway['subsections']) == 2
+        
+        # H5: Authentication Service
+        auth_service = api_gateway['subsections'][0]
+        assert auth_service['heading'] == 'Authentication Service'
+        assert auth_service['content'] == 'Validates user credentials and tokens.'
+        assert len(auth_service['subsections']) == 1
+        
+        # H6: JWT Token Handler
+        jwt_handler = auth_service['subsections'][0]
+        assert jwt_handler['heading'] == 'JWT Token Handler'
+        assert jwt_handler['content'] == 'Manages JWT token creation and validation.'
+        assert jwt_handler.get('subsections', []) == []  # H6 is deepest, no further nesting
+        
+        # H5: Rate Limiting (sibling to Authentication Service)
+        rate_limiting = api_gateway['subsections'][1]
+        assert rate_limiting['heading'] == 'Rate Limiting'
+        assert rate_limiting['content'] == 'Controls request throttling.'
+        
+        # H4: Database Layer (sibling to API Gateway)
+        database = backend['subsections'][1]
+        assert database['heading'] == 'Database Layer'
+        assert database['content'] == 'Manages data persistence.'
+        
+        # H3: Frontend Components (sibling to Backend Services)
+        frontend = section['subsections'][1]
+        assert frontend['heading'] == 'Frontend Components'
+        assert frontend['content'] == 'User interface components.'
