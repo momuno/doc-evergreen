@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "name": "howto-custom-prompts",
+    "description": "Write effective prompts for better documentation",
+    "use_case": "You want to improve your template prompts",
+    "quadrant": "howto",
+    "estimated_lines": "300-500 lines"
+  },
+  "document": {
+    "title": "Custom Prompt Engineering Guide",
+    "output": "docs/PROMPT_GUIDE.md",
+    "sections": [
+      {
+        "heading": "# Prompt Engineering for Documentation",
+        "prompt": "Introduction to prompt engineering (3-4 paragraphs): (1) Why prompts matter, (2) Common problems (too long, too vague), (3) What makes a good prompt, (4) Overview of techniques. Set expectations.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**"]
+      },
+      {
+        "heading": "## Length Control Techniques",
+        "prompt": "How to control output length (5-6 paragraphs): (1) Explicit length guidance (3-5 paragraphs), (2) Scope constraints (skip X, focus on Y), (3) Structure hints (bullet lists, numbered steps), (4) Examples with before/after, (5) Common patterns. Be specific with examples.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**"]
+      },
+      {
+        "heading": "## Specificity and Clarity",
+        "prompt": "Writing clear prompts (4-5 paragraphs): (1) Be explicit about format, (2) Specify what to include, (3) Specify what to exclude, (4) Give examples in prompt. Show good vs bad examples.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**"]
+      },
+      {
+        "heading": "## Source Selection Strategy",
+        "prompt": "Choosing right sources (4-5 paragraphs): (1) Match sources to section purpose, (2) Specific files vs globs, (3) Avoid too many sources, (4) Testing source effectiveness. Include patterns.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**", "README.md"]
+      },
+      {
+        "heading": "## Testing and Iteration",
+        "prompt": "Improving prompts iteratively (3-4 paragraphs): (1) Generate and review, (2) Identify issues, (3) Refine prompts, (4) Re-test. Include iteration workflow.",
+        "sources": ["docs/**", "README.md"]
+      },
+      {
+        "heading": "## Common Patterns and Anti-Patterns",
+        "prompt": "What works and what doesn't (5-7 paragraphs): (1) Good patterns (explicit length, clear scope), (2) Anti-patterns (be brief, make it good), (3) Real examples from templates, (4) Quick reference. Be practical.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "name": "explanation-architecture",
+    "description": "Architecture and design explanation",
+    "use_case": "You need to explain system design decisions",
+    "quadrant": "explanation",
+    "estimated_lines": "400-800 lines"
+  },
+  "document": {
+    "title": "Architecture Guide",
+    "output": "docs/ARCHITECTURE.md",
+    "sections": [
+      {
+        "heading": "# Architecture Overview",
+        "prompt": "Explain the high-level architecture (4-5 paragraphs): (1) System purpose and goals, (2) Key architectural decisions, (3) Major components and their responsibilities, (4) Data flow overview, (5) Integration points. Focus on 'why' not 'how'. Help readers build a mental model.",
+        "sources": ["README.md", "docs/**", "src/**/*.py"]
+      },
+      {
+        "heading": "## Design Principles",
+        "prompt": "Articulate the design philosophy (5-7 paragraphs). What principles guide decisions? Cover: (1) Core values (simplicity, performance, etc), (2) Trade-offs made, (3) Patterns used consistently, (4) Patterns explicitly avoided, (5) When to break the rules. Be philosophical but grounded in examples.",
+        "sources": ["docs/**", "README.md", "CONTRIBUTING.md"]
+      },
+      {
+        "heading": "## Component Deep Dive",
+        "prompt": "Explain each major component in depth (6-10 paragraphs, one per component). For each: (1) Purpose and responsibilities, (2) Key design decisions, (3) Interaction with other components, (4) Notable implementation details. Focus on design rationale and trade-offs, not line-by-line code.",
+        "sources": ["src/**/*.py", "docs/**"]
+      },
+      {
+        "heading": "## Data Flow",
+        "prompt": "Trace key data flows through the system (4-6 paragraphs). Pick 2-3 critical workflows and explain the complete flow: what happens at each step, why, what could go wrong. Use specific examples. Help readers understand the system's behavior.",
+        "sources": ["src/**/*.py", "docs/**"]
+      },
+      {
+        "heading": "## Technology Choices",
+        "prompt": "Explain technology and library choices (5-7 paragraphs). For major dependencies: (1) Why chosen, (2) What alternatives considered, (3) Trade-offs accepted, (4) How it could be replaced if needed. Be honest about limitations.",
+        "sources": ["pyproject.toml", "requirements.txt", "docs/**"]
+      },
+      {
+        "heading": "## Future Directions",
+        "prompt": "Discuss potential evolution (3-4 paragraphs): Known limitations, areas for improvement, how architecture supports (or constrains) future features. Be realistic about trade-offs. Don't promise features, explain possibilities.",
+        "sources": ["docs/**", "README.md", "CONTRIBUTING.md"]
+      }
+    ]
+  }
+}

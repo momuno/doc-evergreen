@@ -100,13 +100,16 @@ def validate_all_sources(template: Template, base_dir: Path) -> SourceValidation
         # Try glob pattern first
         all_matches = list(base_dir.glob(pattern))
 
-        # Filter out excluded paths (virtual envs, node_modules, etc.)
-        resolved = [p for p in all_matches if not _should_exclude_path(p, base_dir)]
+        # Filter out excluded paths (virtual envs, node_modules, etc.) AND directories
+        resolved = [
+            p for p in all_matches 
+            if p.is_file() and not _should_exclude_path(p, base_dir)
+        ]
 
         # If no match after filtering, try literal path
         if not resolved:
             literal_path = base_dir / pattern
-            if literal_path.exists() and not _should_exclude_path(
+            if literal_path.exists() and literal_path.is_file() and not _should_exclude_path(
                 literal_path, base_dir
             ):
                 resolved = [literal_path]

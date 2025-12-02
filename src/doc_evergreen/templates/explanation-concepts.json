@@ -1,0 +1,50 @@
+{
+  "_meta": {
+    "name": "explanation-concepts",
+    "description": "Core concepts and mental models explained",
+    "use_case": "You want to understand how doc-evergreen works",
+    "quadrant": "explanation",
+    "estimated_lines": "400-600 lines"
+  },
+  "document": {
+    "title": "Core Concepts",
+    "output": "docs/CONCEPTS.md",
+    "sections": [
+      {
+        "heading": "# Core Concepts",
+        "prompt": "Introduction to key concepts (3-4 paragraphs): (1) What makes doc-evergreen different, (2) Core philosophy, (3) Key concepts overview, (4) How to use this guide. Set the stage for understanding.",
+        "sources": ["README.md", "docs/**"]
+      },
+      {
+        "heading": "## The Template Model",
+        "prompt": "Explain template concept (5-6 paragraphs): (1) Why templates, (2) Template vs generator, (3) Anatomy of template, (4) How templates work with LLMs, (5) Trade-offs. Build mental model.",
+        "sources": ["docs/**", "README.md", "src/doc_evergreen/templates/**"]
+      },
+      {
+        "heading": "## Chunked Generation",
+        "prompt": "Explain chunking strategy (5-6 paragraphs): (1) Why chunked vs single-shot, (2) How chunking works, (3) Benefits (quality, flexibility), (4) Trade-offs (time, consistency), (5) When it matters. Focus on understanding 'why'.",
+        "sources": ["docs/**", "README.md", "src/**/*.py"]
+      },
+      {
+        "heading": "## Source Selection and Context",
+        "prompt": "Explain context building (4-5 paragraphs): (1) How sources are selected, (2) Context window management, (3) Why specific sources matter, (4) Balancing breadth vs depth. Help readers understand the strategy.",
+        "sources": ["docs/**", "src/**/*.py", "README.md"]
+      },
+      {
+        "heading": "## Prompt Engineering Principles",
+        "prompt": "Core prompt engineering ideas (5-7 paragraphs): (1) Why prompts need engineering, (2) Length control philosophy, (3) Specificity vs flexibility, (4) Iteration mindset, (5) Examples of principle in action. Be philosophical but grounded.",
+        "sources": ["docs/**", "src/doc_evergreen/templates/**"]
+      },
+      {
+        "heading": "## Living Documentation",
+        "prompt": "Explain the living docs concept (4-5 paragraphs): (1) What makes docs 'living', (2) Update workflow, (3) Version control integration, (4) Trade-offs vs manual docs. Discuss philosophy and practice.",
+        "sources": ["README.md", "docs/**"]
+      },
+      {
+        "heading": "## Design Philosophy",
+        "prompt": "Articulate design values (4-5 paragraphs): (1) Simplicity over features, (2) Templates over configuration, (3) Trust in LLMs, (4) User control. Explain 'why' behind decisions.",
+        "sources": ["README.md", "docs/**", "CONTRIBUTING.md"]
+      }
+    ]
+  }
+}

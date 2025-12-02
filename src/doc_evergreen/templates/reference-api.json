@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "name": "reference-api",
+    "description": "Complete API reference documentation",
+    "use_case": "You need technical API documentation",
+    "quadrant": "reference",
+    "estimated_lines": "500-700 lines"
+  },
+  "document": {
+    "title": "API Reference",
+    "output": "docs/API.md",
+    "sections": [
+      {
+        "heading": "# API Reference",
+        "prompt": "API overview (3-4 paragraphs): (1) Purpose of API, (2) Installation and setup, (3) Basic usage pattern, (4) Authentication if applicable. Be technical but clear.",
+        "sources": ["README.md", "src/**/*.py", "docs/**"]
+      },
+      {
+        "heading": "## Core Classes",
+        "prompt": "Document main classes (10-15 paragraphs, one per class): For each major class: (1) Purpose, (2) Constructor parameters with types, (3) Key methods with signatures, (4) Return types, (5) Usage example. Be comprehensive and precise. Group by module.",
+        "sources": ["src/**/*.py"]
+      },
+      {
+        "heading": "## Functions",
+        "prompt": "Document utility functions (6-8 paragraphs): Group by module. For each function: (1) Purpose, (2) Parameters with types and defaults, (3) Return type, (4) Example usage. Focus on public API.",
+        "sources": ["src/**/*.py"]
+      },
+      {
+        "heading": "## Data Structures",
+        "prompt": "Document data types (4-6 paragraphs): Dataclasses, TypedDicts, Enums. For each: (1) Purpose, (2) Fields with types, (3) Validation rules if any, (4) Usage example.",
+        "sources": ["src/**/*.py"]
+      },
+      {
+        "heading": "## Exceptions",
+        "prompt": "Document exception classes (3-4 paragraphs): List all custom exceptions. For each: (1) When raised, (2) How to handle, (3) Example. Group by module.",
+        "sources": ["src/**/*.py"]
+      },
+      {
+        "heading": "## Usage Examples",
+        "prompt": "Comprehensive examples (6-8 paragraphs): (1) Basic usage, (2) Advanced usage, (3) Common patterns, (4) Integration examples. Include full code snippets with expected output.",
+        "sources": ["examples/**", "tests/**/*.py", "README.md", "docs/**"]
+      }
+    ]
+  }
+}
