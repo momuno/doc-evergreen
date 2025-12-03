@@ -693,6 +693,7 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             click.echo(f"\nSections:")
             for idx, section in enumerate(parsed_doc['sections']):
                 click.echo(f"  {idx+1}. {section['heading']}")
+            click.echo()  # Add blank line after sections list
     except click.Abort:
         raise
     except UnicodeDecodeError:
@@ -740,7 +741,7 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             # Show progress for all sections (not just verbose)
             section_progress = f"[{idx+1}/{len(parsed_doc['sections'])}]"
             if verbose:
-                click.echo(f"\n  {section_progress} {section['heading']}")
+                click.echo(f"\n{section_progress} Section: {section['heading']}")
             else:
                 # Show inline progress (overwrite line)
                 click.echo(f"\r  {section_progress} Discovering sources...", nl=False)
@@ -756,12 +757,8 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             source_mappings[idx] = sources
             total_sources += len(sources)
             
-            if verbose and sources:
-                click.echo(f"    → Found {len(sources)} source(s):")
-                for source in sources[:3]:  # Show first 3
-                    click.echo(f"      • {source}")
-                if len(sources) > 3:
-                    click.echo(f"      • ... and {len(sources) - 3} more")
+            # Verbose logging from intelligent_source_discoverer already shows sources with scores
+            # No need to repeat here
             
             # Discover for nested subsections
             _discover_subsections(section, (idx,), discoverer, source_mappings, doc_relative_path, max_sources)

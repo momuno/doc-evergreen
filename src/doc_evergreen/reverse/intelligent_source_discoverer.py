@@ -76,7 +76,7 @@ class IntelligentSourceDiscoverer:
         # Stage 2: Semantic search (narrow to relevant)
         logger.info(f"  [Stage 2/3] Semantic search (content-based matching)...")
         key_terms = self._extract_key_terms(section_content)
-        logger.info(f"    → Extracted {len(key_terms)} key terms: {', '.join(key_terms[:5])}")
+        logger.info(f"    → Extracted {len(key_terms)} key terms: {', '.join(key_terms)}")
         if key_terms:  # Only search if we have terms
             logger.info(f"    → Searching {len(self.semantic_searcher.file_index)} indexed files...")
             semantic_matches = self.semantic_searcher.search(
