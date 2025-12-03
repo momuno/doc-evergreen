@@ -147,7 +147,7 @@ def load_ground_truth():
     Returns:
         List of test case dictionaries
     """
-    ground_truth_path = Path(__file__).parent.parent / ".amplifier" / "convergent-dev" / "sprints" / "v0.6.0-reverse-template" / "ground_truth_test_cases.json"
+    ground_truth_path = Path(__file__).parent / "ground_truth_test_cases.json"
     
     logger.info(f"Loading ground truth from: {ground_truth_path}")
     
