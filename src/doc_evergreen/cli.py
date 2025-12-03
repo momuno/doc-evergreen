@@ -832,7 +832,7 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             
             # Analyze and generate prompts for nested subsections
             _analyze_subsections(section, (idx,), analyzer, prompt_generator, 
-                               source_mappings, section_analyses, prompt_mappings, doc_relative_path, max_sources)
+                               source_mappings, section_analyses, prompt_mappings, doc_relative_path, max_sources, verbose)
         
         # Clear progress line and show completion
         if not verbose:
@@ -1038,7 +1038,8 @@ def _analyze_subsections(
     section_analyses: dict,
     prompt_mappings: dict,
     doc_relative_path: str,
-    max_sources: int
+    max_sources: int,
+    verbose: bool = False
 ):
     """Recursively analyze subsections and generate prompts.
     
@@ -1052,10 +1053,16 @@ def _analyze_subsections(
         prompt_mappings: Dictionary to populate with prompts
         doc_relative_path: Relative path of document being analyzed (to exclude)
         max_sources: Maximum sources per section
+        verbose: Whether to show verbose output
     """
     subsections = section.get('subsections', [])
     for sub_idx, subsection in enumerate(subsections):
         nested_index = (*parent_index, sub_idx)
+        
+        # Show subsection header in verbose mode
+        if verbose:
+            indent = "  " * len(parent_index)  # Indent based on nesting depth
+            click.echo(f"\n{indent}  ↳ Analyzing subsection: {subsection['heading']}")
         
         # Analyze subsection content
         analysis = analyzer.analyze_section(
@@ -1063,6 +1070,12 @@ def _analyze_subsections(
             section_content=subsection.get('content', '')
         )
         section_analyses[nested_index] = analysis
+        
+        if verbose:
+            indent = "  " * len(parent_index)
+            click.echo(f"{indent}    → Type: {analysis['section_type']}")
+            click.echo(f"{indent}    → Quadrant: {analysis['divio_quadrant']}")
+            click.echo(f"{indent}    → Intent: {analysis['intent']}")
         
         # Generate intelligent prompt
         prompt_result = prompt_generator.generate_prompt(
@@ -1072,10 +1085,15 @@ def _analyze_subsections(
         )
         prompt_mappings[nested_index] = prompt_result['prompt']
         
+        if verbose:
+            indent = "  " * len(parent_index)
+            prompt_preview = prompt_result['prompt'][:100] + "..." if len(prompt_result['prompt']) > 100 else prompt_result['prompt']
+            click.echo(f"{indent}    → Prompt: {prompt_preview}")
+        
         # Recurse for deeper nesting
         _analyze_subsections(
             subsection, nested_index, analyzer, prompt_generator,
-            source_mappings, section_analyses, prompt_mappings, doc_relative_path, max_sources
+            source_mappings, section_analyses, prompt_mappings, doc_relative_path, max_sources, verbose
         )
 
 

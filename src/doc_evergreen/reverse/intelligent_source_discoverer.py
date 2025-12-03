@@ -63,6 +63,7 @@ class IntelligentSourceDiscoverer:
         
         # Stage 1: Pattern matching (broad net)
         logger.info(f"  [Stage 1/3] Pattern matching for '{section_heading}'...")
+        logger.info(f"    ℹ️  Scoring: Pattern matches get fixed score of 6 (catches obvious files)")
         pattern_matches = self.pattern_discoverer.discover(
             section_heading=section_heading,
             section_content=section_content
@@ -75,8 +76,15 @@ class IntelligentSourceDiscoverer:
         
         # Stage 2: Semantic search (narrow to relevant)
         logger.info(f"  [Stage 2/3] Semantic search (content-based matching)...")
+        logger.info(f"    ℹ️  Scoring: Variable score based on term frequency + path relevance")
+        logger.info(f"              (Higher score = more term matches in content + matching path)")
         key_terms = self._extract_key_terms(section_content)
-        logger.info(f"    → Extracted {len(key_terms)} key terms: {', '.join(key_terms)}")
+        # Show all key terms (not truncated)
+        if key_terms:
+            logger.info(f"    → Extracted {len(key_terms)} key terms:")
+            logger.info(f"       {', '.join(key_terms)}")
+        else:
+            logger.info(f"    → No key terms extracted")
         if key_terms:  # Only search if we have terms
             logger.info(f"    → Searching {len(self.semantic_searcher.file_index)} indexed files...")
             semantic_matches = self.semantic_searcher.search(
@@ -118,7 +126,13 @@ class IntelligentSourceDiscoverer:
         )[:10]
         
         logger.info(f"    → Selecting top {len(top_candidates)} by initial score (pattern=6, semantic=varies)")
+        logger.info(f"")
+        logger.info(f"    Top {len(top_candidates)} candidates by initial score:")
+        for idx, candidate in enumerate(top_candidates):
+            logger.info(f"       {idx+1}. {candidate['path']} (score: {candidate['score']:.2f})")
+        logger.info(f"")
         logger.info(f"  [Stage 3/3] LLM scoring ({len(top_candidates)} API calls - this is the slow part)...")
+        logger.info(f"    ℹ️  Scoring: LLM assigns 0-10 relevance score (5+ threshold for inclusion)")
         
         # Score each candidate with LLM
         scored_candidates = []
@@ -136,6 +150,10 @@ class IntelligentSourceDiscoverer:
                 source_file_path=candidate['path'],
                 source_file_content=file_content
             )
+            
+            # Log the LLM result
+            logger.info(f"       ✓ LLM score: {llm_result['score']}/10 (confidence: {llm_result['confidence']})")
+            logger.info(f"         Reason: {llm_result['reasoning'][:80]}{'...' if len(llm_result['reasoning']) > 80 else ''}")
             
             scored_candidates.append({
                 'path': candidate['path'],
