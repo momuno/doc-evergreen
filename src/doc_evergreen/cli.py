@@ -714,8 +714,13 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         total_sources = 0
         
         for idx, section in enumerate(parsed_doc['sections']):
+            # Show progress for all sections (not just verbose)
+            section_progress = f"[{idx+1}/{len(parsed_doc['sections'])}]"
             if verbose:
-                click.echo(f"\n  Section {idx+1}/{len(parsed_doc['sections'])}: {section['heading']}")
+                click.echo(f"\n  {section_progress} {section['heading']}")
+            else:
+                # Show inline progress (overwrite line)
+                click.echo(f"\r  {section_progress} Discovering sources...", nl=False)
             
             # IntelligentSourceDiscoverer returns rich metadata, extract just paths
             discovered = discoverer.discover_sources(
@@ -738,6 +743,9 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             # Discover for nested subsections
             _discover_subsections(section, (idx,), discoverer, source_mappings, doc_relative_path, max_sources)
         
+        # Clear progress line and show completion
+        if not verbose:
+            click.echo(f"\r  [Complete]                              ")
         click.echo(f"✅ Found {total_sources} source file{'' if total_sources == 1 else 's'}")
         
         if total_sources == 0:
@@ -768,8 +776,13 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         prompt_mappings = {}
         
         for idx, section in enumerate(parsed_doc['sections']):
+            # Show progress for all sections (not just verbose)
+            section_progress = f"[{idx+1}/{len(parsed_doc['sections'])}]"
             if verbose:
-                click.echo(f"\n  Analyzing section {idx+1}/{len(parsed_doc['sections'])}: {section['heading']}")
+                click.echo(f"\n  {section_progress} Analyzing: {section['heading']}")
+            else:
+                # Show inline progress (overwrite line)
+                click.echo(f"\r  {section_progress} Analyzing and generating prompts...", nl=False)
             
             # Analyze section content
             analysis = analyzer.analyze_section(
@@ -799,6 +812,9 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             _analyze_subsections(section, (idx,), analyzer, prompt_generator, 
                                source_mappings, section_analyses, prompt_mappings, doc_relative_path, max_sources)
         
+        # Clear progress line and show completion
+        if not verbose:
+            click.echo(f"\r  [Complete]                                               ")
         click.echo(f"✅ Generated {len(prompt_mappings)} intelligent prompts")
     except click.Abort:
         raise
