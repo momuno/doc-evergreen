@@ -628,6 +628,14 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         TemplateAssembler
     )
     
+    # Enable debug logging if verbose
+    if verbose:
+        import logging
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(name)s - %(levelname)s - %(message)s'
+        )
+    
     doc_path_obj = Path(doc_path)
     
     # Validate file exists
