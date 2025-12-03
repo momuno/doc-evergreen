@@ -110,8 +110,17 @@ class ChunkedGenerator:
 
             # Progress: Starting section
             if progress_callback:
-                source_names = [s.name for s in sources]
-                source_desc = ", ".join(source_names) if source_names else "No sources"
+                # Show relative paths from base_dir for clarity
+                source_paths = []
+                for s in sources:
+                    try:
+                        rel_path = s.relative_to(self.base_dir)
+                        source_paths.append(str(rel_path))
+                    except ValueError:
+                        # If not relative to base_dir, use full path
+                        source_paths.append(str(s))
+                
+                source_desc = ", ".join(source_paths) if source_paths else "No sources"
                 file_count = f"{len(sources)} file" if len(sources) == 1 else f"{len(sources)} files"
 
                 progress_callback(f"[{idx}/{total_sections}] Generating: {section.heading}\n")
