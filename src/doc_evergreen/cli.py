@@ -656,8 +656,19 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         with open(doc_path_obj) as f:
             content = f.read()
         
+        if not content.strip():
+            click.echo(f"❌ Error: Document is empty", err=True)
+            click.echo(f"   File: {doc_path_obj}", err=True)
+            raise click.Abort()
+        
         parser = DocumentParser()
         parsed_doc = parser.parse(content)
+        
+        if not parsed_doc.get('sections'):
+            click.echo(f"❌ Error: No sections found in document", err=True)
+            click.echo(f"   The document may not have any markdown headings (##, ###, etc.)", err=True)
+            click.echo(f"   File: {doc_path_obj}", err=True)
+            raise click.Abort()
         
         section_count = len(parsed_doc['sections'])
         click.echo(f"📝 Found {section_count} section{'' if section_count == 1 else 's'}")
@@ -666,8 +677,19 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             click.echo(f"\nSections:")
             for idx, section in enumerate(parsed_doc['sections']):
                 click.echo(f"  {idx+1}. {section['heading']}")
+    except click.Abort:
+        raise
+    except UnicodeDecodeError:
+        click.echo(f"❌ Error: Cannot read file (encoding issue)", err=True)
+        click.echo(f"   File may not be valid UTF-8 text", err=True)
+        click.echo(f"   File: {doc_path_obj}", err=True)
+        raise click.Abort()
     except Exception as e:
         click.echo(f"❌ Error parsing document: {e}", err=True)
+        if verbose:
+            import traceback
+            click.echo(f"\nFull traceback:", err=True)
+            traceback.print_exc()
         raise click.Abort()
     
     # Step 2: Discover sources for each section (intelligent 3-stage pipeline)
@@ -710,8 +732,22 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             _discover_subsections(section, (idx,), discoverer, source_mappings)
         
         click.echo(f"✅ Found {total_sources} source file{'' if total_sources == 1 else 's'}")
+        
+        if total_sources == 0:
+            click.echo(f"\n⚠️  Warning: No source files discovered", err=False)
+            click.echo(f"   Template will be created with empty source lists", err=False)
+            click.echo(f"   You can manually add sources after generation", err=False)
+    except click.Abort:
+        raise
     except Exception as e:
         click.echo(f"❌ Error discovering sources: {e}", err=True)
+        click.echo(f"   This may be due to API issues or project structure", err=True)
+        if verbose:
+            import traceback
+            click.echo(f"\nFull traceback:", err=True)
+            traceback.print_exc()
+        else:
+            click.echo(f"   Run with --verbose for detailed error information", err=True)
         raise click.Abort()
     
     # Step 3: Analyze content and generate intelligent prompts
@@ -757,8 +793,19 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
                                source_mappings, section_analyses, prompt_mappings)
         
         click.echo(f"✅ Generated {len(prompt_mappings)} intelligent prompts")
+    except click.Abort:
+        raise
     except Exception as e:
         click.echo(f"❌ Error analyzing content: {e}", err=True)
+        click.echo(f"   This may be due to LLM API issues", err=True)
+        if verbose:
+            import traceback
+            click.echo(f"\nFull traceback:", err=True)
+            traceback.print_exc()
+        else:
+            click.echo(f"   Run with --verbose for detailed error information", err=True)
+        click.echo(f"\n   Tip: Check that your Anthropic API key is valid:", err=True)
+        click.echo(f"   ~/.claude/api_key.txt", err=True)
         raise click.Abort()
     
     # Step 4: Assemble template with intelligent prompts
@@ -819,8 +866,14 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         click.echo(f"2. Test: doc-evergreen regen-doc {output_path}")
         click.echo(f"3. Refine prompts and sources as needed")
         
+    except click.Abort:
+        raise
     except Exception as e:
         click.echo(f"❌ Error generating template: {e}", err=True)
+        if verbose:
+            import traceback
+            click.echo(f"\nFull traceback:", err=True)
+            traceback.print_exc()
         raise click.Abort()
 
 
