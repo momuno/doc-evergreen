@@ -605,7 +605,13 @@ def reverse(doc_path: str, output: str | None):
         doc-evergreen reverse docs/API.md --output custom-template.json
     """
     from pathlib import Path
-    from doc_evergreen.reverse import DocumentParser, IntelligentSourceDiscoverer, TemplateAssembler
+    from doc_evergreen.reverse import (
+        DocumentParser, 
+        IntelligentSourceDiscoverer, 
+        ContentIntentAnalyzer,
+        PromptGenerator,
+        TemplateAssembler
+    )
     
     doc_path_obj = Path(doc_path)
     
@@ -637,7 +643,7 @@ def reverse(doc_path: str, output: str | None):
     click.echo(f"🔎 Discovering source files (intelligent discovery)...")
     
     try:
-        # Create simple LLM client for intelligent discovery
+        # Create simple LLM client for intelligent analysis
         llm_client = _create_llm_client()
         
         discoverer = IntelligentSourceDiscoverer(
@@ -667,15 +673,51 @@ def reverse(doc_path: str, output: str | None):
         click.echo(f"❌ Error discovering sources: {e}", err=True)
         raise click.Abort()
     
-    # Step 3: Assemble template
-    click.echo(f"🔧 Generating template...")
+    # Step 3: Analyze content and generate intelligent prompts
+    click.echo(f"🧠 Analyzing content and generating prompts...")
+    
+    try:
+        analyzer = ContentIntentAnalyzer(llm_client=llm_client)
+        prompt_generator = PromptGenerator(llm_client=llm_client)
+        
+        section_analyses = {}
+        prompt_mappings = {}
+        
+        for idx, section in enumerate(parsed_doc['sections']):
+            # Analyze section content
+            analysis = analyzer.analyze_section(
+                section_heading=section['heading'],
+                section_content=section.get('content', '')
+            )
+            section_analyses[idx] = analysis
+            
+            # Generate intelligent prompt based on analysis
+            prompt_result = prompt_generator.generate_prompt(
+                section_heading=section['heading'],
+                section_analysis=analysis,
+                discovered_sources=source_mappings.get(idx, [])
+            )
+            prompt_mappings[idx] = prompt_result['prompt']
+            
+            # Analyze and generate prompts for nested subsections
+            _analyze_subsections(section, (idx,), analyzer, prompt_generator, 
+                               source_mappings, section_analyses, prompt_mappings)
+        
+        click.echo(f"✅ Generated {len(prompt_mappings)} intelligent prompts")
+    except Exception as e:
+        click.echo(f"❌ Error analyzing content: {e}", err=True)
+        raise click.Abort()
+    
+    # Step 4: Assemble template with intelligent prompts
+    click.echo(f"🔧 Assembling template...")
     
     try:
         assembler = TemplateAssembler()
         template = assembler.assemble(
             parsed_doc=parsed_doc,
             source_mappings=source_mappings,
-            output_filename=doc_path_obj.name
+            output_filename=doc_path_obj.name,
+            prompt_mappings=prompt_mappings
         )
         
         # Determine output path
@@ -764,6 +806,52 @@ def _discover_subsections(section: dict, parent_index: tuple, discoverer, source
         
         # Recurse for deeper nesting
         _discover_subsections(subsection, nested_index, discoverer, source_mappings)
+
+
+def _analyze_subsections(
+    section: dict, 
+    parent_index: tuple, 
+    analyzer, 
+    prompt_generator,
+    source_mappings: dict,
+    section_analyses: dict,
+    prompt_mappings: dict
+):
+    """Recursively analyze subsections and generate prompts.
+    
+    Args:
+        section: Section dictionary with potential subsections
+        parent_index: Parent section index tuple (e.g., (0,) or (0, 1))
+        analyzer: ContentIntentAnalyzer instance
+        prompt_generator: PromptGenerator instance
+        source_mappings: Dictionary with source mappings
+        section_analyses: Dictionary to populate with analyses
+        prompt_mappings: Dictionary to populate with prompts
+    """
+    subsections = section.get('subsections', [])
+    for sub_idx, subsection in enumerate(subsections):
+        nested_index = (*parent_index, sub_idx)
+        
+        # Analyze subsection content
+        analysis = analyzer.analyze_section(
+            section_heading=subsection['heading'],
+            section_content=subsection.get('content', '')
+        )
+        section_analyses[nested_index] = analysis
+        
+        # Generate intelligent prompt
+        prompt_result = prompt_generator.generate_prompt(
+            section_heading=subsection['heading'],
+            section_analysis=analysis,
+            discovered_sources=source_mappings.get(nested_index, [])
+        )
+        prompt_mappings[nested_index] = prompt_result['prompt']
+        
+        # Recurse for deeper nesting
+        _analyze_subsections(
+            subsection, nested_index, analyzer, prompt_generator,
+            source_mappings, section_analyses, prompt_mappings
+        )
 
 
 if __name__ == "__main__":

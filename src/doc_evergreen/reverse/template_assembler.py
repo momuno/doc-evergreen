@@ -12,7 +12,8 @@ class TemplateAssembler:
         self,
         parsed_doc: dict,
         source_mappings: Dict[Union[int, tuple], List[str]],
-        output_filename: str
+        output_filename: str,
+        prompt_mappings: Dict[Union[int, tuple], str] = None
     ) -> dict:
         """Assemble template from parsed document and source mappings.
         
@@ -20,6 +21,7 @@ class TemplateAssembler:
             parsed_doc: Parsed document structure with title and sections
             source_mappings: Mapping of section indices to source file lists
             output_filename: Output filename for the generated document (e.g., 'README.md')
+            prompt_mappings: Optional mapping of section indices to intelligent prompts
             
         Returns:
             Complete template dictionary with _meta and document fields
@@ -38,7 +40,8 @@ class TemplateAssembler:
         document = self._build_document(
             parsed_doc=parsed_doc,
             source_mappings=source_mappings,
-            output_filename=output_filename
+            output_filename=output_filename,
+            prompt_mappings=prompt_mappings or {}
         )
         
         return {
@@ -132,7 +135,8 @@ class TemplateAssembler:
         self,
         parsed_doc: dict,
         source_mappings: Dict[Union[int, tuple], List[str]],
-        output_filename: str
+        output_filename: str,
+        prompt_mappings: Dict[Union[int, tuple], str] = None
     ) -> dict:
         """Build document structure for template.
         
@@ -140,6 +144,7 @@ class TemplateAssembler:
             parsed_doc: Parsed document with title and sections
             source_mappings: Source mappings by section index
             output_filename: Output filename
+            prompt_mappings: Optional intelligent prompts by section index
             
         Returns:
             Document dictionary with title, output, and sections
@@ -154,6 +159,7 @@ class TemplateAssembler:
                 section=section,
                 index=idx,
                 source_mappings=source_mappings,
+                prompt_mappings=prompt_mappings or {},
                 level=2  # H2 for top-level sections
             )
             template_sections.append(template_section)
@@ -169,6 +175,7 @@ class TemplateAssembler:
         section: dict,
         index: Union[int, tuple],
         source_mappings: Dict[Union[int, tuple], List[str]],
+        prompt_mappings: Dict[Union[int, tuple], str],
         level: int
     ) -> dict:
         """Build a template section from parsed section.
@@ -177,6 +184,7 @@ class TemplateAssembler:
             section: Parsed section dictionary
             index: Section index (int or tuple for nested)
             source_mappings: Source mappings
+            prompt_mappings: Intelligent prompts by section index
             level: Heading level (2-6)
             
         Returns:
@@ -191,8 +199,8 @@ class TemplateAssembler:
         # Get sources for this section
         sources = source_mappings.get(index, [])
         
-        # Generate placeholder prompt
-        prompt = self._generate_prompt(section['heading'])
+        # Get intelligent prompt or generate placeholder
+        prompt = prompt_mappings.get(index) or self._generate_prompt(section['heading'])
         
         # Build template section
         template_section = {
@@ -213,6 +221,7 @@ class TemplateAssembler:
                     section=subsection,
                     index=nested_index,
                     source_mappings=source_mappings,
+                    prompt_mappings=prompt_mappings,
                     level=level + 1
                 )
                 nested_sections.append(nested_template)
