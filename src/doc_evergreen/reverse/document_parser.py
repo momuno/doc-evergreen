@@ -30,11 +30,28 @@ class DocumentParser:
         # node is the dict being built at that level
         hierarchy_stack = []
         
+        # Track if we're inside a code block
+        in_code_block = False
+        
         for line in lines:
+            # Check for code fence (``` or ~~~)
+            if line.strip().startswith('```') or line.strip().startswith('~~~'):
+                in_code_block = not in_code_block
+                # Still append code fence as content if we have a section
+                if hierarchy_stack:
+                    self._append_content(line, hierarchy_stack)
+                continue
+            
+            # Skip heading detection inside code blocks
+            if in_code_block:
+                if hierarchy_stack:
+                    self._append_content(line, hierarchy_stack)
+                continue
+            
             heading_level = self._get_heading_level(line)
             
             if heading_level == 1:
-                # H1 is the document title
+                # H1 is the document title (only if not in code block)
                 title = self._extract_heading(line, 1)
             elif heading_level == 2:
                 # H2 starts a new section
