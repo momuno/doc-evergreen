@@ -96,13 +96,17 @@ class IntelligentSourceDiscoverer:
             ])
         
         # Deduplicate candidates (same file may be found by multiple methods)
-        logger.info(f"  Deduplicating {len(all_candidates)} total candidates...")
+        logger.info(f"  Combining results from all stages...")
+        logger.info(f"    → Pattern matches: {len([c for c in all_candidates if c['source'] == 'pattern'])}")
+        logger.info(f"    → Semantic matches: {len([c for c in all_candidates if c['source'] == 'semantic'])}")
+        logger.info(f"    → Total candidates: {len(all_candidates)}")
+        
         unique_candidates = self._deduplicate_candidates(all_candidates)
-        logger.info(f"    → {len(unique_candidates)} unique candidates")
+        logger.info(f"    → After deduplication: {len(unique_candidates)} unique files")
         
         # If no candidates, return empty list
         if not unique_candidates:
-            logger.info(f"  No candidates found for '{section_heading}'")
+            logger.info(f"  ⚠️  No candidates found for '{section_heading}'")
             return []
         
         # Stage 3: LLM scoring (precise ranking)
@@ -113,7 +117,8 @@ class IntelligentSourceDiscoverer:
             reverse=True
         )[:10]
         
-        logger.info(f"  [Stage 3/3] LLM scoring (this is the slow part - {len(top_candidates)} API calls)...")
+        logger.info(f"    → Selecting top {len(top_candidates)} by initial score (pattern=6, semantic=varies)")
+        logger.info(f"  [Stage 3/3] LLM scoring ({len(top_candidates)} API calls - this is the slow part)...")
         
         # Score each candidate with LLM
         scored_candidates = []
