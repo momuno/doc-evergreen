@@ -635,8 +635,8 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         click.echo(f"❌ Error: {doc_path} does not exist", err=True)
         raise click.Abort()
     
-    # Determine project root (parent of document)
-    project_root = doc_path_obj.parent
+    # Determine project root (look for git root, fallback to current directory)
+    project_root = _find_project_root(doc_path_obj)
     
     if verbose:
         click.echo(f"\n{'='*60}")
@@ -875,6 +875,28 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             click.echo(f"\nFull traceback:", err=True)
             traceback.print_exc()
         raise click.Abort()
+
+
+def _find_project_root(doc_path: Path) -> Path:
+    """Find the project root (git root or current working directory).
+    
+    Args:
+        doc_path: Path to the document being analyzed
+        
+    Returns:
+        Project root path
+    """
+    # Start from document directory
+    current = doc_path.parent if doc_path.is_file() else doc_path
+    
+    # Look for .git directory (git root)
+    while current != current.parent:
+        if (current / ".git").exists():
+            return current
+        current = current.parent
+    
+    # Fallback to current working directory
+    return Path.cwd()
 
 
 def _create_llm_client():
