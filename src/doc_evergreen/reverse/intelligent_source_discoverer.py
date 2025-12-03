@@ -1,5 +1,6 @@
 """IntelligentSourceDiscoverer - integrated 3-stage discovery pipeline."""
 
+import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, List
@@ -8,6 +9,9 @@ from collections import Counter
 from .naive_source_discovery import NaiveSourceDiscoverer
 from .semantic_source_searcher import SemanticSourceSearcher
 from .llm_relevance_scorer import LLMRelevanceScorer
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 
 class IntelligentSourceDiscoverer:
@@ -58,24 +62,30 @@ class IntelligentSourceDiscoverer:
         all_candidates = []
         
         # Stage 1: Pattern matching (broad net)
+        logger.debug(f"Stage 1: Pattern matching for '{section_heading}'")
         pattern_matches = self.pattern_discoverer.discover(
             section_heading=section_heading,
             section_content=section_content
         )
+        logger.debug(f"  Found {len(pattern_matches)} pattern matches")
         all_candidates.extend([
             {'path': p, 'source': 'pattern', 'score': 6}
             for p in pattern_matches
         ])
         
         # Stage 2: Semantic search (narrow to relevant)
+        logger.debug(f"Stage 2: Semantic search for '{section_heading}'")
         key_terms = self._extract_key_terms(section_content)
+        logger.debug(f"  Extracted {len(key_terms)} key terms: {key_terms[:5]}")
         if key_terms:  # Only search if we have terms
+            logger.debug(f"  Performing semantic search...")
             semantic_matches = self.semantic_searcher.search(
                 section_heading=section_heading,
                 section_content=section_content,
                 key_terms=key_terms,
                 max_results=20  # Top 20 from semantic search
             )
+            logger.debug(f"  Found {len(semantic_matches)} semantic matches")
             all_candidates.extend([
                 {
                     'path': m['file_path'],
@@ -86,10 +96,13 @@ class IntelligentSourceDiscoverer:
             ])
         
         # Deduplicate candidates (same file may be found by multiple methods)
+        logger.debug(f"Deduplicating {len(all_candidates)} candidates")
         unique_candidates = self._deduplicate_candidates(all_candidates)
+        logger.debug(f"  {len(unique_candidates)} unique candidates")
         
         # If no candidates, return empty list
         if not unique_candidates:
+            logger.debug(f"No candidates found for '{section_heading}'")
             return []
         
         # Stage 3: LLM scoring (precise ranking)
@@ -100,9 +113,12 @@ class IntelligentSourceDiscoverer:
             reverse=True
         )[:10]
         
+        logger.debug(f"Stage 3: LLM scoring for top {len(top_candidates)} candidates")
+        
         # Score each candidate with LLM
         scored_candidates = []
-        for candidate in top_candidates:
+        for idx, candidate in enumerate(top_candidates):
+            logger.debug(f"  Scoring candidate {idx+1}/{len(top_candidates)}: {candidate['path']}")
             # Read file content
             file_content = self._read_file(candidate['path'])
             if file_content is None:

@@ -704,12 +704,16 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
     
     try:
         # Create simple LLM client for intelligent analysis
+        click.echo(f"  Initializing LLM client...")
         llm_client = _create_llm_client()
         
+        # Building file index can take time on large repos
+        click.echo(f"  Building file index (this may take a moment for large repos)...")
         discoverer = IntelligentSourceDiscoverer(
             project_root=project_root,
             llm_client=llm_client
         )
+        click.echo(f"  File index ready - starting discovery...")
         source_mappings = {}
         total_sources = 0
         
