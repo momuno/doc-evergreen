@@ -695,6 +695,13 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
     # Step 2: Discover sources for each section (intelligent 3-stage pipeline)
     click.echo(f"🔎 Discovering source files (intelligent discovery)...")
     
+    # Calculate document path relative to project root (to exclude from sources)
+    try:
+        doc_relative_path = str(doc_path_obj.relative_to(project_root))
+    except ValueError:
+        # Document is outside project root, use name only
+        doc_relative_path = doc_path_obj.name
+    
     try:
         # Create simple LLM client for intelligent analysis
         llm_client = _create_llm_client()
@@ -716,8 +723,8 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
                 section_content=section.get('content', ''),
                 max_sources=max_sources
             )
-            # Extract just the file paths for template
-            sources = [d['path'] for d in discovered]
+            # Extract just the file paths for template, excluding the document itself
+            sources = [d['path'] for d in discovered if d['path'] != doc_relative_path]
             source_mappings[idx] = sources
             total_sources += len(sources)
             
@@ -729,7 +736,7 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
                     click.echo(f"      • ... and {len(sources) - 3} more")
             
             # Discover for nested subsections
-            _discover_subsections(section, (idx,), discoverer, source_mappings)
+            _discover_subsections(section, (idx,), discoverer, source_mappings, doc_relative_path, max_sources)
         
         click.echo(f"✅ Found {total_sources} source file{'' if total_sources == 1 else 's'}")
         
@@ -790,7 +797,7 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             
             # Analyze and generate prompts for nested subsections
             _analyze_subsections(section, (idx,), analyzer, prompt_generator, 
-                               source_mappings, section_analyses, prompt_mappings)
+                               source_mappings, section_analyses, prompt_mappings, doc_relative_path, max_sources)
         
         click.echo(f"✅ Generated {len(prompt_mappings)} intelligent prompts")
     except click.Abort:
@@ -939,7 +946,14 @@ def _create_llm_client():
     return SimpleLLMClient()
 
 
-def _discover_subsections(section: dict, parent_index: tuple, discoverer, source_mappings: dict):
+def _discover_subsections(
+    section: dict, 
+    parent_index: tuple, 
+    discoverer, 
+    source_mappings: dict,
+    doc_relative_path: str,
+    max_sources: int
+):
     """Recursively discover sources for subsections.
     
     Args:
@@ -947,6 +961,8 @@ def _discover_subsections(section: dict, parent_index: tuple, discoverer, source
         parent_index: Parent section index tuple (e.g., (0,) or (0, 1))
         discoverer: IntelligentSourceDiscoverer instance
         source_mappings: Dictionary to populate with source mappings
+        doc_relative_path: Relative path of document being analyzed (to exclude)
+        max_sources: Maximum sources per section
     """
     subsections = section.get('subsections', [])
     for sub_idx, subsection in enumerate(subsections):
@@ -956,13 +972,14 @@ def _discover_subsections(section: dict, parent_index: tuple, discoverer, source
         discovered = discoverer.discover_sources(
             section_heading=subsection['heading'],
             section_content=subsection.get('content', ''),
-            max_sources=5
+            max_sources=max_sources
         )
-        sources = [d['path'] for d in discovered]
+        # Exclude the document itself from sources
+        sources = [d['path'] for d in discovered if d['path'] != doc_relative_path]
         source_mappings[nested_index] = sources
         
         # Recurse for deeper nesting
-        _discover_subsections(subsection, nested_index, discoverer, source_mappings)
+        _discover_subsections(subsection, nested_index, discoverer, source_mappings, doc_relative_path, max_sources)
 
 
 def _analyze_subsections(
@@ -972,7 +989,9 @@ def _analyze_subsections(
     prompt_generator,
     source_mappings: dict,
     section_analyses: dict,
-    prompt_mappings: dict
+    prompt_mappings: dict,
+    doc_relative_path: str,
+    max_sources: int
 ):
     """Recursively analyze subsections and generate prompts.
     
@@ -984,6 +1003,8 @@ def _analyze_subsections(
         source_mappings: Dictionary with source mappings
         section_analyses: Dictionary to populate with analyses
         prompt_mappings: Dictionary to populate with prompts
+        doc_relative_path: Relative path of document being analyzed (to exclude)
+        max_sources: Maximum sources per section
     """
     subsections = section.get('subsections', [])
     for sub_idx, subsection in enumerate(subsections):
@@ -1007,7 +1028,7 @@ def _analyze_subsections(
         # Recurse for deeper nesting
         _analyze_subsections(
             subsection, nested_index, analyzer, prompt_generator,
-            source_mappings, section_analyses, prompt_mappings
+            source_mappings, section_analyses, prompt_mappings, doc_relative_path, max_sources
         )
 
 
