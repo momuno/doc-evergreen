@@ -397,7 +397,8 @@ def _sections_to_dict(sections) -> list[dict]:
 @click.argument("template_name")  # Changed: now accepts short names or paths
 @click.option("--auto-approve", is_flag=True, help="Apply changes without approval prompt")
 @click.option("--output", type=click.Path(), help="Override output path from template")
-def regen_doc(template_name: str, auto_approve: bool, output: str | None):
+@click.option("--verbose", "-v", is_flag=True, help="Show detailed generation progress")
+def regen_doc(template_name: str, auto_approve: bool, output: str | None, verbose: bool):
     """Regenerate documentation from template with change preview.
 
     \b
@@ -498,6 +499,22 @@ def regen_doc(template_name: str, auto_approve: bool, output: str | None):
         click.echo(f"Error: Failed to parse template: {e}", err=True)
         raise click.Abort()
 
+    # 3. Enable verbose logging if requested
+    if verbose:
+        import logging
+        
+        # Set doc_evergreen loggers to INFO level for detailed progress
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(message)s'  # Clean format, just the message
+        )
+        
+        # Silence noisy third-party libraries
+        logging.getLogger('anthropic').setLevel(logging.WARNING)
+        logging.getLogger('httpx').setLevel(logging.WARNING)
+        logging.getLogger('httpcore').setLevel(logging.WARNING)
+        logging.getLogger('anthropic._base_client').setLevel(logging.WARNING)
+    
     # 3. Initialize generator (use cwd as base_dir for intuitive source resolution)
     generator = ChunkedGenerator(template_obj, Path.cwd())
 

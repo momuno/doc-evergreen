@@ -173,14 +173,27 @@ class ChunkedGenerator:
                 f"See: TEMPLATES.md#writing-effective-prompts"
             )
 
-        # Read source files
+        # Read source files with detailed logging
         source_content_parts = []
+        total_source_bytes = 0
+        
+        logger.info(f"  Reading {len(sources)} source files...")
         for source_path in sources:
             try:
                 content = source_path.read_text(encoding="utf-8")
+                file_size = len(content)
+                total_source_bytes += file_size
+                
+                # Show relative path
+                try:
+                    rel_path = source_path.relative_to(self.base_dir)
+                except ValueError:
+                    rel_path = source_path
+                
+                logger.info(f"    → {rel_path} ({file_size:,} chars)")
                 source_content_parts.append(f"=== {source_path.name} ===\n{content}")
             except Exception as e:
-                logger.warning(f"Failed to read {source_path}: {e}")
+                logger.warning(f"    ✗ Failed to read {source_path}: {e}")
 
         source_content = "\n\n".join(source_content_parts) if source_content_parts else "No source files."
 
@@ -198,8 +211,27 @@ class ChunkedGenerator:
 
 Write in clear markdown. Include the section heading at the start."""
 
-        # Call LLM
+        # Log context sizes
+        prompt_size = len(section.prompt)
+        context_size = len(context) if context else 0
+        total_prompt_size = len(user_prompt)
+        
+        logger.info(f"  Prompt composition:")
+        logger.info(f"    • Section prompt: {prompt_size:,} chars")
+        logger.info(f"    • Source materials: {total_source_bytes:,} chars")
+        logger.info(f"    • Previous context: {context_size:,} chars")
+        logger.info(f"    • Total to LLM: {total_prompt_size:,} chars (~{total_prompt_size // 4:,} tokens)")
+        logger.info(f"  Calling LLM (this may take 10-30 seconds)...")
+
+        # Call LLM with timing
+        import time
+        llm_start = time.time()
         content = await self._call_llm(user_prompt)
+        llm_duration = time.time() - llm_start
+        
+        output_size = len(content)
+        logger.info(f"  ✓ LLM response received ({llm_duration:.1f}s)")
+        logger.info(f"    • Generated: {output_size:,} chars (~{output_size // 4:,} tokens)")
 
         return content
 
