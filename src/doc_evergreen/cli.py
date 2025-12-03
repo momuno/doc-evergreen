@@ -745,9 +745,12 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         # Building file index can take time on large repos
         if verbose:
             click.echo(f"  Building file index (this may take a moment for large repos)...")
+            click.echo(f"  Excluding from sources: {doc_relative_path} (document being reversed)")
+        
         discoverer = IntelligentSourceDiscoverer(
             project_root=project_root,
-            llm_client=llm_client
+            llm_client=llm_client,
+            exclude_path=doc_relative_path  # CRITICAL: Exclude document being reversed
         )
         if verbose:
             click.echo(f"  File index ready ({len(discoverer.semantic_searcher.file_index)} files indexed) - starting discovery...")
@@ -766,13 +769,14 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
                 click.echo(f"\r  {section_progress} Discovering sources...", nl=False)
             
             # IntelligentSourceDiscoverer returns rich metadata, extract just paths
+            # (document being reversed is already excluded in discovery stages)
             discovered = discoverer.discover_sources(
                 section_heading=section['heading'],
                 section_content=section.get('content', ''),
                 max_sources=max_sources
             )
-            # Extract just the file paths for template, excluding the document itself
-            sources = [d['path'] for d in discovered if d['path'] != doc_relative_path]
+            # Extract just the file paths for template
+            sources = [d['path'] for d in discovered]
             source_mappings[idx] = sources
             total_sources += len(sources)
             
@@ -1033,13 +1037,14 @@ def _discover_subsections(
             logger.info(f"\n{indent}  ↳ Subsection: {subsection['heading']}")
         
         # IntelligentSourceDiscoverer returns rich metadata, extract just paths
+        # (document being reversed is already excluded in discovery stages)
         discovered = discoverer.discover_sources(
             section_heading=subsection['heading'],
             section_content=subsection.get('content', ''),
             max_sources=max_sources
         )
-        # Exclude the document itself from sources
-        sources = [d['path'] for d in discovered if d['path'] != doc_relative_path]
+        # Extract just the file paths for template
+        sources = [d['path'] for d in discovered]
         source_mappings[nested_index] = sources
         
         # Recurse for deeper nesting

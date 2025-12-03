@@ -70,13 +70,15 @@ SECTION_PATTERNS = {
 class NaiveSourceDiscoverer:
     """Discover source files using pattern matching against section headings."""
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, exclude_path: str | None = None):
         """Initialize discoverer with project root.
         
         Args:
             project_root: Root directory of the project to search
+            exclude_path: Relative path to exclude from discovery (e.g., document being reversed)
         """
         self.project_root = Path(project_root)
+        self.exclude_path = exclude_path
     
     def discover(self, section_heading: str, section_content: str) -> List[str]:
         """Discover source files for a given section using pattern matching.
@@ -103,8 +105,16 @@ class NaiveSourceDiscoverer:
             matched_files = self._glob_pattern(pattern)
             sources.extend(matched_files)
         
-        # Return relative paths
-        return [self._relative_path(f) for f in sources]
+        # Convert to relative paths and filter out excluded document
+        relative_paths = []
+        for f in sources:
+            rel_path = self._relative_path(f)
+            # Skip the document being reverse-templated (cyclical reference)
+            if self.exclude_path and rel_path == self.exclude_path:
+                continue
+            relative_paths.append(rel_path)
+        
+        return relative_paths
     
     def _normalize_heading(self, heading: str) -> str:
         """Normalize heading for pattern matching.

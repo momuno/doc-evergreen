@@ -23,18 +23,20 @@ class IntelligentSourceDiscoverer:
     Stage 3: LLM scoring (precise ranking, semantic understanding)
     """
     
-    def __init__(self, project_root: Path, llm_client: Any):
+    def __init__(self, project_root: Path, llm_client: Any, exclude_path: str | None = None):
         """Initialize discoverer with all three discovery methods.
         
         Args:
             project_root: Root directory of project
             llm_client: LLM client for relevance scoring
+            exclude_path: Relative path to exclude from discovery (e.g., document being reversed)
         """
         self.project_root = Path(project_root)
+        self.exclude_path = exclude_path
         
-        # Initialize all three discovery stages
-        self.pattern_discoverer = NaiveSourceDiscoverer(project_root=project_root)
-        self.semantic_searcher = SemanticSourceSearcher(project_root=project_root)
+        # Initialize all three discovery stages (all exclude the document being reversed)
+        self.pattern_discoverer = NaiveSourceDiscoverer(project_root=project_root, exclude_path=exclude_path)
+        self.semantic_searcher = SemanticSourceSearcher(project_root=project_root, exclude_path=exclude_path)
         self.llm_scorer = LLMRelevanceScorer(llm_client=llm_client)
     
     def discover_sources(

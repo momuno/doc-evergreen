@@ -9,13 +9,15 @@ from collections import Counter
 class SemanticSourceSearcher:
     """Find source files relevant to documentation sections using content-based search."""
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, exclude_path: str | None = None):
         """Initialize searcher with project root.
         
         Args:
             project_root: Root directory of project to search
+            exclude_path: Relative path to exclude from indexing (e.g., document being reversed)
         """
         self.project_root = Path(project_root)
+        self.exclude_path = exclude_path
         self.file_index = self._build_file_index()
     
     def search(
@@ -109,6 +111,10 @@ class SemanticSourceSearcher:
                 
                 # Get relative path
                 relative_path = str(file_path.relative_to(self.project_root))
+                
+                # CRITICAL: Skip the document being reverse-templated (cyclical reference)
+                if self.exclude_path and relative_path == self.exclude_path:
+                    continue
                 
                 # Extract keywords
                 keywords = self._extract_keywords(content)
