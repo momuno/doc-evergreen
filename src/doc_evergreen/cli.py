@@ -741,7 +741,9 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             # Show progress for all sections (not just verbose)
             section_progress = f"[{idx+1}/{len(parsed_doc['sections'])}]"
             if verbose:
-                click.echo(f"\n{section_progress} Section: {section['heading']}")
+                click.echo(f"\n{'='*60}")
+                click.echo(f"{section_progress} TOP-LEVEL SECTION: {section['heading']}")
+                click.echo(f"{'='*60}")
             else:
                 # Show inline progress (overwrite line)
                 click.echo(f"\r  {section_progress} Discovering sources...", nl=False)
@@ -761,7 +763,7 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
             # No need to repeat here
             
             # Discover for nested subsections
-            _discover_subsections(section, (idx,), discoverer, source_mappings, doc_relative_path, max_sources)
+            _discover_subsections(section, (idx,), discoverer, source_mappings, doc_relative_path, max_sources, verbose)
         
         # Clear progress line and show completion
         if not verbose:
@@ -988,7 +990,8 @@ def _discover_subsections(
     discoverer, 
     source_mappings: dict,
     doc_relative_path: str,
-    max_sources: int
+    max_sources: int,
+    verbose: bool = False
 ):
     """Recursively discover sources for subsections.
     
@@ -999,10 +1002,18 @@ def _discover_subsections(
         source_mappings: Dictionary to populate with source mappings
         doc_relative_path: Relative path of document being analyzed (to exclude)
         max_sources: Maximum sources per section
+        verbose: Whether to show verbose output
     """
     subsections = section.get('subsections', [])
     for sub_idx, subsection in enumerate(subsections):
         nested_index = (*parent_index, sub_idx)
+        
+        # Show subsection header in verbose mode
+        if verbose:
+            indent = "  " * len(parent_index)  # Indent based on nesting depth
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"\n{indent}  ↳ Subsection: {subsection['heading']}")
         
         # IntelligentSourceDiscoverer returns rich metadata, extract just paths
         discovered = discoverer.discover_sources(
@@ -1015,7 +1026,7 @@ def _discover_subsections(
         source_mappings[nested_index] = sources
         
         # Recurse for deeper nesting
-        _discover_subsections(subsection, nested_index, discoverer, source_mappings, doc_relative_path, max_sources)
+        _discover_subsections(subsection, nested_index, discoverer, source_mappings, doc_relative_path, max_sources, verbose)
 
 
 def _analyze_subsections(
