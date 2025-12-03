@@ -592,7 +592,10 @@ def regen_doc(template_name: str, auto_approve: bool, output: str | None):
 @cli.command("reverse")
 @click.argument("doc_path", type=click.Path(exists=True))
 @click.option("--output", "-o", type=click.Path(), help="Output path for generated template")
-def reverse(doc_path: str, output: str | None):
+@click.option("--dry-run", is_flag=True, help="Preview analysis without creating template file")
+@click.option("--verbose", "-v", is_flag=True, help="Show detailed progress and analysis")
+@click.option("--max-sources", type=int, default=5, help="Maximum sources per section (default: 5)")
+def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max_sources: int):
     """Generate template from existing documentation.
     
     Analyzes document structure, discovers source files, and creates
@@ -600,9 +603,21 @@ def reverse(doc_path: str, output: str | None):
     
     Uses intelligent 3-stage discovery (pattern + semantic + LLM) for 70-80% accuracy.
     
-    Example:
+    Examples:
+        # Basic usage
         doc-evergreen reverse README.md
-        doc-evergreen reverse docs/API.md --output custom-template.json
+        
+        # Preview without creating file
+        doc-evergreen reverse README.md --dry-run
+        
+        # Verbose output with details
+        doc-evergreen reverse README.md --verbose
+        
+        # Custom output path
+        doc-evergreen reverse docs/API.md -o my-template.json
+        
+        # Limit sources per section
+        doc-evergreen reverse README.md --max-sources 3
     """
     from pathlib import Path
     from doc_evergreen.reverse import (
@@ -623,6 +638,17 @@ def reverse(doc_path: str, output: str | None):
     # Determine project root (parent of document)
     project_root = doc_path_obj.parent
     
+    if verbose:
+        click.echo(f"\n{'='*60}")
+        click.echo(f"REVERSE TEMPLATE GENERATION")
+        click.echo(f"{'='*60}")
+        click.echo(f"Document: {doc_path_obj}")
+        click.echo(f"Project root: {project_root}")
+        click.echo(f"Max sources per section: {max_sources}")
+        if dry_run:
+            click.echo(f"Mode: DRY RUN (preview only)")
+        click.echo(f"{'='*60}\n")
+    
     click.echo(f"🔍 Analyzing {doc_path_obj.name}...")
     
     # Step 1: Parse document structure
@@ -635,6 +661,11 @@ def reverse(doc_path: str, output: str | None):
         
         section_count = len(parsed_doc['sections'])
         click.echo(f"📝 Found {section_count} section{'' if section_count == 1 else 's'}")
+        
+        if verbose:
+            click.echo(f"\nSections:")
+            for idx, section in enumerate(parsed_doc['sections']):
+                click.echo(f"  {idx+1}. {section['heading']}")
     except Exception as e:
         click.echo(f"❌ Error parsing document: {e}", err=True)
         raise click.Abort()
@@ -654,16 +685,26 @@ def reverse(doc_path: str, output: str | None):
         total_sources = 0
         
         for idx, section in enumerate(parsed_doc['sections']):
+            if verbose:
+                click.echo(f"\n  Section {idx+1}/{len(parsed_doc['sections'])}: {section['heading']}")
+            
             # IntelligentSourceDiscoverer returns rich metadata, extract just paths
             discovered = discoverer.discover_sources(
                 section_heading=section['heading'],
                 section_content=section.get('content', ''),
-                max_sources=5
+                max_sources=max_sources
             )
             # Extract just the file paths for template
             sources = [d['path'] for d in discovered]
             source_mappings[idx] = sources
             total_sources += len(sources)
+            
+            if verbose and sources:
+                click.echo(f"    → Found {len(sources)} source(s):")
+                for source in sources[:3]:  # Show first 3
+                    click.echo(f"      • {source}")
+                if len(sources) > 3:
+                    click.echo(f"      • ... and {len(sources) - 3} more")
             
             # Discover for nested subsections
             _discover_subsections(section, (idx,), discoverer, source_mappings)
@@ -684,12 +725,20 @@ def reverse(doc_path: str, output: str | None):
         prompt_mappings = {}
         
         for idx, section in enumerate(parsed_doc['sections']):
+            if verbose:
+                click.echo(f"\n  Analyzing section {idx+1}/{len(parsed_doc['sections'])}: {section['heading']}")
+            
             # Analyze section content
             analysis = analyzer.analyze_section(
                 section_heading=section['heading'],
                 section_content=section.get('content', '')
             )
             section_analyses[idx] = analysis
+            
+            if verbose:
+                click.echo(f"    → Type: {analysis['section_type']}")
+                click.echo(f"    → Quadrant: {analysis['divio_quadrant']}")
+                click.echo(f"    → Intent: {analysis['intent']}")
             
             # Generate intelligent prompt based on analysis
             prompt_result = prompt_generator.generate_prompt(
@@ -698,6 +747,10 @@ def reverse(doc_path: str, output: str | None):
                 discovered_sources=source_mappings.get(idx, [])
             )
             prompt_mappings[idx] = prompt_result['prompt']
+            
+            if verbose:
+                prompt_preview = prompt_result['prompt'][:100] + "..." if len(prompt_result['prompt']) > 100 else prompt_result['prompt']
+                click.echo(f"    → Prompt: {prompt_preview}")
             
             # Analyze and generate prompts for nested subsections
             _analyze_subsections(section, (idx,), analyzer, prompt_generator, 
@@ -728,10 +781,39 @@ def reverse(doc_path: str, output: str | None):
             template_name = template['_meta']['name']
             output_path = project_root / ".doc-evergreen" / "templates" / f"{template_name}.json"
         
+        # Handle dry-run mode
+        if dry_run:
+            click.echo(f"\n{'='*60}")
+            click.echo(f"DRY RUN COMPLETE - Template Preview")
+            click.echo(f"{'='*60}\n")
+            
+            # Show template summary
+            click.echo(f"Template Name: {template['_meta']['name']}")
+            click.echo(f"Description: {template['_meta']['description']}")
+            click.echo(f"Sections: {len(template['document']['sections'])}")
+            click.echo(f"Total Sources: {sum(len(s.get('sources', [])) for s in template['document']['sections'])}")
+            
+            if verbose:
+                click.echo(f"\nFull template JSON:")
+                import json
+                click.echo(json.dumps(template, indent=2))
+            
+            click.echo(f"\n✅ Preview complete. No template file created (dry-run mode).")
+            click.echo(f"\nTo generate the template, run without --dry-run:")
+            click.echo(f"  doc-evergreen reverse {doc_path}")
+            return
+        
         # Save template
         assembler.save(template, output_path)
         
         click.echo(f"✅ Template generated: {output_path}")
+        
+        if verbose:
+            click.echo(f"\nTemplate details:")
+            click.echo(f"  • Sections: {len(template['document']['sections'])}")
+            click.echo(f"  • Total sources: {total_sources}")
+            click.echo(f"  • Total prompts: {len(prompt_mappings)}")
+        
         click.echo("\nNext steps:")
         click.echo(f"1. Review: cat {output_path}")
         click.echo(f"2. Test: doc-evergreen regen-doc {output_path}")
