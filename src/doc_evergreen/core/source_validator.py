@@ -146,7 +146,9 @@ def validate_all_sources(template: Template, base_dir: Path) -> SourceValidation
         all_sources = list(set(all_sources))
 
         # Check if section has any sources
-        if not all_sources:
+        # Allow empty sources array (sections can be structural/organizational)
+        if not all_sources and section.sources:
+            # Only error if sources were specified but none resolved
             patterns_str = ", ".join(f"'{p}'" for p in section.sources)
             error = (
                 f"Section '{section_name}' has no sources - no files matched patterns: {patterns_str}\n"
