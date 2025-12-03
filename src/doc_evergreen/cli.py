@@ -628,13 +628,21 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         TemplateAssembler
     )
     
-    # Enable debug logging if verbose
+    # Enable logging if verbose (but filter out noisy third-party libraries)
     if verbose:
         import logging
+        
+        # Set our app to INFO level (not DEBUG - too much)
         logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(name)s - %(levelname)s - %(message)s'
+            level=logging.INFO,
+            format='%(message)s'  # Clean format, just the message
         )
+        
+        # Silence noisy third-party libraries
+        logging.getLogger('anthropic').setLevel(logging.WARNING)
+        logging.getLogger('httpx').setLevel(logging.WARNING)
+        logging.getLogger('httpcore').setLevel(logging.WARNING)
+        logging.getLogger('anthropic._base_client').setLevel(logging.WARNING)
     
     doc_path_obj = Path(doc_path)
     
@@ -712,16 +720,19 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
     
     try:
         # Create simple LLM client for intelligent analysis
-        click.echo(f"  Initializing LLM client...")
+        if verbose:
+            click.echo(f"  Initializing LLM client...")
         llm_client = _create_llm_client()
         
         # Building file index can take time on large repos
-        click.echo(f"  Building file index (this may take a moment for large repos)...")
+        if verbose:
+            click.echo(f"  Building file index (this may take a moment for large repos)...")
         discoverer = IntelligentSourceDiscoverer(
             project_root=project_root,
             llm_client=llm_client
         )
-        click.echo(f"  File index ready - starting discovery...")
+        if verbose:
+            click.echo(f"  File index ready ({len(discoverer.semantic_searcher.file_index)} files indexed) - starting discovery...")
         source_mappings = {}
         total_sources = 0
         
