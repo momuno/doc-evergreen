@@ -1218,5 +1218,186 @@ def generate_doc(output_path: str, doc_type: str, purpose: str):
         raise click.Abort()
 
 
+@cli.command("generate-outline")
+@click.argument("output_path", type=click.Path())
+@click.option("--type", "doc_type", required=True, help="Documentation type: tutorial, howto, reference, explanation")
+@click.option("--purpose", required=True, help="What should this documentation accomplish?")
+def generate_outline(output_path: str, doc_type: str, purpose: str):
+    """Generate documentation outline without creating the document.
+    
+    This command runs the complete analysis pipeline and creates an outline.json
+    file that you can review and edit before generating the actual documentation.
+    
+    \b
+    Workflow:
+      1. Run generate-outline to create outline.json
+      2. Review/edit .doc-evergreen/outline.json (optional)
+      3. Run generate-from-outline to create the document
+    
+    \b
+    Examples:
+      # Generate outline for tutorial
+      $ doc-evergreen generate-outline README.md \\
+          --type tutorial \\
+          --purpose "Help developers get started in 5 minutes"
+      
+      # Generate outline for API reference
+      $ doc-evergreen generate-outline docs/API.md \\
+          --type reference \\
+          --purpose "Document all public APIs"
+    """
+    from doc_evergreen.generate.doc_type import validate_doc_type, InvalidDocTypeError
+    from doc_evergreen.generate.intent_context import IntentContext, save_intent_context
+    from doc_evergreen.generate.repo_indexer import RepoIndexer
+    from doc_evergreen.generate.relevance_analyzer import RelevanceAnalyzer, RelevanceNotes
+    from doc_evergreen.generate.outline_generator import OutlineGenerator
+    
+    try:
+        # Step 1: Capture intent (Sprint 1)
+        click.echo("🎯 Capturing intent...")
+        validated_doc_type = validate_doc_type(doc_type)
+        context = IntentContext(
+            doc_type=validated_doc_type,
+            purpose=purpose,
+            output_path=output_path,
+        )
+        save_intent_context(context)
+        
+        # Step 2: Index repository (Sprint 2)
+        click.echo("📂 Indexing repository...")
+        indexer = RepoIndexer(project_root=Path.cwd())
+        file_index = indexer.build_index()
+        click.echo(f"   Found {file_index.total_files} files")
+        
+        # Save file index
+        file_index.save(Path(".doc-evergreen/file_index.json"))
+        
+        # Step 3: Analyze relevance (Sprint 3)
+        click.echo("🔍 Analyzing file relevance...")
+        analyzer = RelevanceAnalyzer(context=context, file_index=file_index)
+        scores = analyzer.analyze()
+        click.echo(f"   Identified {len(scores)} relevant files")
+        
+        # Save relevance notes
+        notes = RelevanceNotes(
+            doc_type=context.doc_type.value,
+            purpose=context.purpose,
+            relevant_files=scores,
+            total_files_analyzed=file_index.total_files,
+            threshold=50,
+        )
+        notes.save(Path(".doc-evergreen/relevance_notes.json"))
+        
+        # Step 4: Generate outline (Sprint 4-5)
+        click.echo("📝 Generating outline...")
+        generator = OutlineGenerator(context=context, relevant_files=scores)
+        outline = generator.generate()
+        click.echo(f"   {len(outline.sections)} sections")
+        
+        # Count total subsections
+        def count_sections(sections):
+            count = len(sections)
+            for s in sections:
+                count += count_sections(s.sections)
+            return count
+        total_sections = count_sections(outline.sections)
+        click.echo(f"   {total_sections} total sections (including subsections)")
+        
+        # Save outline
+        outline_path = Path(".doc-evergreen/outline.json")
+        outline.save(outline_path)
+        
+        # Success message
+        click.echo()
+        click.echo("✅ Outline generated successfully!")
+        click.echo()
+        click.echo(f"📄 Outline saved to: {outline_path}")
+        click.echo()
+        click.echo("Next steps:")
+        click.echo("  1. Review the outline: cat .doc-evergreen/outline.json")
+        click.echo("  2. (Optional) Edit the outline to adjust sections, prompts, or sources")
+        click.echo("  3. Generate the document:")
+        click.echo(f"     $ doc-evergreen generate-from-outline {outline_path}")
+        click.echo()
+        
+    except InvalidDocTypeError as e:
+        click.echo(f"❌ Error: {e}", err=True)
+        raise click.Abort()
+    except Exception as e:
+        click.echo(f"❌ Error generating outline: {e}", err=True)
+        raise click.Abort()
+
+
+@cli.command("generate-from-outline")
+@click.argument("outline_path", type=click.Path())
+def generate_from_outline(outline_path: str):
+    """Generate documentation from an outline file.
+    
+    Takes an existing outline.json file (created by generate-outline or manually)
+    and generates the complete documentation.
+    
+    \b
+    This allows you to:
+      - Review the outline before generating
+      - Make manual adjustments to structure, prompts, or sources
+      - Regenerate documentation with different settings
+    
+    \b
+    Examples:
+      # Generate from default outline location
+      $ doc-evergreen generate-from-outline .doc-evergreen/outline.json
+      
+      # Generate from custom outline
+      $ doc-evergreen generate-from-outline /path/to/custom-outline.json
+    """
+    from doc_evergreen.generate.doc_generator import DocumentGenerator
+    
+    try:
+        outline_path_obj = Path(outline_path)
+        
+        # Validate outline exists
+        if not outline_path_obj.exists():
+            click.echo()
+            click.echo(f"❌ Error: Outline file not found", err=True)
+            click.echo(f"   File: {outline_path}", err=True)
+            click.echo()
+            click.echo("Did you mean to:", err=True)
+            click.echo("  1. Generate outline first:", err=True)
+            click.echo("     $ doc-evergreen generate-outline README.md --type tutorial --purpose \"...\"", err=True)
+            click.echo()
+            raise click.Abort()
+        
+        # Generate document
+        click.echo("✨ Generating documentation from outline...")
+        click.echo()
+        
+        generator = DocumentGenerator(project_root=Path.cwd())
+        content = generator.generate_from_outline(outline_path_obj)
+        
+        # Success message
+        click.echo()
+        click.echo("✅ Documentation generated successfully!")
+        click.echo()
+        
+        # Load outline to get output path
+        from doc_evergreen.generate.outline_generator import DocumentOutline
+        outline = DocumentOutline.load(outline_path_obj)
+        
+        click.echo(f"📄 Document created: {outline.output_path}")
+        click.echo(f"   {len(content)} characters")
+        click.echo()
+        click.echo("💡 Tip: Review the generated document and refine the outline if needed,")
+        click.echo("   then run generate-from-outline again to regenerate.")
+        click.echo()
+        
+    except Exception as e:
+        click.echo()
+        click.echo(f"❌ Error generating document: {e}", err=True)
+        click.echo()
+        click.echo("Make sure the outline file is valid JSON with the required structure.", err=True)
+        click.echo()
+        raise click.Abort()
+
+
 if __name__ == "__main__":
     cli()

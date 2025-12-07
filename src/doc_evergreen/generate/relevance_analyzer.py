@@ -80,6 +80,8 @@ class RelevanceNotes:
     
     def save(self, path: Path) -> None:
         """Save to JSON file."""
+        # Ensure parent directory exists
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(self.to_dict(), indent=2))
     
     @classmethod

@@ -114,7 +114,7 @@ def save_intent_context(context: IntentContext, project_root: Path = Path.cwd())
     try:
         # Create .doc-evergreen directory if needed
         doc_evergreen_dir = project_root / ".doc-evergreen"
-        doc_evergreen_dir.mkdir(exist_ok=True)
+        doc_evergreen_dir.mkdir(parents=True, exist_ok=True)
         
         # Write context to JSON file
         context_file = doc_evergreen_dir / "context.json"
