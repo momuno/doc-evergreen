@@ -249,7 +249,23 @@ def generate_section(section, outline_context):
         Your content should introduce this topic but leave details to subsections.
         """
     
-    content = llm_generate(prompt, section.sources)
+    # Assemble LLM context with three components:
+    # 1. Section prompt (what to generate)
+    # 2. Relevancy summaries (attention guides - what to focus on in each source)
+    # 3. Full source file contents (the actual information)
+    context = {
+        "prompt": prompt,
+        "sources": [
+            {
+                "file": source.file,
+                "relevancy_summary": source.reasoning,  # Acts as attention guide
+                "content": read_file(source.file)       # Full source content
+            }
+            for source in section.sources
+        ]
+    }
+    
+    content = llm_generate(context)
     
     # Recursively generate subsections
     for subsection in section.sections:
@@ -258,6 +274,16 @@ def generate_section(section, outline_context):
     
     return content
 ```
+
+**Key Context Structure:**
+- **Prompt**: Instructions for what to generate (nesting-aware)
+- **Relevancy Summary**: "Notes" from Phase 4 - guides LLM attention to relevant parts
+- **Full Source Content**: The actual information source (complete file contents)
+
+**Why Three Components?**
+- Relevancy summary prevents LLM distraction (focuses attention on relevant parts)
+- Full source content provides complete information (not just snippets)
+- Prompt ties it together (what to generate from these sources)
 
 **Success Criteria:**
 - ✅ Generates content for each section
