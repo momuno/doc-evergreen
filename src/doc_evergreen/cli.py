@@ -1119,5 +1119,104 @@ def _analyze_subsections(
         )
 
 
+@cli.command("generate-doc")
+@click.argument("output_path", type=click.Path())
+@click.option("--type", "doc_type", required=True, help="Documentation type: tutorial, howto, reference, explanation (Diataxis framework)")
+@click.option("--purpose", required=True, help="What should this documentation accomplish?")
+def generate_doc(output_path: str, doc_type: str, purpose: str):
+    """Generate documentation from scratch using project analysis.
+    
+    Creates a new document by analyzing your project and generating an appropriate
+    structure based on the documentation type and purpose you specify.
+    
+    \b
+    Documentation Types (Diataxis):
+      tutorial     - Learning-oriented guides for getting started
+      howto        - Goal-oriented guides for solving problems
+      reference    - Information-oriented technical descriptions
+      explanation  - Understanding-oriented clarifications
+    
+    \b
+    Examples:
+      # Generate a tutorial README
+      $ doc-evergreen generate-doc README.md \\
+          --type tutorial \\
+          --purpose "Help developers get started in 5 minutes"
+      
+      # Generate API reference
+      $ doc-evergreen generate-doc docs/API.md \\
+          --type reference \\
+          --purpose "Document all public APIs"
+      
+      # Generate how-to guide
+      $ doc-evergreen generate-doc docs/CONTRIBUTING.md \\
+          --type howto \\
+          --purpose "Guide contributors through the development workflow"
+    
+    \b
+    Sprint 1 Status:
+      This command currently captures your intent and saves it to
+      .doc-evergreen/context.json. Future sprints will add:
+      - Repository analysis
+      - Source file discovery
+      - Outline generation
+      - Document generation
+    """
+    from doc_evergreen.generate.doc_type import validate_doc_type, InvalidDocTypeError, get_doc_type_description
+    from doc_evergreen.generate.intent_context import IntentContext, save_intent_context, ContextFileError
+    
+    try:
+        # Validate doc type
+        validated_doc_type = validate_doc_type(doc_type)
+        
+        # Create intent context
+        context = IntentContext(
+            doc_type=validated_doc_type,
+            purpose=purpose,
+            output_path=output_path,
+        )
+        
+        # Save context
+        save_intent_context(context)
+        
+        # Display success message
+        click.echo()
+        click.echo("✅ Intent captured successfully!")
+        click.echo()
+        click.echo(f"  📄 Output: {output_path}")
+        click.echo(f"  📚 Type: {doc_type}")
+        click.echo(f"  🎯 Purpose: {purpose}")
+        click.echo()
+        click.echo(f"  💡 {get_doc_type_description(validated_doc_type)}")
+        click.echo()
+        click.echo("📝 Context saved to: .doc-evergreen/context.json")
+        click.echo()
+        click.echo("🚧 Sprint 1 Complete - Intent Capture")
+        click.echo("   Future sprints will add:")
+        click.echo("   • Repository analysis (Sprint 2)")
+        click.echo("   • Source file discovery (Sprint 3)")
+        click.echo("   • Outline generation (Sprints 4-5)")
+        click.echo("   • Document generation (Sprint 6)")
+        click.echo()
+        
+    except InvalidDocTypeError as e:
+        click.echo()
+        click.echo(f"❌ Error: {e}", err=True)
+        click.echo()
+        click.echo("Valid documentation types:", err=True)
+        click.echo("  • tutorial     - Learning-oriented (getting started)", err=True)
+        click.echo("  • howto        - Goal-oriented (problem-solving)", err=True)
+        click.echo("  • reference    - Information-oriented (technical)", err=True)
+        click.echo("  • explanation  - Understanding-oriented (concepts)", err=True)
+        click.echo()
+        raise click.Abort()
+        
+    except ContextFileError as e:
+        click.echo()
+        click.echo(f"❌ Error saving context: {e}", err=True)
+        click.echo()
+        raise click.Abort()
+
+
 if __name__ == "__main__":
     cli()
