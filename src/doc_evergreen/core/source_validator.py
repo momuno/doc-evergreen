@@ -97,14 +97,25 @@ def validate_all_sources(template: Template, base_dir: Path) -> SourceValidation
         if pattern in glob_cache:
             return glob_cache[pattern]
 
+        # Normalize pattern: if it ends with "**", append "/*" to match files recursively
+        normalized_pattern = pattern
+        if pattern.endswith("**"):
+            normalized_pattern = pattern + "/*"
+            logger.debug(f"Normalized pattern '{pattern}' → '{normalized_pattern}'")
+        elif pattern.endswith("**/"):
+            normalized_pattern = pattern + "*"
+            logger.debug(f"Normalized pattern '{pattern}' → '{normalized_pattern}'")
+
         # Try glob pattern first
-        all_matches = list(base_dir.glob(pattern))
+        all_matches = list(base_dir.glob(normalized_pattern))
+        logger.debug(f"Pattern '{normalized_pattern}' matched {len(all_matches)} paths")
 
         # Filter out excluded paths (virtual envs, node_modules, etc.) AND directories
         resolved = [
             p for p in all_matches 
             if p.is_file() and not _should_exclude_path(p, base_dir)
         ]
+        logger.debug(f"After filtering: {len(resolved)} files (excluded dirs and blacklisted paths)")
 
         # If no match after filtering, try literal path
         if not resolved:
@@ -113,9 +124,11 @@ def validate_all_sources(template: Template, base_dir: Path) -> SourceValidation
                 literal_path, base_dir
             ):
                 resolved = [literal_path]
+                logger.debug(f"Found as literal path: {literal_path}")
 
         # Cache the result
         glob_cache[pattern] = resolved
+        logger.info(f"Resolved '{pattern}' → {len(resolved)} files")
         return resolved
 
     def validate_section(section: Section, path: str = "") -> None:
@@ -133,7 +146,9 @@ def validate_all_sources(template: Template, base_dir: Path) -> SourceValidation
         all_sources = list(set(all_sources))
 
         # Check if section has any sources
-        if not all_sources:
+        # Allow empty sources array (sections can be structural/organizational)
+        if not all_sources and section.sources:
+            # Only error if sources were specified but none resolved
             patterns_str = ", ".join(f"'{p}'" for p in section.sources)
             error = (
                 f"Section '{section_name}' has no sources - no files matched patterns: {patterns_str}\n"

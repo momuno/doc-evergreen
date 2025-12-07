@@ -1,0 +1,126 @@
+{
+  "repository": "microsoft/amplifier-profiles",
+  "document": "docs/AGENT_AUTHORING.md",
+  "test_cases": [
+    {
+      "section_heading": "Overview",
+      "section_content": "Agents in Amplifier are specialized sub-sessions with: Focused system instructions, Specific tool subsets, Custom models (optional), Partial mount plans. How Agents Work: Parent session delegates task to agent via task tool, System resolves agent file from search locations (first match wins), Agent config (partial mount plan) merges with parent session config, Forked sub-session executes with specialized configuration, Results return to parent.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/agent_schema.py",
+        "src/amplifier_profiles/agent_loader.py",
+        "src/amplifier_profiles/agent_resolver.py",
+        "README.md"
+      ],
+      "rationale": "Overview explains what agents are and how they work - implemented in agent_schema.py (data model), agent_loader.py (loading), agent_resolver.py (resolution). README.md provides user-facing overview."
+    },
+    {
+      "section_heading": "Agent Structure",
+      "section_content": "YAML frontmatter with meta, providers, tools, hooks, session. Minimal Agent needs only metadata and system instruction. Referencing Shared Context via @mentions.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/agent_schema.py",
+        "src/amplifier_profiles/utils.py"
+      ],
+      "rationale": "Agent structure (YAML frontmatter format) is defined by agent_schema.py (AgentMeta, AgentTools, Agent classes). Utils.py contains frontmatter parsing."
+    },
+    {
+      "section_heading": "Agent Resolution",
+      "section_content": "Search Order (Highest to Lowest Priority): Environment variable, User agents, Project agents, Bundled agents. First-match-wins resolution. Resolution Examples showing override behavior.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/agent_resolver.py",
+        "src/amplifier_profiles/agent_loader.py"
+      ],
+      "rationale": "Agent resolution logic (search order, first-match-wins) is implemented in agent_resolver.py. Agent loading that uses resolution is in agent_loader.py."
+    },
+    {
+      "section_heading": "Key Concepts",
+      "section_content": "Partial Mount Plans - agents specify only what they override. How Agent Configs Merge with Parent using deep recursive merging. Tool Subsets - omit to inherit, specify to override, empty for none. Module Configuration pattern.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/compiler.py",
+        "src/amplifier_profiles/merger.py",
+        "src/amplifier_profiles/agent_schema.py"
+      ],
+      "rationale": "Partial mount plan compilation is in compiler.py. Deep merge logic is in merger.py (merge_profile_dicts). Schema defining structure is in agent_schema.py."
+    },
+    {
+      "section_heading": "Working Examples",
+      "section_content": "Example 1: Model Specialist - Use different model for complex analysis. Example 2: Tool-Focused Agent - Specialist with specific tool subset. Example 3: Security-Enhanced Agent - Additional security layer. Example 4: Custom Orchestrator Agent.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/agent_schema.py",
+        "src/amplifier_profiles/compiler.py"
+      ],
+      "rationale": "Examples demonstrate agent schema capabilities (agent_schema.py defines AgentMeta, providers, tools, hooks, session). Compiler (compiler.py) shows how these configs are processed into mount plans."
+    },
+    {
+      "section_heading": "Using Agents in Profiles",
+      "section_content": "Agents are loaded via profiles using the agents schema. Load from Standard Locations, Define Inline, Combine Both.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/schema.py",
+        "src/amplifier_profiles/loader.py",
+        "src/amplifier_profiles/compiler.py"
+      ],
+      "rationale": "Profile schema (schema.py) defines how profiles reference agents. ProfileLoader (loader.py) loads profiles. Compiler (compiler.py) integrates agents into mount plans."
+    },
+    {
+      "section_heading": "Testing Your Agent",
+      "section_content": "Validation - amplifier agents validate my-agent.md. Testing in Session. Common Issues: Agent Not Found, YAML Syntax Errors, Module Not Found, Tool Inheritance Issues.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/agent_loader.py",
+        "src/amplifier_profiles/exceptions.py",
+        "tests/test_compiler.py"
+      ],
+      "rationale": "Agent validation is in agent_loader.py. Error handling in exceptions.py. Testing patterns in tests/test_compiler.py."
+    },
+    {
+      "section_heading": "Override Strategies",
+      "section_content": "Override at Project Level - customize bundled agent for whole project. Override for Personal Use - personal version without affecting project. Temporary Testing - test changes without modifying files using env vars.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/agent_resolver.py"
+      ],
+      "rationale": "Override mechanism (search path priority, env var support, first-match-wins) is implemented in agent_resolver.py. Resolution order and env var handling are the core implementation."
+    },
+    {
+      "section_heading": "CLI Commands",
+      "section_content": "List Agents - See all available agents. Show Agent - Display agent configuration. Validate Agent - Check agent file is valid.",
+      "ground_truth_sources": [
+        "README.md",
+        "src/amplifier_profiles/agent_loader.py",
+        "src/amplifier_profiles/agent_resolver.py"
+      ],
+      "rationale": "CLI commands would be in amplifier-app-cli (separate repo), but README.md shows usage examples. The underlying APIs (agent_loader.py, agent_resolver.py) power these commands."
+    },
+    {
+      "section_heading": "Advanced Features",
+      "section_content": "Module Sources in Agents - agents can specify module sources. Session Config Overrides - override orchestrator or context. Hook Customization. Sub-Agent Access Control - control which agents this agent can delegate to.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/agent_schema.py",
+        "src/amplifier_profiles/compiler.py",
+        "src/amplifier_profiles/merger.py"
+      ],
+      "rationale": "Schema (agent_schema.py) defines these advanced fields. Compiler (compiler.py) processes them. Merger (merger.py) handles deep config merging."
+    },
+    {
+      "section_heading": "Common Agent Patterns",
+      "section_content": "Research Agent - optimized for information gathering. Code Review Agent - focused on quality assessment. Analysis Agent - read-only analysis. Builder Agent - full modification capabilities.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/agent_schema.py"
+      ],
+      "rationale": "Pattern examples demonstrate different agent configurations (tools, providers, session overrides). Schema (agent_schema.py) defines the structure these patterns use (AgentMeta, tools list, providers, hooks, session config)."
+    },
+    {
+      "section_heading": "Troubleshooting",
+      "section_content": "YAML Syntax Errors - common mistakes with quotes and colons. Agent Not Loading - debugging resolution. Agent Uses Wrong File - check resolution order. Module Not Found - module installation issues.",
+      "ground_truth_sources": [
+        "src/amplifier_profiles/exceptions.py",
+        "src/amplifier_profiles/agent_resolver.py",
+        "src/amplifier_profiles/agent_loader.py"
+      ],
+      "rationale": "Error handling and exceptions in exceptions.py. Resolution debugging involves agent_resolver.py. Loading errors from agent_loader.py."
+    }
+  ],
+  "notes": [
+    "Created 12 test cases covering major sections of AGENT_AUTHORING.md",
+    "Skipped minor sections like 'Summary' and 'Best Practices' duplicates",
+    "Focus on sections with clear implementation mappings",
+    "CLI Commands section is tricky - the library provides APIs, actual CLI is in separate repo"
+  ]
+}

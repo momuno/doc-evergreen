@@ -93,35 +93,30 @@ class ContextManager:
         """Get formatted context from all previous sections.
 
         Args:
-            section_index: Index of current section (0-based)
+            section_index: Index of current section being generated (0-based)
 
         Returns:
-            Formatted context string with all previous sections
-
-        Raises:
-            IndexError: If section_index is out of bounds
+            Formatted context string with available previous sections
+            
+        Note:
+            Due to deque maxlen, only the most recent max_context_sections are kept.
+            This method returns all available previous sections in the sliding window.
         """
         sections_list = list(self._sections_deque)
-
-        # section_index represents the section we're ABOUT to generate
-        # So it can be equal to len(sections_list) (next section to add)
-        # But not greater than that
-        if section_index > len(sections_list):
-            raise IndexError(f"Section index {section_index} out of bounds")
 
         if section_index == 0:
             return ""
 
-        # Get all sections before the current one
-        previous_sections = sections_list[:section_index]
-
-        if not previous_sections:
+        # The deque has a sliding window of the most recent sections
+        # If section_index >= len(sections_list), we're beyond the window
+        # Just use all available sections (they're the most recent ones)
+        if not sections_list:
             return ""
 
-        # Format context
+        # Format context from all available previous sections
         lines = ["Previous Sections Context:", ""]
 
-        for section in previous_sections:
+        for section in sections_list:
             lines.append(f"## {section.heading}")
             if section.summary:
                 lines.append(f"Summary: {section.summary}")
