@@ -77,10 +77,49 @@ class DocumentOutline:
         }
     
     def save(self, path: Path) -> None:
-        """Save outline to JSON file."""
+        """Save outline to JSON file.
+        
+        Args:
+            path: Path to save outline (will be created with parent dirs)
+        """
         # Ensure parent directory exists
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(self.to_dict(), indent=2))
+    
+    @classmethod
+    def generate_versioned_path(cls, output_path: str, base_dir: Path = Path.cwd()) -> Path:
+        """Generate versioned outline path based on output document name.
+        
+        Creates path: .doc-evergreen/outlines/{doc-stem}-{timestamp}.json
+        
+        Args:
+            output_path: Output document path (e.g., "README.md", "docs/API.md")
+            base_dir: Base directory (default: current directory)
+            
+        Returns:
+            Versioned outline path
+            
+        Examples:
+            >>> DocumentOutline.generate_versioned_path("README.md")
+            .doc-evergreen/outlines/README-20251208-121030.json
+            
+            >>> DocumentOutline.generate_versioned_path("docs/API.md")
+            .doc-evergreen/outlines/API-20251208-121030.json
+        """
+        from datetime import datetime
+        
+        # Extract document name (without extension)
+        doc_path = Path(output_path)
+        doc_stem = doc_path.stem  # e.g., "README" from "README.md"
+        
+        # Generate timestamp
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        
+        # Create versioned filename
+        outline_filename = f"{doc_stem}-{timestamp}.json"
+        
+        # Return path in outlines subdirectory
+        return base_dir / ".doc-evergreen" / "outlines" / outline_filename
     
     @classmethod
     def load(cls, path: Path) -> "DocumentOutline":

@@ -1,13 +1,25 @@
 {
   "project_root": "/home/momuno/AI_MADE_Explorations/doc-evergreen",
-  "total_files": 93,
-  "indexed_at": "2025-12-08T18:32:29.670983+00:00",
+  "total_files": 95,
+  "indexed_at": "2025-12-08T20:05:05.612840+00:00",
   "files": [
+    {
+      "rel_path": "GetStarted.md",
+      "size": 19404,
+      "extension": ".md",
+      "type": "documentation"
+    },
     {
       "rel_path": "test_llm_analyzer.py",
       "size": 4271,
       "extension": ".py",
       "type": "test"
+    },
+    {
+      "rel_path": "GetStartedNew.md",
+      "size": 19693,
+      "extension": ".md",
+      "type": "documentation"
     },
     {
       "rel_path": ".gitattributes",
@@ -323,7 +335,7 @@
     },
     {
       "rel_path": "src/doc_evergreen/cli.py",
-      "size": 58239,
+      "size": 50846,
       "extension": ".py",
       "type": "source_code"
     },
@@ -467,7 +479,7 @@
     },
     {
       "rel_path": "src/doc_evergreen/generate/doc_generator.py",
-      "size": 3819,
+      "size": 11286,
       "extension": ".py",
       "type": "source_code"
     },
@@ -563,10 +575,10 @@
     }
   ],
   "file_counts": {
+    "documentation": 9,
     "test": 38,
     "unknown": 6,
     "config": 11,
-    "documentation": 7,
     "source_code": 31
   }
 }

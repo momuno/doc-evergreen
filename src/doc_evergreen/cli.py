@@ -271,9 +271,10 @@ def generate(output_path: str, purpose: str, doc_type: str | None, force: bool):
       3. Creates a custom outline based on your intent
       4. Generates the actual documentation content
     
-    ⚠️  FOR FIRST-TIME GENERATION ONLY
-    This overwrites .doc-evergreen/outline.json. For regeneration with
-    an existing outline, use generate-from-outline instead.
+    Each run creates a versioned outline preserving history:
+      .doc-evergreen/outlines/{doc-name}-{timestamp}.json
+    
+    For regeneration with an existing outline, use generate-from-outline.
     
     \\b
     Examples:
@@ -311,20 +312,8 @@ def generate(output_path: str, purpose: str, doc_type: str | None, force: bool):
     _ensure_api_key()
     
     try:
-        # Safety check: warn if outline already exists
-        outline_path = Path(".doc-evergreen/outline.json")
-        if outline_path.exists() and not force:
-            click.echo()
-            click.echo("⚠️  WARNING: Outline already exists!", err=True)
-            click.echo(f"   File: {outline_path}", err=True)
-            click.echo()
-            click.echo("This command will OVERWRITE the existing outline.", err=True)
-            click.echo("If you want to regenerate using the existing outline, use:", err=True)
-            click.echo(f"  $ doc-evergreen generate-from-outline {outline_path}", err=True)
-            click.echo()
-            if not click.confirm("Continue and overwrite existing outline?"):
-                click.echo("Aborted.")
-                return
+        # Note: No longer need safety check - outlines are now versioned by timestamp
+        # Each run creates a new outline file: .doc-evergreen/outlines/{doc-stem}-{timestamp}.json
         
         click.echo()
         click.echo("🚀 Starting full documentation generation pipeline...")
@@ -397,7 +386,9 @@ def generate(output_path: str, purpose: str, doc_type: str | None, force: bool):
         total_sections = count_sections(outline.sections)
         click.echo(f"   {total_sections} total sections")
         
-        # Save outline
+        # Save outline with versioned path
+        from doc_evergreen.generate.outline_generator import DocumentOutline as OutlineClass
+        outline_path = OutlineClass.generate_versioned_path(output_path)
         outline.save(outline_path)
         click.echo(f"   ✓ Outline saved to: {outline_path}")
         
@@ -423,12 +414,12 @@ def generate(output_path: str, purpose: str, doc_type: str | None, force: bool):
         click.echo(f"   {len(content)} characters, {total_sections} sections")
         click.echo()
         click.echo(f"📋 Outline saved: {outline_path}")
-        click.echo(f"   (Use generate-from-outline to regenerate from this outline)")
+        click.echo(f"   (Versioned - previous outlines preserved)")
         click.echo()
         click.echo("💡 Next steps:")
         click.echo("   • Review the generated documentation")
         click.echo("   • Edit the outline if you want to adjust structure")
-        click.echo("   • Run generate-from-outline to regenerate after edits")
+        click.echo(f"   • Regenerate: doc-evergreen generate-from-outline {outline_path}")
         click.echo()
         
     except InvalidDocTypeError as e:
@@ -1208,9 +1199,10 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
         click.echo("✅ Outline generated successfully!")
         click.echo()
         click.echo(f"📄 Outline saved to: {outline_path}")
+        click.echo(f"   (Versioned - previous outlines preserved)")
         click.echo()
         click.echo("Next steps:")
-        click.echo("  1. Review the outline: cat .doc-evergreen/outline.json")
+        click.echo(f"  1. Review: cat {outline_path}")
         click.echo("  2. (Optional) Edit the outline to adjust sections, prompts, or sources")
         click.echo("  3. Generate the document:")
         click.echo(f"     $ doc-evergreen generate-from-outline {outline_path}")

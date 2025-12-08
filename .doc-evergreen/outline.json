@@ -11,20 +11,24 @@
   },
   "document": {
     "title": "Doc-Evergreen 101: Quick Start Guide",
-    "output": "GetStarted.md",
+    "output": "DocEvergreen101.md",
     "sections": [
       {
         "heading": "# Introduction",
         "level": 1,
-        "prompt": "Provide a clear, beginner-friendly introduction to doc-evergreen. Explain what it is, what problem it solves, and what users will accomplish by the end of this tutorial. Focus on the core value proposition: turning repository code into documentation automatically. Keep it to a few sentences. We don't want to bog folks down in narrative when they are trying to get started.",
+        "prompt": "Provide a clear, beginner-friendly introduction explaining what doc-evergreen is, what problem it solves, and why someone would want to use it. Focus on the value proposition for new users who need to understand the tool's purpose before diving into setup.",
         "sources": [
           {
             "file": "README.md",
-            "reasoning": "Contains the project overview and fundamental workflow explanation that forms the conceptual foundation for beginners"
+            "reasoning": "Contains the core explanation of what doc-evergreen does conceptually and how it works at a high level"
+          },
+          {
+            "file": "GetStarted.md",
+            "reasoning": "Already positioned as introductory material that addresses 'what is doc-evergreen' and 'why use it' questions"
           },
           {
             "file": "docs/USER_GUIDE.md",
-            "reasoning": "Provides the existing explanation of what doc-evergreen is and core concepts that can be adapted for beginners"
+            "reasoning": "Contains existing explanation of 'What is doc-evergreen?' that can inform the introduction"
           }
         ],
         "sections": []
@@ -32,15 +36,15 @@
       {
         "heading": "# Prerequisites",
         "level": 1,
-        "prompt": "List the system requirements and prerequisites needed before installing doc-evergreen. Include Python version requirements, any necessary tools, and what users should have ready (like a repository to work with). This should be concise and focused on what is strictly necessary to get started.",
+        "prompt": "List the system requirements and prerequisites needed before installing doc-evergreen. Include Python version requirements, any system dependencies, and what users should have ready before starting.",
         "sources": [
           {
             "file": "pyproject.toml",
-            "reasoning": "Contains Python version requirement (>=3.11) and project metadata essential for installation prerequisites"
+            "reasoning": "Contains minimum Python version requirement (>=3.11) and project setup information"
           },
           {
             "file": "docs/INSTALLATION.md",
-            "reasoning": "Contains installation requirements and system setup information"
+            "reasoning": "Likely contains prerequisite information and system requirements for installation"
           }
         ],
         "sections": []
@@ -48,11 +52,15 @@
       {
         "heading": "# Installation",
         "level": 1,
-        "prompt": "Provide step-by-step installation instructions for doc-evergreen. Focus on the quickest, most reliable method for beginners. Include verification steps to confirm successful installation.",
+        "prompt": "Provide step-by-step installation instructions for doc-evergreen. Focus on the recommended installation method and include verification steps to confirm the installation was successful.",
         "sources": [
           {
             "file": "docs/INSTALLATION.md",
-            "reasoning": "Contains the quick install instructions and pipx recommendations for beginner-friendly setup"
+            "reasoning": "Contains installation methods with pipx as the recommended approach"
+          },
+          {
+            "file": "src/doc_evergreen/cli.py",
+            "reasoning": "Shows the CLI entry point that users can test to verify installation worked"
           }
         ],
         "sections": []
@@ -60,26 +68,34 @@
       {
         "heading": "# Quick Start",
         "level": 1,
-        "prompt": "Walk users through their first successful use of doc-evergreen from start to finish. This should be a complete, working example that gets them from zero to generated documentation.",
+        "prompt": "Walk users through their first successful use of doc-evergreen with a complete end-to-end example. This should be a hands-on tutorial that gets them from zero to generated documentation in the shortest path possible.",
         "sources": [
           {
-            "file": "tests/test_full_workflow_init_to_regen.py",
-            "reasoning": "Demonstrates the complete workflow from initialization to regeneration, showing the practical steps users need"
+            "file": "src/doc_evergreen/cli.py",
+            "reasoning": "Shows the CLI commands users will actually run to use doc-evergreen"
           },
           {
-            "file": "src/doc_evergreen/cli.py",
-            "reasoning": "Contains the CLI commands and interface that users will interact with for their first experience"
+            "file": "tests/test_full_workflow_init_to_regen.py",
+            "reasoning": "Demonstrates the complete workflow sequence from initialization to document regeneration"
+          },
+          {
+            "file": "GetStartedNew.md",
+            "reasoning": "Contains existing quickstart content structured for beginners"
           }
         ],
         "sections": [
           {
-            "heading": "## Initialize Your Repository",
+            "heading": "## Setting Up Your First Project",
             "level": 2,
-            "prompt": "Show how to run the init command to set up doc-evergreen in a repository. Explain what files are created and what the user should expect to see.",
+            "prompt": "Show users how to initialize doc-evergreen in a repository, including creating the basic configuration file and understanding the initial setup process.",
             "sources": [
               {
                 "file": "src/doc_evergreen/config.py",
-                "reasoning": "Defines the configuration mechanism and .doc-evergreen.yaml file that gets created during initialization"
+                "reasoning": "Handles the .doc-evergreen.yaml configuration file setup that users need to understand"
+              },
+              {
+                "file": "src/doc_evergreen/generate/doc_type.py",
+                "reasoning": "Shows the DocType options users need to choose from when generating documentation"
               }
             ],
             "sections": []
@@ -87,31 +103,35 @@
           {
             "heading": "## Understanding Templates",
             "level": 2,
-            "prompt": "Explain what templates are and how they work in doc-evergreen. Show a simple example of a template structure without going into advanced details.",
+            "prompt": "Explain what templates are in doc-evergreen, how they work, and show users a simple example of using a template to generate documentation. Keep this practical and focused on usage rather than creation.",
             "sources": [
               {
                 "file": "docs/TEMPLATES.md",
-                "reasoning": "Explains how to create and use JSON templates, which is essential for users to understand the core feature"
+                "reasoning": "Explains what templates are, how they work, and their purpose in doc-evergreen"
               },
               {
                 "file": "src/doc_evergreen/templates/tutorial-quickstart.json",
-                "reasoning": "Provides a concrete example of template structure that demonstrates the JSON format and key fields"
+                "reasoning": "Perfect meta-example showing template structure for quickstart tutorials"
+              },
+              {
+                "file": "src/doc_evergreen/core/template_schema.py",
+                "reasoning": "Shows the basic template structure users need to understand"
               }
             ],
             "sections": []
           },
           {
-            "heading": "## Generate Your First Document",
+            "heading": "## Generating Your First Document",
             "level": 2,
-            "prompt": "Walk through running the document generation command. Show the exact command to run and what output to expect. Include how to find and view the generated documentation.",
+            "prompt": "Provide a step-by-step walkthrough of generating documentation, including the exact commands to run, what output to expect, and how to interpret the results.",
             "sources": [
               {
                 "file": "src/doc_evergreen/cli.py",
-                "reasoning": "Contains the CLI commands for document generation that users need to run"
+                "reasoning": "Contains the actual CLI commands for document generation"
               },
               {
-                "file": "src/doc_evergreen/generate/doc_type.py",
-                "reasoning": "Shows the available documentation types users can generate, which they'll need to specify in commands"
+                "file": "src/doc_evergreen/diff.py",
+                "reasoning": "Shows users what diff output they'll see when running doc-evergreen"
               }
             ],
             "sections": []
@@ -119,62 +139,37 @@
         ]
       },
       {
-        "heading": "# Customizing for Your Repository",
+        "heading": "# Basic Configuration",
         "level": 1,
-        "prompt": "Show users how to adapt doc-evergreen for their specific repository needs. Cover the essential configuration options and common customizations without overwhelming beginners.",
+        "prompt": "Show users how to customize doc-evergreen for their specific repository needs. Cover essential configuration options, file exclusions, and how to adapt the tool to different project structures.",
         "sources": [
           {
             "file": "src/doc_evergreen/config.py",
-            "reasoning": "Defines the core configuration options that users need to understand for customizing doc-evergreen"
+            "reasoning": "Handles configuration file structure and available options"
           },
           {
             "file": ".docignore",
-            "reasoning": "Shows a practical example of how to exclude files and directories from documentation generation"
-          }
-        ],
-        "sections": [
-          {
-            "heading": "## Configuration Basics",
-            "level": 2,
-            "prompt": "Explain the key configuration options in the .doc-evergreen.yaml file that users are most likely to need. Focus on practical, commonly-used settings.",
-            "sources": [
-              {
-                "file": "src/doc_evergreen/config.py",
-                "reasoning": "Contains the FileConfig structure and configuration loading that defines what users can customize"
-              }
-            ],
-            "sections": []
+            "reasoning": "Demonstrates how to exclude files and directories from documentation generation"
           },
           {
-            "heading": "## Controlling What Gets Documented",
-            "level": 2,
-            "prompt": "Show users how to include or exclude specific files and directories from documentation generation. Explain the .docignore file and other filtering options.",
-            "sources": [
-              {
-                "file": ".docignore",
-                "reasoning": "Provides a real-world example of excluding directories and files from documentation"
-              },
-              {
-                "file": "src/doc_evergreen/context.py",
-                "reasoning": "Shows what files doc-evergreen looks at by default, helping users understand what should be in their repository"
-              }
-            ],
-            "sections": []
+            "file": "src/doc_evergreen/context.py",
+            "reasoning": "Shows what files doc-evergreen looks at by default, helping users understand what context will be used"
           }
-        ]
+        ],
+        "sections": []
       },
       {
         "heading": "# Next Steps",
         "level": 1,
-        "prompt": "Guide users on what to do after completing this tutorial. Point them to additional resources, advanced features they might explore, and common next actions. Keep it encouraging and provide clear pathways for continued learning.",
+        "prompt": "Guide users on what to explore next after completing the basic tutorial. Point them to more advanced features, additional documentation, and resources for deeper learning without overwhelming them.",
         "sources": [
           {
             "file": "docs/USER_GUIDE.md",
-            "reasoning": "Contains information about advanced usage and workflows that users can explore after mastering the basics"
+            "reasoning": "Contains comprehensive information about advanced features and workflows"
           },
           {
-            "file": "src/doc_evergreen/templates/howto-contributing-guide.json",
-            "reasoning": "Shows an example of other types of documentation users can generate once they're comfortable with the basics"
+            "file": "src/doc_evergreen/template_registry.py",
+            "reasoning": "Shows advanced template management for users ready to explore customization"
           }
         ],
         "sections": []

@@ -2,7 +2,7 @@
   "version": "0.7.0",
   "doc_type": "tutorial",
   "purpose": "This document is to help someone brand new to the repository quickly understand how to get started with doc-evergeen.  It is not to give them a deep understanding of how it works internally, instead it is simply output-driven. It answers the question 'how do I use doc-evergreen to get that document output?' because the use of doc-evergreen is for any repo, it should include how to set it up for whatever repo you want to run it for.  a basic quickstart is good.  and more advanced usage should be defferred for another tutorial.  think of this as doc-evergreen 101.",
-  "output_path": "GetStarted.md",
-  "timestamp": "2025-12-08T18:32:28.217109+00:00",
+  "output_path": "DocEvergreen101.md",
+  "timestamp": "2025-12-08T20:05:04.233708+00:00",
   "status": "intent_captured"
 }
