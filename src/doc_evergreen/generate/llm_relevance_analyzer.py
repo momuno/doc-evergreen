@@ -67,12 +67,12 @@ class LLMRelevanceAnalyzer:
         self.batch_size = batch_size
         
         # Create pydantic-ai agent for relevance analysis
-        # Let pydantic-ai discover ANTHROPIC_API_KEY from environment
-        logger.info("  Creating pydantic-ai agent with Claude...")
+        # Use string output (not structured) to avoid beta API
+        logger.info("  Creating pydantic-ai agent with Claude (non-beta API)...")
         
         self.agent = Agent(
             "claude-sonnet-4-5",
-            output_type=FileRelevanceResponse,
+            # No output_type - returns string, we'll parse JSON manually
             system_prompt=self._build_system_prompt(),
         )
         logger.info("  ✓ LLM agent created successfully")
@@ -91,10 +91,8 @@ Guidelines:
 - Medium scores (50-79): Useful supporting files
 - Low scores (0-49): Not relevant for this specific purpose
 
-Provide:
-1. Relevance score (0-100)
-2. Reasoning: WHY is this file relevant/irrelevant for THIS PURPOSE?
-3. Key material: WHAT specific information from this file would be useful?
+IMPORTANT: Respond ONLY with valid JSON in this exact format:
+{{"score": 85, "reasoning": "Explanation here...", "key_material": "What info is useful..."}}
 
 Be specific and purpose-driven in your reasoning. Generic answers like "contains project information" are not helpful.
 """
@@ -205,29 +203,30 @@ Remember:
         
         try:
             # Call LLM
-            logger.debug(f"      Calling Claude API...")
+            logger.debug(f"      Calling Claude API (non-beta)...")
             logger.debug(f"      Prompt (first 200 chars): {prompt[:200]}...")
             
             result = await self.agent.run(prompt)
             
             logger.debug(f"      ✓ Got result from Claude")
-            logger.debug(f"      Result type: {type(result)}")
-            logger.debug(f"      Result attributes: {dir(result)}")
             
-            # Access the output
-            response = result.output
+            # Parse JSON response from string output
+            response_text = result.output
+            logger.debug(f"      Response text (first 200 chars): {response_text[:200]}...")
             
-            logger.debug(f"      Response type: {type(response)}")
-            logger.debug(f"      Response: {response}")
-            logger.debug(f"      Score: {response.score}")
-            logger.debug(f"      Reasoning (first 100 chars): {response.reasoning[:100]}...")
-            logger.debug(f"      Key material (first 100 chars): {response.key_material[:100]}...")
+            # Parse JSON
+            response_json = json.loads(response_text)
+            
+            logger.debug(f"      Parsed JSON successfully")
+            logger.debug(f"      Score: {response_json['score']}")
+            logger.debug(f"      Reasoning (first 100 chars): {response_json['reasoning'][:100]}...")
+            logger.debug(f"      Key material (first 100 chars): {response_json.get('key_material', 'N/A')[:100]}...")
             
             return RelevanceScore(
                 file_path=file_entry.rel_path,
-                score=response.score,
-                reasoning=response.reasoning,
-                key_material=response.key_material,
+                score=response_json['score'],
+                reasoning=response_json['reasoning'],
+                key_material=response_json.get('key_material', 'N/A'),
             )
         
         except AttributeError as e:
