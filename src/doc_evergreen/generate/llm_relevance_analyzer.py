@@ -3,33 +3,16 @@
 import asyncio
 import json
 import logging
+import os
 from pathlib import Path
-from typing import Any
 
-from pydantic import BaseModel, Field
-from pydantic_ai import Agent
+from anthropic import AsyncAnthropic
 
 from doc_evergreen.generate.intent_context import IntentContext
 from doc_evergreen.generate.repo_indexer import FileIndex, FileType
 from doc_evergreen.generate.relevance_analyzer import RelevanceScore
 
 logger = logging.getLogger(__name__)
-
-
-class FileRelevanceResponse(BaseModel):
-    """LLM response for file relevance analysis."""
-    
-    score: int = Field(
-        description="Relevance score 0-100. 0=completely irrelevant, 100=essential",
-        ge=0,
-        le=100
-    )
-    reasoning: str = Field(
-        description="2-3 sentences explaining WHY this file is or isn't relevant for the specific documentation purpose"
-    )
-    key_material: str = Field(
-        description="If relevant (score >= 50): WHAT specific information in this file is useful. If not relevant: 'N/A'"
-    )
 
 
 class LLMRelevanceAnalyzer:
@@ -66,16 +49,18 @@ class LLMRelevanceAnalyzer:
         self.threshold = threshold
         self.batch_size = batch_size
         
-        # Create pydantic-ai agent for relevance analysis
-        # Use string output (not structured) to avoid beta API
-        logger.info("  Creating pydantic-ai agent with Claude (non-beta API)...")
+        # Create Anthropic client directly (uses standard API, not beta)
+        logger.info("  Creating Anthropic client (standard API)...")
         
-        self.agent = Agent(
-            "claude-sonnet-4-5",
-            # No output_type - returns string, we'll parse JSON manually
-            system_prompt=self._build_system_prompt(),
-        )
-        logger.info("  ✓ LLM agent created successfully")
+        api_key = os.getenv('ANTHROPIC_API_KEY')
+        if not api_key:
+            raise ValueError("ANTHROPIC_API_KEY environment variable not set")
+        
+        self.client = AsyncAnthropic(api_key=api_key)
+        self.model = "claude-sonnet-4-5"
+        self.system_prompt = self._build_system_prompt()
+        
+        logger.info("  ✓ Anthropic client created successfully")
     
     def _build_system_prompt(self) -> str:
         """Build system prompt for relevance analysis."""
@@ -202,25 +187,45 @@ Remember:
         )
         
         try:
-            # Call LLM
-            logger.debug(f"      Calling Claude API (non-beta)...")
+            # Call standard Anthropic API (NOT beta)
+            logger.debug(f"      Calling Claude API (standard, non-beta)...")
             logger.debug(f"      Prompt (first 200 chars): {prompt[:200]}...")
             
-            result = await self.agent.run(prompt)
+            # Use standard messages.create (NOT beta.messages.create)
+            response = await self.client.messages.create(
+                model=self.model,
+                max_tokens=1024,
+                system=self.system_prompt,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
             
-            logger.debug(f"      ✓ Got result from Claude")
+            logger.debug(f"      ✓ Got response from Claude")
             
-            # Parse JSON response from string output
-            response_text = result.output
+            # Extract text from response
+            response_text = response.content[0].text
             logger.debug(f"      Response text (first 200 chars): {response_text[:200]}...")
             
-            # Parse JSON
+            # Parse JSON from response
+            # Claude might wrap it in markdown code blocks, so extract JSON
+            if "```json" in response_text:
+                # Extract JSON from markdown code block
+                json_start = response_text.find("```json") + 7
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            elif "```" in response_text:
+                # Generic code block
+                json_start = response_text.find("```") + 3
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            
             response_json = json.loads(response_text)
             
             logger.debug(f"      Parsed JSON successfully")
             logger.debug(f"      Score: {response_json['score']}")
             logger.debug(f"      Reasoning (first 100 chars): {response_json['reasoning'][:100]}...")
-            logger.debug(f"      Key material (first 100 chars): {response_json.get('key_material', 'N/A')[:100]}...")
+            logger.debug(f"      Key material: {response_json.get('key_material', 'N/A')[:100]}...")
             
             return RelevanceScore(
                 file_path=file_entry.rel_path,
