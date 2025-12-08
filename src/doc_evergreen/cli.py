@@ -1278,7 +1278,8 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
     from doc_evergreen.generate.doc_type import validate_doc_type, InvalidDocTypeError
     from doc_evergreen.generate.intent_context import IntentContext, save_intent_context
     from doc_evergreen.generate.repo_indexer import RepoIndexer
-    from doc_evergreen.generate.relevance_analyzer import RelevanceAnalyzer, RelevanceNotes
+    from doc_evergreen.generate.relevance_analyzer import RelevanceNotes
+    from doc_evergreen.generate.llm_relevance_analyzer import LLMRelevanceAnalyzer
     from doc_evergreen.generate.outline_generator import OutlineGenerator
     
     try:
@@ -1301,11 +1302,23 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
         # Save file index
         file_index.save(Path(".doc-evergreen/file_index.json"))
         
-        # Step 3: Analyze relevance (Sprint 3)
-        click.echo("🔍 Analyzing file relevance...")
-        analyzer = RelevanceAnalyzer(context=context, file_index=file_index)
-        scores = analyzer.analyze()
-        click.echo(f"   Identified {len(scores)} relevant files")
+        # Step 3: Analyze relevance (Sprint 3 - LLM-powered)
+        click.echo("🔍 Analyzing file relevance (LLM-powered)...")
+        
+        analyzer = LLMRelevanceAnalyzer(
+            context=context,
+            file_index=file_index,
+            threshold=50,
+            batch_size=5,
+        )
+        
+        # Progress tracking
+        def show_progress(current, total, file_path):
+            percentage = int((current / total) * 100)
+            click.echo(f"   🔍 {percentage}% ({current}/{total}) - {file_path}")
+        
+        scores = analyzer.analyze(progress_callback=show_progress)
+        click.echo(f"   ✓ Identified {len(scores)} relevant files")
         
         # Save relevance notes
         notes = RelevanceNotes(
