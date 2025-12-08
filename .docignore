@@ -1,0 +1,8 @@
+# Exclude internal tooling from doc generation
+.beads/
+.amplifier/
+.doc-evergreen/
+
+# Exclude test artifacts
+.doc-evergreen/working/
+TEST_*.md

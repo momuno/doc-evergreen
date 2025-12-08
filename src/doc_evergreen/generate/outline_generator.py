@@ -316,8 +316,9 @@ class OutlineGenerator:
         """Generate subsections for a parent section."""
         subsections = []
         
-        # Generate subsections based on parent heading
-        if "Getting Started" in parent.heading or "Introduction" in parent.heading:
+        # Generate subsections based on parent heading (exact matching)
+        # Only "Getting Started" section gets Installation/Quick Start
+        if parent.heading == "# Getting Started":
             subsections.append(Section(
                 heading="## Installation",
                 level=parent.level + 1,
@@ -340,7 +341,8 @@ class OutlineGenerator:
                 sections=[],
             ))
         
-        elif "Steps" in parent.heading:
+        # For how-to "Steps" section (not "Next Steps")
+        elif parent.heading == "# Steps":
             # For how-to, generate step subsections
             subsections.append(Section(
                 heading="## Step 1: Setup",
@@ -402,14 +404,25 @@ class OutlineGenerator:
                     ))
         
         elif section_type in ["quickstart", "step1", "step2"]:
-            # Use source code and examples
-            for rf in self.relevant_files[:5]:
-                if rf.file_path.endswith((".py", ".js", ".ts")):
+            # Use source code, examples, and README for context
+            # First, add README for overview
+            for rf in self.relevant_files:
+                if "README" in rf.file_path.upper():
                     sources.append(SourceReference(
                         file=rf.file_path,
                         reasoning=rf.reasoning,
                     ))
-                    break  # Just one source file for examples
+                    break
+            
+            # Then add main source files (CLI entry points, main modules)
+            for rf in self.relevant_files[:5]:
+                if rf.file_path.endswith((".py", ".js", ".ts")) and "test" not in rf.file_path:
+                    if "cli" in rf.file_path.lower() or "main" in rf.file_path.lower():
+                        sources.append(SourceReference(
+                            file=rf.file_path,
+                            reasoning=rf.reasoning,
+                        ))
+                        break
         
         elif section_type in ["api", "functions", "classes"]:
             # Use source code
