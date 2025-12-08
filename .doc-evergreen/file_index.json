@@ -1,0 +1,566 @@
+{
+  "project_root": "/home/momuno/AI_MADE_Explorations/doc-evergreen",
+  "total_files": 92,
+  "indexed_at": "2025-12-08T17:26:13.720100+00:00",
+  "files": [
+    {
+      "rel_path": "test_llm_analyzer.py",
+      "size": 4029,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": ".gitattributes",
+      "size": 70,
+      "extension": "",
+      "type": "unknown"
+    },
+    {
+      "rel_path": "LICENSE",
+      "size": 1069,
+      "extension": "",
+      "type": "unknown"
+    },
+    {
+      "rel_path": ".gitignore",
+      "size": 4688,
+      "extension": "",
+      "type": "unknown"
+    },
+    {
+      "rel_path": "pyproject.toml",
+      "size": 925,
+      "extension": ".toml",
+      "type": "config"
+    },
+    {
+      "rel_path": ".docignore",
+      "size": 178,
+      "extension": "",
+      "type": "unknown"
+    },
+    {
+      "rel_path": "README.md",
+      "size": 25314,
+      "extension": ".md",
+      "type": "documentation"
+    },
+    {
+      "rel_path": "uv.lock",
+      "size": 318409,
+      "extension": ".lock",
+      "type": "unknown"
+    },
+    {
+      "rel_path": "tests/test_iterative_refinement.py",
+      "size": 12031,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_generate_outline_cli.py",
+      "size": 8902,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_init_command.py",
+      "size": 6978,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_llm_relevance_scorer.py",
+      "size": 11103,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_semantic_source_searcher.py",
+      "size": 11349,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_cli_mode_removal.py",
+      "size": 2729,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_cli_installation.py",
+      "size": 3050,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_chunked_generator.py",
+      "size": 21200,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_doc_generator.py",
+      "size": 8262,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_intelligent_source_discoverer.py",
+      "size": 11803,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_outline_generator.py",
+      "size": 11730,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_interactive_selection.py",
+      "size": 7795,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_document_parser.py",
+      "size": 9320,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_integration_regen_workflow.py",
+      "size": 17598,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_repo_indexer.py",
+      "size": 10883,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_template_discovery.py",
+      "size": 5503,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_cross_directory_usage.py",
+      "size": 6141,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_intent_context.py",
+      "size": 8735,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_content_intent_analyzer.py",
+      "size": 7775,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/__init__.py",
+      "size": 50,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "tests/test_progress_feedback.py",
+      "size": 8860,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_template_library_smoke.py",
+      "size": 3652,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_naive_source_discovery.py",
+      "size": 7136,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_source_validator.py",
+      "size": 18284,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_package_config.py",
+      "size": 4881,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_generate_doc_cli.py",
+      "size": 8681,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_cli_template_flags.py",
+      "size": 12125,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_doc_type_validation.py",
+      "size": 5176,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_prompt_generator.py",
+      "size": 13062,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_reverse_command.py",
+      "size": 8301,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_accuracy_validator.py",
+      "size": 12111,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_change_detection.py",
+      "size": 10794,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_template_registry.py",
+      "size": 8218,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_full_workflow_init_to_regen.py",
+      "size": 5389,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_template_assembler.py",
+      "size": 10421,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_context_manager.py",
+      "size": 10878,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_cwd_path_resolution.py",
+      "size": 5229,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "tests/test_relevance_analyzer.py",
+      "size": 12024,
+      "extension": ".py",
+      "type": "test"
+    },
+    {
+      "rel_path": "docs/USER_GUIDE.md",
+      "size": 18280,
+      "extension": ".md",
+      "type": "documentation"
+    },
+    {
+      "rel_path": "docs/TEMPLATE_QUALITY.md",
+      "size": 9035,
+      "extension": ".md",
+      "type": "documentation"
+    },
+    {
+      "rel_path": "docs/TEMPLATE_BEST_PRACTICES.md",
+      "size": 13987,
+      "extension": ".md",
+      "type": "documentation"
+    },
+    {
+      "rel_path": "docs/TEMPLATES.md",
+      "size": 16965,
+      "extension": ".md",
+      "type": "documentation"
+    },
+    {
+      "rel_path": "docs/INSTALLATION.md",
+      "size": 7268,
+      "extension": ".md",
+      "type": "documentation"
+    },
+    {
+      "rel_path": "docs/BEST_PRACTICES.md",
+      "size": 21711,
+      "extension": ".md",
+      "type": "documentation"
+    },
+    {
+      "rel_path": "src/doc_evergreen/cli.py",
+      "size": 56927,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/context.py",
+      "size": 1726,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/__init__.py",
+      "size": 95,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/context_manager.py",
+      "size": 5042,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/config.py",
+      "size": 5000,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/diff.py",
+      "size": 1869,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/template_registry.py",
+      "size": 9169,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/chunked_generator.py",
+      "size": 8987,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/change_detection.py",
+      "size": 1268,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/reference-cli.json",
+      "size": 1934,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/howto-custom-prompts.json",
+      "size": 2513,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/tutorial-quickstart.json",
+      "size": 1454,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/explanation-architecture.json",
+      "size": 2747,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/explanation-concepts.json",
+      "size": 2787,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/tutorial-first-template.json",
+      "size": 2899,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/.gitkeep",
+      "size": 0,
+      "extension": "",
+      "type": "unknown"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/howto-ci-integration.json",
+      "size": 2373,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/reference-api.json",
+      "size": 2155,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/templates/howto-contributing-guide.json",
+      "size": 1957,
+      "extension": ".json",
+      "type": "config"
+    },
+    {
+      "rel_path": "src/doc_evergreen/generate/outline_generator.py",
+      "size": 16101,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/generate/doc_type.py",
+      "size": 3103,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/generate/repo_indexer.py",
+      "size": 8458,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/generate/__init__.py",
+      "size": 74,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/generate/llm_relevance_analyzer.py",
+      "size": 9096,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/generate/doc_generator.py",
+      "size": 3819,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/generate/relevance_analyzer.py",
+      "size": 8971,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/generate/intent_context.py",
+      "size": 5528,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/core/template_schema.py",
+      "size": 6804,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/core/__init__.py",
+      "size": 32,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/core/source_validator.py",
+      "size": 7859,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/naive_source_discovery.py",
+      "size": 6241,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/semantic_source_searcher.py",
+      "size": 11380,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/prompt_generator.py",
+      "size": 7788,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/document_parser.py",
+      "size": 7074,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/__init__.py",
+      "size": 820,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/accuracy_validator.py",
+      "size": 9277,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/content_intent_analyzer.py",
+      "size": 6234,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/template_assembler.py",
+      "size": 8660,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/llm_relevance_scorer.py",
+      "size": 6841,
+      "extension": ".py",
+      "type": "source_code"
+    },
+    {
+      "rel_path": "src/doc_evergreen/reverse/intelligent_source_discoverer.py",
+      "size": 10986,
+      "extension": ".py",
+      "type": "source_code"
+    }
+  ],
+  "file_counts": {
+    "test": 38,
+    "unknown": 6,
+    "config": 10,
+    "documentation": 7,
+    "source_code": 31
+  }
+}

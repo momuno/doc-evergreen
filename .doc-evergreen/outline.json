@@ -1,0 +1,99 @@
+{
+  "_meta": {
+    "name": "generated-tutorial-20251208",
+    "description": "This document is to help someone brand new to the repository quickly understand how to get started with doc-evergeen.  It is not to give them a deep understanding of how it works internally, instead it is simply output-driven. It answers the question 'how do I use doc-evergreen to get that document output?' because the use of doc-evergreen is for any repo, it should include how to set it up for whatever repo you want to run it for.  a basic quickstart is good.  and more advanced usage should be defferred for another tutorial.  think of this as doc-evergreen 101.",
+    "use_case": "This document is to help someone brand new to the repository quickly understand how to get started with doc-evergeen.  It is not to give them a deep understanding of how it works internally, instead it is simply output-driven. It answers the question 'how do I use doc-evergreen to get that document output?' because the use of doc-evergreen is for any repo, it should include how to set it up for whatever repo you want to run it for.  a basic quickstart is good.  and more advanced usage should be defferred for another tutorial.  think of this as doc-evergreen 101.",
+    "quadrant": "tutorial",
+    "estimated_lines": "400-800 lines",
+    "generation_method": "forward",
+    "doc_type": "tutorial",
+    "user_intent": "This document is to help someone brand new to the repository quickly understand how to get started with doc-evergeen.  It is not to give them a deep understanding of how it works internally, instead it is simply output-driven. It answers the question 'how do I use doc-evergreen to get that document output?' because the use of doc-evergreen is for any repo, it should include how to set it up for whatever repo you want to run it for.  a basic quickstart is good.  and more advanced usage should be defferred for another tutorial.  think of this as doc-evergreen 101."
+  },
+  "document": {
+    "title": "Getting Started Guide",
+    "output": "GetStarted.md",
+    "sections": [
+      {
+        "heading": "# Introduction",
+        "level": 1,
+        "prompt": "Write a welcoming introduction (2-3 paragraphs) that explains what this tool/project does and why it's useful. Set expectations for what the reader will learn. Don't cover installation or usage details - those are in sections below.",
+        "sources": [
+          {
+            "file": "README.md",
+            "reasoning": "Documentation file - README highly relevant for tutorial"
+          },
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Documentation file"
+          },
+          {
+            "file": "docs/TEMPLATE_QUALITY.md",
+            "reasoning": "Documentation file"
+          }
+        ],
+        "sections": []
+      },
+      {
+        "heading": "# Getting Started",
+        "level": 1,
+        "prompt": "Provide a high-level overview of getting started. Introduce the subsections below but don't repeat their content. Keep this brief (1-2 paragraphs).",
+        "sources": [
+          {
+            "file": "README.md",
+            "reasoning": "Documentation file - README highly relevant for tutorial"
+          },
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Documentation file"
+          },
+          {
+            "file": "docs/TEMPLATE_QUALITY.md",
+            "reasoning": "Documentation file"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "## Installation",
+            "level": 2,
+            "prompt": "Provide step-by-step installation instructions. Include prerequisites, installation commands, and verification steps.",
+            "sources": [
+              {
+                "file": "pyproject.toml",
+                "reasoning": "Configuration file - Package config relevant for getting started"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Quick Start",
+            "level": 2,
+            "prompt": "Show the simplest possible example to get users started. Include a complete working example with expected output.",
+            "sources": [
+              {
+                "file": "README.md",
+                "reasoning": "Documentation file - README highly relevant for tutorial"
+              }
+            ],
+            "sections": []
+          }
+        ]
+      },
+      {
+        "heading": "# Next Steps",
+        "level": 1,
+        "prompt": "Suggest what the reader should do next after completing this tutorial. Point to additional resources or advanced topics. If there are subsections below, introduce them briefly without covering their details.",
+        "sources": [
+          {
+            "file": "README.md",
+            "reasoning": "Documentation file - README highly relevant for tutorial"
+          },
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Documentation file"
+          }
+        ],
+        "sections": []
+      }
+    ]
+  }
+}

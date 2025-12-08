@@ -69,8 +69,8 @@ class LLMRelevanceAnalyzer:
         # Create pydantic-ai agent for relevance analysis
         logger.info("  Creating pydantic-ai agent with Claude...")
         self.agent = Agent(
-            "anthropic:claude-3-5-sonnet-20241022",
-            result_type=FileRelevanceResponse,
+            "anthropic:claude-sonnet-4-5-20250929",  # Use same model as chunked_generator
+            output_type=FileRelevanceResponse,
             system_prompt=self._build_system_prompt(),
         )
         logger.info("  ✓ LLM agent created successfully")
@@ -237,8 +237,8 @@ Remember:
             Preview string
         """
         try:
-            # Get absolute path
-            abs_path = Path(file_entry.abs_path)
+            # Construct absolute path from project root + relative path
+            abs_path = self.file_index.project_root / file_entry.rel_path
             
             # Read preview
             content = abs_path.read_text(encoding='utf-8')
