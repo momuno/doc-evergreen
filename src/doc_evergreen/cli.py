@@ -483,7 +483,7 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
     """Generate template from existing documentation.
     
     Analyzes document structure, discovers source files, and creates
-    a template.json file that can be used with the regen-doc command.
+    a template.json file that can be used with generate-from-outline.
     
     Uses intelligent 3-stage discovery (pattern + semantic + LLM) for 70-80% accuracy.
     
