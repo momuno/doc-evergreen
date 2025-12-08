@@ -204,10 +204,22 @@ Remember:
         try:
             # Call LLM
             logger.debug(f"      Calling Claude API...")
-            result = await self.agent.run(prompt)
-            response = result.output  # Use .output not .data
+            logger.debug(f"      Prompt (first 200 chars): {prompt[:200]}...")
             
-            logger.debug(f"      ✓ Score: {response.score}, Reasoning: {response.reasoning[:50]}...")
+            result = await self.agent.run(prompt)
+            
+            logger.debug(f"      ✓ Got result from Claude")
+            logger.debug(f"      Result type: {type(result)}")
+            logger.debug(f"      Result attributes: {dir(result)}")
+            
+            # Access the output
+            response = result.output
+            
+            logger.debug(f"      Response type: {type(response)}")
+            logger.debug(f"      Response: {response}")
+            logger.debug(f"      Score: {response.score}")
+            logger.debug(f"      Reasoning (first 100 chars): {response.reasoning[:100]}...")
+            logger.debug(f"      Key material (first 100 chars): {response.key_material[:100]}...")
             
             return RelevanceScore(
                 file_path=file_entry.rel_path,
@@ -216,9 +228,24 @@ Remember:
                 key_material=response.key_material,
             )
         
+        except AttributeError as e:
+            # Specific handling for attribute errors (likely API change)
+            logger.error(f"      ✗ AttributeError for {file_entry.rel_path}: {e}")
+            logger.error(f"      Result object: {result if 'result' in locals() else 'not created'}")
+            logger.error(f"      Result dir: {dir(result) if 'result' in locals() else 'N/A'}")
+            return RelevanceScore(
+                file_path=file_entry.rel_path,
+                score=0,
+                reasoning=f"AttributeError: {str(e)}",
+                key_material="N/A",
+            )
+        
         except Exception as e:
             # Fallback on error (don't fail entire analysis)
             logger.warning(f"      ✗ LLM analysis failed for {file_entry.rel_path}: {e}")
+            logger.warning(f"      Exception type: {type(e).__name__}")
+            import traceback
+            logger.debug(f"      Traceback: {traceback.format_exc()}")
             return RelevanceScore(
                 file_path=file_entry.rel_path,
                 score=0,
