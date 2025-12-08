@@ -1005,6 +1005,69 @@ def _find_project_root(doc_path: Path) -> Path:
     return Path.cwd()
 
 
+def _infer_doc_type(purpose: str) -> str:
+    """Infer documentation type from user's purpose using LLM.
+    
+    Uses the Diataxis framework to classify purpose into:
+    - tutorial: Learning-oriented
+    - howto: Goal-oriented
+    - reference: Information-oriented  
+    - explanation: Understanding-oriented
+    
+    Args:
+        purpose: User's purpose statement
+        
+    Returns:
+        Inferred doc type (tutorial, howto, reference, or explanation)
+    """
+    llm_client = _create_llm_client()
+    
+    prompt = f"""You are a documentation expert familiar with the Diataxis documentation framework.
+
+Analyze this purpose statement and classify it into ONE of the four Diataxis documentation types:
+
+**Purpose Statement:**
+{purpose}
+
+**Diataxis Documentation Types:**
+
+1. **tutorial** - Learning-oriented, takes user on a journey
+   - Keywords: "get started", "learn", "first time", "beginner", "introduction", "quickstart"
+   - Focus: Teaching through doing, step-by-step learning
+
+2. **howto** - Goal-oriented, problem-solving
+   - Keywords: "how to", "solve", "accomplish", "achieve", "implement", "guide to"
+   - Focus: Solving a specific problem or achieving a specific task
+
+3. **reference** - Information-oriented, factual descriptions
+   - Keywords: "document", "describe", "reference", "API", "commands", "parameters", "specification"
+   - Focus: Technical descriptions, comprehensive information
+
+4. **explanation** - Understanding-oriented, clarifying concepts
+   - Keywords: "explain", "understand", "why", "concepts", "architecture", "design", "rationale"
+   - Focus: Understanding and illumination of topics
+
+**Task:**
+Classify the purpose statement above into ONE type. Respond with ONLY the type name (tutorial, howto, reference, or explanation).
+
+Your classification:"""
+    
+    response = llm_client.generate(prompt, temperature=0.0)
+    
+    # Extract just the type name (handle variations)
+    doc_type = response.strip().lower()
+    
+    # Validate it's one of the four types
+    valid_types = ["tutorial", "howto", "reference", "explanation"]
+    for valid_type in valid_types:
+        if valid_type in doc_type:
+            return valid_type
+    
+    # Fallback to tutorial if unclear
+    click.echo(f"   ⚠️  Could not confidently classify (got: {doc_type}), defaulting to 'tutorial'", err=True)
+    return "tutorial"
+
+
 def _create_llm_client():
     """Create a simple LLM client for intelligent source discovery.
     
@@ -1330,7 +1393,14 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
     _ensure_api_key()
 
     try:
-        # Step 1: Capture intent (Sprint 1)
+        # Step 1: Infer doc type if not provided
+        if doc_type is None:
+            click.echo("🤔 Inferring documentation type from your purpose...")
+            inferred_type = _infer_doc_type(purpose)
+            click.echo(f"   → Inferred type: {inferred_type}")
+            doc_type = inferred_type
+        
+        # Step 2: Capture intent (Sprint 1)
         click.echo("🎯 Capturing intent...")
         validated_doc_type = validate_doc_type(doc_type)
         context = IntentContext(
