@@ -2,6 +2,9 @@
 .beads/
 .amplifier/
 .doc-evergreen/
+.pytest_cache/
+.ruff_cache/
+.venv/
 
 # Exclude test artifacts
 .doc-evergreen/working/
