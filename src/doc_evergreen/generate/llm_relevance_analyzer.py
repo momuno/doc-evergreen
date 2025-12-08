@@ -205,7 +205,7 @@ Remember:
             # Call LLM
             logger.debug(f"      Calling Claude API...")
             result = await self.agent.run(prompt)
-            response = result.data
+            response = result.output  # Use .output not .data
             
             logger.debug(f"      ✓ Score: {response.score}, Reasoning: {response.reasoning[:50]}...")
             
