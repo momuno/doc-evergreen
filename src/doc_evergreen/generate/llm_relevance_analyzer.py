@@ -69,7 +69,7 @@ class LLMRelevanceAnalyzer:
         # Create pydantic-ai agent for relevance analysis
         logger.info("  Creating pydantic-ai agent with Claude...")
         self.agent = Agent(
-            "claude-3-5-sonnet-latest",  # Use latest available Claude 3.5 Sonnet
+            "claude-sonnet-4-5",
             output_type=FileRelevanceResponse,
             system_prompt=self._build_system_prompt(),
         )
