@@ -7,6 +7,7 @@ Supports section-by-section documentation generation with explicit prompts.
 import asyncio
 import json
 from pathlib import Path
+import logging
 
 import click
 
@@ -1244,7 +1245,8 @@ def generate_doc(output_path: str, doc_type: str, purpose: str):
     )
 )
 @click.option("--purpose", required=True, help="What should this documentation accomplish?")
-def generate_outline(output_path: str, doc_type: str, purpose: str):
+@click.pass_context
+def generate_outline(ctx, output_path: str, doc_type: str, purpose: str):
     """Generate documentation outline without creating the document.
     
     This command runs the complete analysis pipeline and creates an outline.json
@@ -1275,6 +1277,8 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
           --type reference \\
           --purpose "Document all public APIs"
     """
+    import logging
+    
     from doc_evergreen.generate.doc_type import validate_doc_type, InvalidDocTypeError
     from doc_evergreen.generate.intent_context import IntentContext, save_intent_context
     from doc_evergreen.generate.repo_indexer import RepoIndexer
@@ -1282,7 +1286,11 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
     from doc_evergreen.generate.llm_relevance_analyzer import LLMRelevanceAnalyzer
     from doc_evergreen.generate.outline_generator import OutlineGenerator
     
+    logger = logging.getLogger(__name__)
+    verbose = ctx.obj.get('verbose', False)
+    
     try:
+        logger.info(f"🎯 Starting generate-outline (verbose={verbose})")
         # Step 1: Capture intent (Sprint 1)
         click.echo("🎯 Capturing intent...")
         validated_doc_type = validate_doc_type(doc_type)
@@ -1304,6 +1312,7 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
         
         # Step 3: Analyze relevance (Sprint 3 - LLM-powered)
         click.echo("🔍 Analyzing file relevance (LLM-powered)...")
+        logger.info("Creating LLMRelevanceAnalyzer...")
         
         analyzer = LLMRelevanceAnalyzer(
             context=context,
@@ -1312,13 +1321,17 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
             batch_size=5,
         )
         
+        logger.info("Starting relevance analysis...")
+        
         # Progress tracking
         def show_progress(current, total, file_path):
             percentage = int((current / total) * 100)
             click.echo(f"   🔍 {percentage}% ({current}/{total}) - {file_path}")
+            logger.debug(f"Progress: {current}/{total} files analyzed")
         
         scores = analyzer.analyze(progress_callback=show_progress)
         click.echo(f"   ✓ Identified {len(scores)} relevant files")
+        logger.info(f"Relevance analysis complete: {len(scores)} files above threshold")
         
         # Save relevance notes
         notes = RelevanceNotes(

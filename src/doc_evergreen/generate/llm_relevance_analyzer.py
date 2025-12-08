@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +12,8 @@ from pydantic_ai import Agent
 from doc_evergreen.generate.intent_context import IntentContext
 from doc_evergreen.generate.repo_indexer import FileIndex, FileType
 from doc_evergreen.generate.relevance_analyzer import RelevanceScore
+
+logger = logging.getLogger(__name__)
 
 
 class FileRelevanceResponse(BaseModel):
@@ -51,17 +54,26 @@ class LLMRelevanceAnalyzer:
             threshold: Minimum relevance score to include
             batch_size: Files to analyze per batch (for progress feedback)
         """
+        logger.info("🤖 Initializing LLMRelevanceAnalyzer")
+        logger.debug(f"  Doc type: {context.doc_type.value}")
+        logger.debug(f"  Purpose: {context.purpose[:100]}...")
+        logger.debug(f"  Files to analyze: {len(file_index.files)}")
+        logger.debug(f"  Threshold: {threshold}")
+        logger.debug(f"  Batch size: {batch_size}")
+        
         self.context = context
         self.file_index = file_index
         self.threshold = threshold
         self.batch_size = batch_size
         
         # Create pydantic-ai agent for relevance analysis
+        logger.info("  Creating pydantic-ai agent with Claude...")
         self.agent = Agent(
             "anthropic:claude-3-5-sonnet-20241022",
             result_type=FileRelevanceResponse,
             system_prompt=self._build_system_prompt(),
         )
+        logger.info("  ✓ LLM agent created successfully")
     
     def _build_system_prompt(self) -> str:
         """Build system prompt for relevance analysis."""
@@ -117,12 +129,17 @@ Remember:
         Returns:
             List of relevance scores above threshold
         """
+        logger.info(f"🔍 Starting LLM-based relevance analysis for {len(self.file_index.files)} files")
         scores = []
         total_files = len(self.file_index.files)
         
         # Process in batches for progress feedback
         for i in range(0, total_files, self.batch_size):
             batch = self.file_index.files[i:i + self.batch_size]
+            batch_num = (i // self.batch_size) + 1
+            total_batches = (total_files + self.batch_size - 1) // self.batch_size
+            
+            logger.debug(f"  Processing batch {batch_num}/{total_batches} ({len(batch)} files)")
             
             # Analyze batch concurrently
             batch_tasks = [
@@ -132,9 +149,13 @@ Remember:
             batch_results = await asyncio.gather(*batch_tasks)
             
             # Filter by threshold
+            batch_relevant = 0
             for score in batch_results:
                 if score.score >= self.threshold:
                     scores.append(score)
+                    batch_relevant += 1
+            
+            logger.debug(f"    → {batch_relevant}/{len(batch)} files above threshold")
             
             # Progress callback
             if progress_callback:
@@ -144,6 +165,7 @@ Remember:
         # Sort by score (highest first)
         scores.sort(key=lambda s: s.score, reverse=True)
         
+        logger.info(f"  ✓ Analysis complete: {len(scores)} relevant files found (threshold: {self.threshold})")
         return scores
     
     def analyze(self, progress_callback=None) -> list[RelevanceScore]:
@@ -166,8 +188,11 @@ Remember:
         Returns:
             RelevanceScore with LLM-generated score and reasoning
         """
+        logger.debug(f"    Analyzing: {file_entry.rel_path}")
+        
         # Extract file preview
         preview = self._extract_preview(file_entry)
+        logger.debug(f"      Preview length: {len(preview)} chars")
         
         # Build analysis prompt
         prompt = self._build_analysis_prompt(
@@ -178,8 +203,11 @@ Remember:
         
         try:
             # Call LLM
+            logger.debug(f"      Calling Claude API...")
             result = await self.agent.run(prompt)
             response = result.data
+            
+            logger.debug(f"      ✓ Score: {response.score}, Reasoning: {response.reasoning[:50]}...")
             
             return RelevanceScore(
                 file_path=file_entry.rel_path,
@@ -190,6 +218,7 @@ Remember:
         
         except Exception as e:
             # Fallback on error (don't fail entire analysis)
+            logger.warning(f"      ✗ LLM analysis failed for {file_entry.rel_path}: {e}")
             return RelevanceScore(
                 file_path=file_entry.rel_path,
                 score=0,
