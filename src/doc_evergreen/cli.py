@@ -242,6 +242,197 @@ def cli():
     pass
 
 
+@cli.command("generate")
+@click.argument("output_path", type=click.Path())
+@click.option("--purpose", required=True, help="What should this documentation accomplish?")
+@click.option(
+    "--type", 
+    "doc_type", 
+    required=False,
+    help="Documentation type (tutorial, howto, reference, explanation) - inferred from purpose if not provided"
+)
+@click.option("--force", is_flag=True, help="Overwrite existing outline if present")
+def generate(output_path: str, purpose: str, doc_type: str | None, force: bool):
+    """Generate documentation from scratch (full pipeline: analyze → outline → generate).
+    
+    This command runs the complete workflow:
+      1. Infers doc type from your purpose (unless --type specified)
+      2. Analyzes your repository for relevant files
+      3. Creates a custom outline based on your intent
+      4. Generates the actual documentation content
+    
+    ⚠️  FOR FIRST-TIME GENERATION ONLY
+    This overwrites .doc-evergreen/outline.json. For regeneration with
+    an existing outline, use generate-from-outline instead.
+    
+    \\b
+    Examples:
+      # Let LLM infer type from purpose (recommended)
+      $ doc-evergreen generate README.md \\
+          --purpose "Help someone brand new get started with this project"
+      
+      # Specify type explicitly if desired
+      $ doc-evergreen generate docs/API.md \\
+          --type reference \\
+          --purpose "Document all public APIs comprehensively"
+      
+      # Force overwrite existing outline
+      $ doc-evergreen generate README.md \\
+          --purpose "Updated getting started guide" \\
+          --force
+    
+    \\b
+    For incremental updates (future):
+      Once content change detection is implemented, this command will
+      become more efficient. For now, it regenerates from scratch.
+    """
+    import logging
+    from doc_evergreen.generate.doc_type import validate_doc_type, InvalidDocTypeError
+    from doc_evergreen.generate.intent_context import IntentContext, save_intent_context
+    from doc_evergreen.generate.repo_indexer import RepoIndexer
+    from doc_evergreen.generate.relevance_analyzer import RelevanceNotes
+    from doc_evergreen.generate.llm_relevance_analyzer import LLMRelevanceAnalyzer
+    from doc_evergreen.generate.outline_generator import OutlineGenerator
+    from doc_evergreen.generate.doc_generator import DocumentGenerator
+    
+    logger = logging.getLogger(__name__)
+    
+    # Ensure API key is loaded
+    _ensure_api_key()
+    
+    try:
+        # Safety check: warn if outline already exists
+        outline_path = Path(".doc-evergreen/outline.json")
+        if outline_path.exists() and not force:
+            click.echo()
+            click.echo("⚠️  WARNING: Outline already exists!", err=True)
+            click.echo(f"   File: {outline_path}", err=True)
+            click.echo()
+            click.echo("This command will OVERWRITE the existing outline.", err=True)
+            click.echo("If you want to regenerate using the existing outline, use:", err=True)
+            click.echo(f"  $ doc-evergreen generate-from-outline {outline_path}", err=True)
+            click.echo()
+            if not click.confirm("Continue and overwrite existing outline?"):
+                click.echo("Aborted.")
+                return
+        
+        click.echo()
+        click.echo("🚀 Starting full documentation generation pipeline...")
+        click.echo()
+        
+        # Step 1: Infer doc type if not provided
+        if doc_type is None:
+            click.echo("🤔 Inferring documentation type from your purpose...")
+            inferred_type = _infer_doc_type(purpose)
+            click.echo(f"   → Inferred type: {inferred_type}")
+            doc_type = inferred_type
+        
+        # Step 2: Capture intent
+        click.echo("🎯 Capturing intent...")
+        validated_doc_type = validate_doc_type(doc_type)
+        context = IntentContext(
+            doc_type=validated_doc_type,
+            purpose=purpose,
+            output_path=output_path,
+        )
+        save_intent_context(context)
+        
+        # Step 3: Index repository
+        click.echo("📂 Indexing repository...")
+        indexer = RepoIndexer(project_root=Path.cwd())
+        file_index = indexer.build_index()
+        click.echo(f"   Found {file_index.total_files} files")
+        
+        # Save file index
+        file_index.save(Path(".doc-evergreen/file_index.json"))
+        
+        # Step 4: Analyze relevance
+        click.echo("🔍 Analyzing file relevance (LLM-powered)...")
+        analyzer = LLMRelevanceAnalyzer(
+            context=context,
+            file_index=file_index,
+            threshold=50,
+            batch_size=5,
+        )
+        
+        # Progress tracking
+        def show_progress(current, total, file_path):
+            percentage = int((current / total) * 100)
+            click.echo(f"   🔍 {percentage}% ({current}/{total}) - {file_path}")
+        
+        scores = analyzer.analyze(progress_callback=show_progress)
+        click.echo(f"   ✓ Identified {len(scores)} relevant files")
+        
+        # Save relevance notes
+        notes = RelevanceNotes(
+            doc_type=context.doc_type.value,
+            purpose=context.purpose,
+            relevant_files=scores,
+            total_files_analyzed=file_index.total_files,
+            threshold=50,
+        )
+        notes.save(Path(".doc-evergreen/relevance_notes.json"))
+        
+        # Step 5: Generate outline
+        click.echo("📝 Generating custom outline...")
+        generator = OutlineGenerator(context=context, relevant_files=scores)
+        outline = generator.generate()
+        
+        # Count sections
+        def count_sections(sections):
+            count = len(sections)
+            for s in sections:
+                count += count_sections(s.sections)
+            return count
+        total_sections = count_sections(outline.sections)
+        click.echo(f"   {total_sections} total sections")
+        
+        # Save outline
+        outline.save(outline_path)
+        click.echo(f"   ✓ Outline saved to: {outline_path}")
+        
+        # Step 6: Generate document content
+        click.echo()
+        click.echo("✨ Generating documentation content...")
+        click.echo()
+        
+        # Progress callback
+        def progress_callback(msg: str) -> None:
+            click.echo(msg, nl=False)
+        
+        doc_generator = DocumentGenerator(project_root=Path.cwd(), progress_callback=progress_callback)
+        content = doc_generator.generate_from_outline(outline_path)
+        
+        # Success message
+        click.echo()
+        click.echo("=" * 60)
+        click.echo("✅ Documentation generated successfully!")
+        click.echo("=" * 60)
+        click.echo()
+        click.echo(f"📄 Document created: {outline.output_path}")
+        click.echo(f"   {len(content)} characters, {total_sections} sections")
+        click.echo()
+        click.echo(f"📋 Outline saved: {outline_path}")
+        click.echo(f"   (Use generate-from-outline to regenerate from this outline)")
+        click.echo()
+        click.echo("💡 Next steps:")
+        click.echo("   • Review the generated documentation")
+        click.echo("   • Edit the outline if you want to adjust structure")
+        click.echo("   • Run generate-from-outline to regenerate after edits")
+        click.echo()
+        
+    except InvalidDocTypeError as e:
+        click.echo(f"❌ Error: {e}", err=True)
+        raise click.Abort()
+    except Exception as e:
+        click.echo()
+        click.echo(f"❌ Error during generation: {e}", err=True)
+        click.echo()
+        import traceback
+        traceback.print_exc()
+        raise click.Abort()
+
+
 @cli.command("init")
 @click.option("--list", "list_templates", is_flag=True, help="List all available templates with descriptions")
 @click.option("--template", help="Template name (e.g., tutorial-quickstart)")
