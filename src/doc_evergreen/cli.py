@@ -1245,8 +1245,7 @@ def generate_doc(output_path: str, doc_type: str, purpose: str):
     )
 )
 @click.option("--purpose", required=True, help="What should this documentation accomplish?")
-@click.pass_context
-def generate_outline(ctx, output_path: str, doc_type: str, purpose: str):
+def generate_outline(output_path: str, doc_type: str, purpose: str):
     """Generate documentation outline without creating the document.
     
     This command runs the complete analysis pipeline and creates an outline.json
@@ -1287,10 +1286,8 @@ def generate_outline(ctx, output_path: str, doc_type: str, purpose: str):
     from doc_evergreen.generate.outline_generator import OutlineGenerator
     
     logger = logging.getLogger(__name__)
-    verbose = ctx.obj.get('verbose', False)
     
     try:
-        logger.info(f"🎯 Starting generate-outline (verbose={verbose})")
         # Step 1: Capture intent (Sprint 1)
         click.echo("🎯 Capturing intent...")
         validated_doc_type = validate_doc_type(doc_type)
