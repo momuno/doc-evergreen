@@ -1,0 +1,188 @@
+{
+  "_meta": {
+    "name": "generated-howto-20251208",
+    "description": "This document is to help someone brand new to the repository answer the questions 'how do i get started?'  think efficent to-the-point how to guide that answers this question, and not a learning tutorial journey that would include a bit more explanation of concepts. the audience for this is the person who just wants to get their hands dirty fast so needs to get the basic usage of doc-evergreen understand fast.  then they will likely go explore other stuff on their own -- they don't need a tutorial.",
+    "use_case": "This document is to help someone brand new to the repository answer the questions 'how do i get started?'  think efficent to-the-point how to guide that answers this question, and not a learning tutorial journey that would include a bit more explanation of concepts. the audience for this is the person who just wants to get their hands dirty fast so needs to get the basic usage of doc-evergreen understand fast.  then they will likely go explore other stuff on their own -- they don't need a tutorial.",
+    "quadrant": "howto",
+    "estimated_lines": "400-800 lines",
+    "generation_method": "forward",
+    "doc_type": "howto",
+    "user_intent": "This document is to help someone brand new to the repository answer the questions 'how do i get started?'  think efficent to-the-point how to guide that answers this question, and not a learning tutorial journey that would include a bit more explanation of concepts. the audience for this is the person who just wants to get their hands dirty fast so needs to get the basic usage of doc-evergreen understand fast.  then they will likely go explore other stuff on their own -- they don't need a tutorial."
+  },
+  "document": {
+    "title": "Doc-Evergreen Quick Start Guide",
+    "output": "DocEvergreenQuickStart.md",
+    "sections": [
+      {
+        "heading": "# What You'll Accomplish",
+        "level": 1,
+        "prompt": "Write a brief problem statement explaining what this guide will help users achieve - getting doc-evergreen installed and generating their first documentation quickly. Include what doc-evergreen does in 1-2 sentences.",
+        "sources": [
+          {
+            "file": "README.md",
+            "reasoning": "Contains the core project overview and purpose that explains what doc-evergreen does"
+          },
+          {
+            "file": "DocEvergreen101.md",
+            "reasoning": "Quick start guide that likely contains the essential overview for new users"
+          }
+        ],
+        "sections": []
+      },
+      {
+        "heading": "# Prerequisites",
+        "level": 1,
+        "prompt": "List the technical requirements needed before starting, including Python version requirements and any system dependencies. Keep it concise and actionable.",
+        "sources": [
+          {
+            "file": "pyproject.toml",
+            "reasoning": "Contains Python version requirements (>=3.11) and package dependencies"
+          },
+          {
+            "file": "docs/INSTALLATION.md",
+            "reasoning": "Likely contains system requirements and prerequisites for installation"
+          }
+        ],
+        "sections": []
+      },
+      {
+        "heading": "# Installation",
+        "level": 1,
+        "prompt": "Provide step-by-step installation commands with the recommended method first. Include verification steps to confirm successful installation.",
+        "sources": [
+          {
+            "file": "docs/INSTALLATION.md",
+            "reasoning": "Contains multiple installation methods with concrete commands (pipx recommended, pip, local install)"
+          },
+          {
+            "file": "pyproject.toml",
+            "reasoning": "Provides the official package name (doc-evergreen) needed for installation commands"
+          }
+        ],
+        "sections": []
+      },
+      {
+        "heading": "# Basic Usage",
+        "level": 1,
+        "prompt": "Show the essential CLI commands and workflow to generate documentation. Focus on the most common use case to get users productive immediately.",
+        "sources": [
+          {
+            "file": "src/doc_evergreen/cli.py",
+            "reasoning": "Contains the CLI entry point with command structure, available options, and parameters"
+          },
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Contains 'Using the CLI' section with practical command examples and workflows"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "## Essential Commands",
+            "level": 2,
+            "prompt": "List the core CLI commands users need to know, with brief descriptions and basic syntax examples.",
+            "sources": [
+              {
+                "file": "src/doc_evergreen/cli.py",
+                "reasoning": "Defines the actual CLI commands and their parameters"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Configuration",
+            "level": 2,
+            "prompt": "Explain the minimal configuration needed to get started, including the .doc-evergreen.yaml file and graceful defaults.",
+            "sources": [
+              {
+                "file": "src/doc_evergreen/config.py",
+                "reasoning": "Shows the configuration structure and mentions graceful fallback to defaults"
+              }
+            ],
+            "sections": []
+          }
+        ]
+      },
+      {
+        "heading": "# Working with Templates",
+        "level": 1,
+        "prompt": "Explain what templates are and how to use them effectively. Focus on practical usage rather than theory.",
+        "sources": [
+          {
+            "file": "docs/TEMPLATES.md",
+            "reasoning": "Directly explains templates and how they work - essential for using doc-evergreen effectively"
+          },
+          {
+            "file": "src/doc_evergreen/core/template_schema.py",
+            "reasoning": "Defines the Section schema that users need to understand when working with templates"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "## Using Built-in Templates",
+            "level": 2,
+            "prompt": "Show how to discover and use the templates that come with doc-evergreen.",
+            "sources": [
+              {
+                "file": "src/doc_evergreen/template_registry.py",
+                "reasoning": "Contains the TemplateRegistry class for discovering and loading built-in templates"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Document Types",
+            "level": 2,
+            "prompt": "Briefly explain the Diataxis framework document types (tutorial, how-to, reference, explanation) that doc-evergreen supports.",
+            "sources": [
+              {
+                "file": "src/doc_evergreen/generate/doc_type.py",
+                "reasoning": "Defines the DocType enum based on Diataxis framework - important for understanding doc-evergreen's approach"
+              }
+            ],
+            "sections": []
+          }
+        ]
+      },
+      {
+        "heading": "# Your First Documentation",
+        "level": 1,
+        "prompt": "Provide a complete, concrete example of generating documentation from start to finish. Include the commands to run and what to expect as output.",
+        "sources": [
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Contains examples and workflows for practical usage"
+          },
+          {
+            "file": "src/doc_evergreen/context.py",
+            "reasoning": "Shows which source files doc-evergreen reads to generate documentation"
+          }
+        ],
+        "sections": []
+      },
+      {
+        "heading": "# Verification",
+        "level": 1,
+        "prompt": "Explain how to verify that doc-evergreen is working correctly and troubleshoot common issues. Include what successful output looks like.",
+        "sources": [
+          {
+            "file": "tests/test_reverse_command.py",
+            "reasoning": "Demonstrates expected command behavior and output patterns for verification"
+          }
+        ],
+        "sections": []
+      },
+      {
+        "heading": "# Next Steps",
+        "level": 1,
+        "prompt": "Point users to additional resources for exploring advanced features, customization, and deeper usage patterns.",
+        "sources": [
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Contains comprehensive documentation for users ready to explore beyond basics"
+          }
+        ],
+        "sections": []
+      }
+    ]
+  }
+}
