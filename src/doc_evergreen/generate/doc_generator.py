@@ -257,9 +257,16 @@ class DocumentGenerator:
 - Focus ONLY on NEW information for THIS specific section
 - Ensure this section flows naturally from what came before
 
+**CRITICAL: Exclude Deprecated/Outdated Code:**
+- DO NOT document any code, features, or commands marked as DEPRECATED
+- DO NOT document any code with comments indicating it's outdated or replaced
+- If you discover deprecated code in source files, IGNORE IT completely
+- Only document current, active, non-deprecated functionality
+- If a feature has been superseded by a newer approach, document ONLY the new approach
+
 **Content Guidelines:**
 - Write clear, concise, beginner-friendly content
-- Use concrete examples from the source files
+- Use concrete examples from the source files (excluding deprecated code)
 - Focus on practical, actionable information that hasn't been covered yet
 - Use proper markdown formatting
 - Keep the tone professional but approachable
