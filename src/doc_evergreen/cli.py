@@ -1446,6 +1446,9 @@ def generate_from_outline(outline_path: str):
     """
     from doc_evergreen.generate.doc_generator import DocumentGenerator
     
+    # Ensure API key is loaded
+    _ensure_api_key()
+    
     try:
         outline_path_obj = Path(outline_path)
         
@@ -1461,11 +1464,16 @@ def generate_from_outline(outline_path: str):
             click.echo()
             raise click.Abort()
         
-        # Generate document
+        # Generate document with progress callback
         click.echo("✨ Generating documentation from outline...")
         click.echo()
         
-        generator = DocumentGenerator(project_root=Path.cwd())
+        # Progress callback to show generation progress
+        def progress_callback(msg: str) -> None:
+            """Display progress messages during generation."""
+            click.echo(msg, nl=False)  # nl=False since messages include newlines
+        
+        generator = DocumentGenerator(project_root=Path.cwd(), progress_callback=progress_callback)
         content = generator.generate_from_outline(outline_path_obj)
         
         # Success message
