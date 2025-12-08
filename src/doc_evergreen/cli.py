@@ -6,6 +6,7 @@ Supports section-by-section documentation generation with explicit prompts.
 
 import asyncio
 import json
+import os
 from pathlib import Path
 import logging
 
@@ -18,6 +19,38 @@ from doc_evergreen.core.template_schema import Section
 from doc_evergreen.core.template_schema import Template
 from doc_evergreen.core.template_schema import parse_template
 from doc_evergreen.core.template_schema import validate_template
+
+
+def _ensure_api_key():
+    """Load API key from ~/.claude/api_key.txt and set as environment variable.
+
+    This ensures both direct Anthropic SDK usage and pydantic-ai can access the key.
+    """
+    import sys
+
+    # Skip if already set
+    if os.getenv('ANTHROPIC_API_KEY'):
+        return
+
+    # Load from file
+    claude_key_path = Path.home() / ".claude" / "api_key.txt"
+    if not claude_key_path.exists():
+        print(f"Warning: API key file not found at {claude_key_path}", file=sys.stderr)
+        print("LLM features will not work without an API key.", file=sys.stderr)
+        return
+
+    try:
+        api_key = claude_key_path.read_text().strip()
+        # Handle key=value format
+        if "=" in api_key:
+            api_key = api_key.split("=", 1)[1].strip()
+        # Set as environment variable
+        os.environ['ANTHROPIC_API_KEY'] = api_key
+        # Debug: Verify it was set
+        if len(os.environ.get('ANTHROPIC_API_KEY', '')) > 0:
+            print(f"✓ API key loaded from {claude_key_path} ({len(api_key)} chars)", file=sys.stderr)
+    except Exception as e:
+        print(f"Warning: Failed to load API key: {e}", file=sys.stderr)
 
 
 def _get_output_path(template_meta) -> str:
@@ -500,23 +533,26 @@ def regen_doc(template_name: str, auto_approve: bool, output: str | None, verbos
         click.echo(f"Error: Failed to parse template: {e}", err=True)
         raise click.Abort()
 
-    # 3. Enable verbose logging if requested
+    # 3. Ensure API key is loaded
+    _ensure_api_key()
+
+    # 4. Enable verbose logging if requested
     if verbose:
         import logging
-        
+
         # Set doc_evergreen loggers to INFO level for detailed progress
         logging.basicConfig(
             level=logging.INFO,
             format='%(message)s'  # Clean format, just the message
         )
-        
+
         # Silence noisy third-party libraries
         logging.getLogger('anthropic').setLevel(logging.WARNING)
         logging.getLogger('httpx').setLevel(logging.WARNING)
         logging.getLogger('httpcore').setLevel(logging.WARNING)
         logging.getLogger('anthropic._base_client').setLevel(logging.WARNING)
-    
-    # 3. Initialize generator (use cwd as base_dir for intuitive source resolution)
+
+    # 5. Initialize generator (use cwd as base_dir for intuitive source resolution)
     generator = ChunkedGenerator(template_obj, Path.cwd())
 
     # Progress callback to show generation progress
@@ -639,13 +675,16 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
     """
     from pathlib import Path
     from doc_evergreen.reverse import (
-        DocumentParser, 
-        IntelligentSourceDiscoverer, 
+        DocumentParser,
+        IntelligentSourceDiscoverer,
         ContentIntentAnalyzer,
         PromptGenerator,
         TemplateAssembler
     )
-    
+
+    # Ensure API key is loaded
+    _ensure_api_key()
+
     # Enable logging if verbose (but filter out noisy third-party libraries)
     if verbose:
         import logging
@@ -1286,7 +1325,10 @@ def generate_outline(output_path: str, doc_type: str, purpose: str):
     from doc_evergreen.generate.outline_generator import OutlineGenerator
     
     logger = logging.getLogger(__name__)
-    
+
+    # Ensure API key is loaded
+    _ensure_api_key()
+
     try:
         # Step 1: Capture intent (Sprint 1)
         click.echo("🎯 Capturing intent...")

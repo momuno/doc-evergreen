@@ -51,11 +51,25 @@ class LLMRelevanceAnalyzer:
         
         # Create Anthropic client directly (uses standard API, not beta)
         logger.info("  Creating Anthropic client (standard API)...")
-        
-        api_key = os.getenv('ANTHROPIC_API_KEY')
-        if not api_key:
-            raise ValueError("ANTHROPIC_API_KEY environment variable not set")
-        
+
+        # Load API key from ~/.claude/api_key.txt (same as reverse command)
+        from pathlib import Path
+        claude_key_path = Path.home() / ".claude" / "api_key.txt"
+        if not claude_key_path.exists():
+            # Fallback to environment variable
+            api_key = os.getenv('ANTHROPIC_API_KEY')
+            if not api_key:
+                raise ValueError(
+                    "Anthropic API key not found. Either:\n"
+                    f"  1. Create {claude_key_path} with your API key, or\n"
+                    "  2. Set ANTHROPIC_API_KEY environment variable"
+                )
+        else:
+            api_key = claude_key_path.read_text().strip()
+            # Handle key=value format
+            if "=" in api_key:
+                api_key = api_key.split("=", 1)[1].strip()
+
         self.client = AsyncAnthropic(api_key=api_key)
         self.model = "claude-sonnet-4-5"
         self.system_prompt = self._build_system_prompt()
