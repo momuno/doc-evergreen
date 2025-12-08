@@ -13,16 +13,20 @@ class DocumentGenerator:
     from parent sections to child sections for coherent flow.
     """
     
-    def __init__(self, project_root: Path = Path.cwd(), llm_client=None):
+    def __init__(self, project_root: Path = Path.cwd(), llm_client=None, progress_callback=None):
         """Initialize generator.
         
         Args:
             project_root: Project root directory for reading source files
             llm_client: LLM client for content generation (optional, will create if None)
+            progress_callback: Optional callback for progress updates (callable(str))
         """
         self.project_root = project_root
         self.llm_client = llm_client or self._create_llm_client()
         self.section_context = []  # Stack of parent section content for context flow
+        self.progress_callback = progress_callback
+        self.sections_completed = 0
+        self.total_sections = 0
     
     def generate_from_outline(self, outline_path: Path) -> str:
         """Generate complete document from outline.
@@ -35,6 +39,13 @@ class DocumentGenerator:
         """
         # Load outline
         outline = DocumentOutline.load(outline_path)
+        
+        # Count total sections for progress
+        self.total_sections = self._count_sections(outline.sections)
+        self.sections_completed = 0
+        
+        if self.progress_callback:
+            self.progress_callback(f"📝 Generating {self.total_sections} sections...\n")
         
         # Generate content for all sections (top-down DFS)
         document_parts = []
@@ -54,7 +65,17 @@ class DocumentGenerator:
         output_path = self.project_root / outline.output_path
         output_path.write_text(full_document)
         
+        if self.progress_callback:
+            self.progress_callback(f"\n✅ Document written to: {outline.output_path}\n")
+        
         return full_document
+    
+    def _count_sections(self, sections: list) -> int:
+        """Count total sections recursively."""
+        count = len(sections)
+        for section in sections:
+            count += self._count_sections(section.sections)
+        return count
     
     def _generate_section(self, section: Section, depth: int = 0) -> str:
         """Generate content for a section recursively using DFS.
@@ -70,12 +91,31 @@ class DocumentGenerator:
         """
         parts = []
         
+        # Show progress
+        self.sections_completed += 1
+        if self.progress_callback:
+            indent = "  " * depth
+            source_count = len(section.sources)
+            progress_msg = (
+                f"{indent}[{self.sections_completed}/{self.total_sections}] "
+                f"Generating: {section.heading}\n"
+                f"{indent}    Sources: {source_count} file{'s' if source_count != 1 else ''}\n"
+            )
+            self.progress_callback(progress_msg)
+        
         # Add heading
         parts.append(section.heading)
         
         # Generate content for this level using LLM with parent context
         content = self._generate_section_content(section)
         parts.append(content)
+        
+        # Show completion
+        if self.progress_callback:
+            indent = "  " * depth
+            char_count = len(content)
+            self.progress_callback(f"{indent}    ✓ Complete ({char_count} chars)\n")
+
         
         # Push this section's content onto context stack for children (DFS)
         self.section_context.append(content)

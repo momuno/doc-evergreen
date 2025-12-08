@@ -1,0 +1,100 @@
+{
+  "analyzed_at": "2025-12-08T18:35:30.768382+00:00",
+  "total_files_analyzed": 93,
+  "relevant_files_count": 15,
+  "threshold": 50,
+  "doc_type": "tutorial",
+  "purpose": "This document is to help someone brand new to the repository quickly understand how to get started with doc-evergeen.  It is not to give them a deep understanding of how it works internally, instead it is simply output-driven. It answers the question 'how do I use doc-evergreen to get that document output?' because the use of doc-evergreen is for any repo, it should include how to set it up for whatever repo you want to run it for.  a basic quickstart is good.  and more advanced usage should be defferred for another tutorial.  think of this as doc-evergreen 101.",
+  "relevant_files": [
+    {
+      "file": "README.md",
+      "score": 95,
+      "reasoning": "This README is critically important for the doc-evergreen 101 tutorial. It directly addresses the core question 'what is doc-evergreen and how do I use it?' which is essential for someone brand new to the repository. The file preview shows it contains: (1) a clear project overview explaining what doc-evergreen does, (2) the fundamental workflow (templates \u2192 AI analysis \u2192 documentation), which is exactly what a quickstart needs. For a beginner-focused, output-driven tutorial, this README likely contains the essential conceptual foundation, basic usage instructions, and possibly setup steps that would form the backbone of a 101-level tutorial.",
+      "key_material": "Project definition and purpose (AI-powered documentation generation), the core workflow explanation (template files \u2192 source code analysis \u2192 documentation output), and likely contains basic setup/usage instructions that follow. This material directly supports explaining 'how to use doc-evergreen to get document output' and would provide the conceptual framework for the quickstart tutorial."
+    },
+    {
+      "file": "docs/USER_GUIDE.md",
+      "score": 95,
+      "reasoning": "This file is highly relevant for the doc-evergreen 101 tutorial. It's the existing user guide that covers exactly what's needed: what doc-evergreen is, core concepts, CLI usage, and workflows. This provides the foundational structure and content for teaching someone how to use doc-evergreen to generate documentation. The table of contents shows it covers quickstart material (CLI usage, workflows) while also noting advanced usage exists elsewhere - perfectly aligned with the 101-level tutorial scope.",
+      "key_material": "The core concepts section will explain what doc-evergreen does; the 'Using the CLI' section provides command-line interface instructions needed for getting started; the 'Creating Templates' section shows how to set up doc-evergreen for any repository; workflow information demonstrates practical usage patterns. This is essentially the source material for the tutorial being created."
+    },
+    {
+      "file": "docs/TEMPLATES.md",
+      "score": 95,
+      "reasoning": "This file is highly relevant for the documentation purpose. It directly explains how to create and use JSON templates, which is a core feature users need to understand to use doc-evergreen. Since the tutorial aims to help someone brand new understand how to use doc-evergreen to generate documentation output, understanding templates is essential - they define what gets generated, how it's generated, and where files come from/go to. This aligns perfectly with the 'how do I use doc-evergreen to get that document output?' question.",
+      "key_material": "Explains the concept of templates as JSON files that control documentation generation; defines the four key aspects (what, how, where info comes from, where to save); emphasizes that templates enable consistent regeneration as code evolves. This is fundamental knowledge for anyone setting up doc-evergreen for their repository."
+    },
+    {
+      "file": "docs/INSTALLATION.md",
+      "score": 95,
+      "reasoning": "This file is highly relevant for the 'doc-evergreen 101' quickstart tutorial. The documentation purpose explicitly states it should help someone 'brand new to the repository quickly understand how to get started with doc-evergreen' and 'include how to set it up for whatever repo you want to run it for.' This INSTALLATION.md file directly addresses these needs by providing quick install instructions, which is the essential first step for any new user. The presence of 'Quick Install' section and pipx recommendations aligns perfectly with a beginner-friendly quickstart approach. The only reason it's not 100 is that installation alone doesn't complete the full picture - users would still need to know how to actually USE the tool after installing it.",
+      "key_material": "The quick install methods (particularly pipx installation commands), the basic setup steps for getting doc-evergreen installed on a fresh system, and any prerequisites or system requirements mentioned. The file likely contains the essential 'Step 1: Install doc-evergreen' content that would be foundational to a quickstart tutorial. The specific commands like 'pipx install git+https://github.com/momuno/doc-evergreen.git' are exactly what a new user needs to get started."
+    },
+    {
+      "file": "src/doc_evergreen/cli.py",
+      "score": 95,
+      "reasoning": "This is the CLI interface file for doc-evergreen, which is CRITICAL for a 'getting started' tutorial. Users need to understand the command-line interface to actually use the tool. The file appears to contain the main entry points and commands that users will interact with. For a tutorial answering 'how do I use doc-evergreen?', understanding available CLI commands, their arguments, and basic usage patterns is essential. This is the primary interface users interact with to generate documentation.",
+      "key_material": "CLI commands and their parameters, usage examples of how to invoke doc-evergreen from command line, available options/flags, command structure for running documentation generation. This provides the foundational 'how to run it' information that any quickstart guide absolutely requires."
+    },
+    {
+      "file": "src/doc_evergreen/templates/tutorial-quickstart.json",
+      "score": 95,
+      "reasoning": "This file is highly relevant as it is literally the template that defines how to generate the quickstart tutorial documentation. It shows exactly what doc-evergreen expects and how to structure a tutorial template. For someone learning to use doc-evergreen, this file demonstrates: (1) the JSON template structure with _meta section, (2) how to define sections with headings and prompts, (3) what fields are available (title, output, sections), (4) how prompts guide the AI generation, and (5) the quadrant classification system. This is a concrete example of doc-evergreen's input format, which is essential for understanding how to use the tool.",
+      "key_material": "Template structure with _meta fields (name, description, use_case, quadrant, estimated_lines), document configuration (title, output file path), sections array with heading and prompt fields. This shows users the exact JSON schema they need to follow to create their own documentation templates."
+    },
+    {
+      "file": "src/doc_evergreen/config.py",
+      "score": 92,
+      "reasoning": "This file is highly relevant for a doc-evergreen 101 tutorial because it defines the core configuration mechanism that users MUST understand to set up doc-evergreen for their repository. The .doc-evergreen.yaml file is the primary user-facing interface for configuring the tool. Understanding FileConfig, template settings, and how configuration is loaded/parsed is essential for answering 'how do I use doc-evergreen to get document output?' A quickstart guide needs to explain what goes in the config file and how it works.",
+      "key_material": "The configuration file structure (.doc-evergreen.yaml), the FileConfig dataclass showing what options are available (template field), how configuration is loaded and parsed, default fallback behavior when config is missing/malformed. This directly maps to setup instructions needed in the tutorial - users need to know what to put in their config file to make doc-evergreen work."
+    },
+    {
+      "file": "pyproject.toml",
+      "score": 75,
+      "reasoning": "This file is relevant for a quickstart/setup tutorial because it contains critical project metadata that a new user needs to know: the project name ('doc-evergreen'), Python version requirement (>=3.11), and the project description which confirms what the tool does. This information is essential for the 'how to set it up' portion of a 101 tutorial - users need to know system requirements before attempting installation. However, it's not the most critical file since it doesn't show actual usage commands or workflows.",
+      "key_material": "Python version requirement (>=3.11) is crucial for setup prerequisites. Project name 'doc-evergreen' confirms the tool being documented. The description 'AI-powered documentation generation from templates' gives context for what the tool does. Dependencies section (if present beyond preview) would show what gets installed, which is relevant for understanding the setup process."
+    },
+    {
+      "file": ".docignore",
+      "score": 75,
+      "reasoning": "This file is directly relevant for teaching users how to configure doc-evergreen for their own repositories. The .docignore file demonstrates a practical, real-world example of how to exclude directories and files from documentation generation. For a '101' tutorial teaching setup and basic usage, showing users how to control what gets documented is essential. However, it's not the most critical file - it's a configuration example rather than core functionality explanation.",
+      "key_material": "Shows the syntax and patterns for excluding directories (.beads/, .venv/, etc.) and files (TEST_*.md) from documentation generation. Demonstrates the concept of filtering content - a key feature users need when setting up doc-evergreen for their own repos. The commented sections ('Exclude internal tooling', 'Exclude test artifacts') illustrate the 'why' behind exclusions, which helps users understand when and what to exclude in their own projects."
+    },
+    {
+      "file": "tests/test_full_workflow_init_to_regen.py",
+      "score": 75,
+      "reasoning": "This test file demonstrates the complete workflow from initialization to regeneration, which directly maps to the tutorial purpose of showing how to use doc-evergreen. The test structure reveals: 1) How to run 'init' command to set up doc-evergreen, 2) The customization step (though details are cut off), and 3) How to run 'regen-doc' to generate output. These are exactly the practical steps a new user needs. However, it's written as test code rather than direct usage examples, requiring translation to tutorial format. The file name explicitly mentions 'init_to_regen' which is the core workflow for getting started.",
+      "key_material": "The test demonstrates the essential command sequence: init \u2192 customize \u2192 regen-doc. It shows practical CLI usage patterns through CliRunner, reveals what happens during initialization (likely file/config generation), and demonstrates the regeneration process. The test structure implicitly documents expected file outputs and configuration steps needed for basic usage. This provides concrete examples of the commands and their sequence for the 'doc-evergreen 101' quickstart."
+    },
+    {
+      "file": "src/doc_evergreen/context.py",
+      "score": 75,
+      "reasoning": "This file is moderately useful for the 'doc-evergreen 101' tutorial because it reveals a key aspect of how doc-evergreen gathers context for documentation generation. The hardcoded SOURCES list shows users what files doc-evergreen looks at by default (README.md, amplifier/__init__.py, pyproject.toml, AGENTS.md). This is relevant for helping new users understand what needs to be in their repository for doc-evergreen to work effectively. However, it's more of an implementation detail rather than a user-facing setup instruction. The file doesn't directly show how to configure or run doc-evergreen for a new repo, but it does reveal important information about what source files should exist in the target repository.",
+      "key_material": "The SOURCES list showing which files doc-evergreen reads by default (README.md, amplifier/__init__.py, pyproject.toml, AGENTS.md) is the most useful information. This tells users what files they should have in their repository structure for doc-evergreen to function properly. The read_source_file function signature also hints at how the tool processes these files, though the implementation details are less critical for a beginner tutorial."
+    },
+    {
+      "file": "src/doc_evergreen/templates/howto-contributing-guide.json",
+      "score": 75,
+      "reasoning": "This file is moderately relevant for a doc-evergreen 101 tutorial. It demonstrates one of the built-in template types that doc-evergreen provides, showing users what kind of documentation they can generate. The file structure (with _meta fields like 'use_case', 'quadrant', 'estimated_lines' and the document structure with title, output, sections) serves as a concrete example of how templates are configured. However, it's not essential for the basic 'how to get started' quickstart - users don't need to understand this specific template to begin using doc-evergreen. It's more valuable for showing 'what templates are available' and 'how templates are structured' rather than the core setup and first-use workflow.",
+      "key_material": "Shows the template JSON structure with _meta configuration (name, description, use_case, quadrant) and document structure (title, output file, sections with headings and prompts). Demonstrates that doc-evergreen comes with pre-built templates for different documentation types. Useful for explaining template concepts and what kinds of documentation users can generate, but not critical for basic setup and first run."
+    },
+    {
+      "file": "src/doc_evergreen/generate/doc_type.py",
+      "score": 75,
+      "reasoning": "This file defines the DocType enum that categorizes documentation types in the Diataxis framework, which doc-evergreen uses. For a 'doc-evergreen 101' tutorial, this is moderately important because: (1) Users need to understand that doc-evergreen uses the Diataxis framework and supports different doc types (Tutorial, How-to, Reference, Explanation), (2) When running doc-evergreen, users will need to specify which type of documentation they want to generate, making this a key parameter they'll encounter. However, it's not the highest priority because the tutorial focuses on 'how to use' rather than deep framework understanding. The file provides context for what doc types are available when setting up and running doc-evergreen.",
+      "key_material": "The four documentation types available in doc-evergreen: Tutorial (learning-oriented/getting started), How-to (goal-oriented/solving problems), Reference (information-oriented/technical description), and Explanation (understanding-oriented/clarification). This helps users understand what kind of documentation they can generate and how to specify it when using the tool. The link to Diataxis framework provides optional deeper reading for interested users."
+    },
+    {
+      "file": "src/doc_evergreen/generate/relevance_analyzer.py",
+      "score": 75,
+      "reasoning": "This file implements the relevance analysis functionality that is central to how doc-evergreen works - it determines which files are analyzed when generating documentation. For a quickstart tutorial showing 'how to use doc-evergreen', this is moderately useful because: (1) Understanding that doc-evergreen uses relevance scoring helps users know WHY certain files are included/excluded in their output, (2) The file preview and scoring mechanism explains how the tool intelligently filters repository content, which builds user confidence. However, it's not essential for a basic 'how to get started' guide since users don't need to understand the internal scoring algorithm to USE the tool - they just need to know it exists and trust it works. This would be more relevant for an 'advanced usage' or 'how it works internally' document.",
+      "key_material": "The concept that doc-evergreen uses AI-powered relevance scoring to filter files (via IntentContext and FileIndex) is useful context for the tutorial. Knowing files get previewed and scored 0-100 helps users understand what happens when they run the tool. The dataclasses and methods show the tool's intelligent filtering approach, which reassures users they won't get irrelevant file dumps in their documentation."
+    },
+    {
+      "file": "src/doc_evergreen/core/template_schema.py",
+      "score": 75,
+      "reasoning": "This file is moderately relevant for a doc-evergreen 101 tutorial. It defines the core template schema that users need to understand when creating their own documentation templates. For a quickstart guide, users will need to create a template file, and understanding the Section dataclass structure (heading, prompt, sources, sections) is essential for that task. However, this is implementation detail rather than user-facing documentation - the tutorial would likely show example template JSON/YAML rather than diving into this Python code. The file is useful for understanding what fields are available and how templates are structured, but users don't need to read this code to use doc-evergreen effectively.",
+      "key_material": "The Section dataclass structure shows what elements a template can contain: 'heading' (required), 'prompt' (optional), 'sources' (list), and nested 'sections' (list). This directly maps to what users need to put in their template files. The nested structure capability (sections within sections) is important for users to know when creating hierarchical documentation."
+    }
+  ]
+}
