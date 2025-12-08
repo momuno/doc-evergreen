@@ -110,16 +110,19 @@ class DocumentOutline:
 
 
 class OutlineGenerator:
-    """Generates hierarchical document outlines.
+    """Generates hierarchical document outlines using LLM.
     
-    For Sprint 4-5, uses rule-based generation. Future enhancements
-    can add LLM-based structure generation for more sophisticated outlines.
+    Uses Claude to generate custom outlines based on:
+    - User intent (doc type, purpose)
+    - Relevant files with reasoning
+    - Diataxis documentation framework
     """
     
     def __init__(
         self,
         context: IntentContext,
         relevant_files: list[RelevanceScore],
+        llm_client=None,
         max_depth: int = 3,
     ):
         """Initialize generator.
@@ -127,30 +130,27 @@ class OutlineGenerator:
         Args:
             context: Intent context (doc type, purpose)
             relevant_files: Relevant files with scores and reasoning
+            llm_client: LLM client for outline generation (optional, will create if None)
             max_depth: Maximum nesting depth
         """
         self.context = context
         self.relevant_files = relevant_files
         self.max_depth = max_depth
+        self.llm_client = llm_client or self._create_llm_client()
     
     def generate(self) -> DocumentOutline:
-        """Generate complete hierarchical outline.
+        """Generate complete hierarchical outline using LLM.
         
         Returns:
-            DocumentOutline with nested sections
+            DocumentOutline with nested sections customized to user intent
         """
+        # Use LLM to generate custom outline based on intent and relevant files
+        outline_response = self._generate_llm_outline()
+        
+        # Parse LLM response into structured outline
         doc_type = self.context.doc_type.value
-        
-        # Generate title
-        title = self._generate_title()
-        
-        # Generate top-level sections based on doc type
-        sections = self._generate_top_level_sections(doc_type)
-        
-        # Generate subsections for each top-level section
-        for section in sections:
-            if section.level < self.max_depth:
-                section.sections = self._generate_subsections(section, doc_type)
+        title = outline_response.get("title", self._generate_title())
+        sections = self._parse_llm_sections(outline_response.get("sections", []))
         
         return DocumentOutline(
             title=title,
@@ -160,8 +160,184 @@ class OutlineGenerator:
             sections=sections,
         )
     
+    def _create_llm_client(self):
+        """Create LLM client for outline generation."""
+        from pathlib import Path
+        import os
+        
+        # Simple LLM client wrapper using Anthropic
+        class SimpleLLMClient:
+            def __init__(self):
+                # Get API key from environment (already loaded by CLI)
+                api_key = os.getenv('ANTHROPIC_API_KEY')
+                if not api_key:
+                    # Fallback to loading from file
+                    claude_key_path = Path.home() / ".claude" / "api_key.txt"
+                    if claude_key_path.exists():
+                        api_key = claude_key_path.read_text().strip()
+                        if "=" in api_key:
+                            api_key = api_key.split("=", 1)[1].strip()
+                
+                if not api_key:
+                    raise ValueError("Anthropic API key not found")
+                
+                try:
+                    import anthropic
+                    self.client = anthropic.Anthropic(api_key=api_key)
+                    self.model = "claude-sonnet-4-20250514"
+                except ImportError:
+                    raise ImportError("anthropic package not installed. Run: pip install anthropic")
+            
+            def generate(self, prompt: str, temperature: float = 0.0) -> str:
+                """Generate response from Claude."""
+                message = self.client.messages.create(
+                    model=self.model,
+                    max_tokens=4096,
+                    temperature=temperature,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                return message.content[0].text
+        
+        return SimpleLLMClient()
+    
+    def _generate_llm_outline(self) -> dict:
+        """Generate outline using LLM based on user intent and relevant files."""
+        # Build context for LLM
+        relevant_files_context = self._build_relevant_files_context()
+        
+        # Create prompt for LLM
+        prompt = f"""You are a technical documentation expert. Generate a hierarchical outline for a {self.context.doc_type.value} document.
+
+**User Intent:**
+{self.context.purpose}
+
+**Documentation Type:** {self.context.doc_type.value}
+{self._get_doc_type_guidance(self.context.doc_type.value)}
+
+**Relevant Files Discovered:**
+{relevant_files_context}
+
+**Task:**
+Generate a custom outline with sections and subsections that:
+1. Aligns with the user's intent and purpose
+2. Places relevant source files in appropriate sections
+3. Follows the {self.context.doc_type.value} documentation pattern
+4. Has meaningful prompts that guide content generation
+
+**Output Format (JSON):**
+{{
+  "title": "Document Title",
+  "sections": [
+    {{
+      "heading": "# Section Name",
+      "level": 1,
+      "prompt": "Clear instruction for what content should be generated in this section",
+      "sources": [
+        {{
+          "file": "path/to/file.py",
+          "reasoning": "Why this file is relevant to this section"
+        }}
+      ],
+      "sections": [
+        {{
+          "heading": "## Subsection Name",
+          "level": 2,
+          "prompt": "Clear instruction for subsection content",
+          "sources": [...],
+          "sections": []
+        }}
+      ]
+    }}
+  ]
+}}
+
+**Important Guidelines:**
+- Maximum 3 levels of nesting (level 1, 2, 3)
+- Each section should have 1-5 relevant source files
+- Prompts should be specific and actionable
+- Structure should flow logically for the documentation type
+- Match source files to sections based on their relevance reasoning
+
+Generate the outline as valid JSON:"""
+        
+        # Call LLM
+        response = self.llm_client.generate(prompt, temperature=0.3)
+        
+        # Parse JSON response (extract JSON from markdown code blocks if present)
+        import re
+        json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', response, re.DOTALL)
+        if json_match:
+            response = json_match.group(1)
+        
+        return json.loads(response)
+    
+    def _build_relevant_files_context(self) -> str:
+        """Build context string from relevant files."""
+        if not self.relevant_files:
+            return "No relevant files identified."
+        
+        lines = []
+        for i, rf in enumerate(self.relevant_files[:20], 1):  # Top 20 files
+            lines.append(f"{i}. {rf.file_path} (score: {rf.score})")
+            lines.append(f"   Reasoning: {rf.reasoning}")
+        
+        return "\n".join(lines)
+    
+    def _get_doc_type_guidance(self, doc_type: str) -> str:
+        """Get guidance for specific doc type."""
+        guidance = {
+            "tutorial": """
+**Tutorial Characteristics:**
+- Learning-oriented, takes user on a journey
+- Step-by-step progression
+- Focuses on getting user to complete a first task successfully
+- Should include: Introduction, Prerequisites, Installation, Quick Start, Next Steps""",
+            "howto": """
+**How-To Characteristics:**
+- Goal-oriented, problem-solving
+- Practical steps to achieve a specific outcome
+- Should include: Problem statement, Prerequisites, Step-by-step solution, Verification""",
+            "reference": """
+**Reference Characteristics:**
+- Information-oriented, factual
+- Comprehensive technical details
+- Should include: Overview, API/Commands, Parameters, Examples, Return values""",
+            "explanation": """
+**Explanation Characteristics:**
+- Understanding-oriented, conceptual
+- Clarifies and illuminates
+- Should include: Overview, Key Concepts, Design Rationale, Trade-offs, Related Topics"""
+        }
+        return guidance.get(doc_type, "")
+    
+    def _parse_llm_sections(self, sections_data: list) -> list[Section]:
+        """Parse LLM-generated sections into Section objects."""
+        sections = []
+        
+        for section_data in sections_data:
+            # Parse sources
+            sources = []
+            for src_data in section_data.get("sources", []):
+                sources.append(SourceReference(
+                    file=src_data.get("file", ""),
+                    reasoning=src_data.get("reasoning", "")
+                ))
+            
+            # Parse subsections recursively
+            subsections = self._parse_llm_sections(section_data.get("sections", []))
+            
+            sections.append(Section(
+                heading=section_data.get("heading", ""),
+                level=section_data.get("level", 1),
+                prompt=section_data.get("prompt", ""),
+                sources=sources,
+                sections=subsections
+            ))
+        
+        return sections
+    
     def _generate_title(self) -> str:
-        """Generate document title from purpose."""
+        """Generate document title from purpose (fallback)."""
         purpose = self.context.purpose
         doc_type = self.context.doc_type.value
         
@@ -176,269 +352,4 @@ class OutlineGenerator:
             return "Technical Overview"
         else:
             return "Documentation"
-    
-    def _generate_top_level_sections(self, doc_type: str) -> list[Section]:
-        """Generate top-level sections based on doc type."""
-        if doc_type == "tutorial":
-            return self._tutorial_sections()
-        elif doc_type == "howto":
-            return self._howto_sections()
-        elif doc_type == "reference":
-            return self._reference_sections()
-        elif doc_type == "explanation":
-            return self._explanation_sections()
-        else:
-            return self._default_sections()
-    
-    def _tutorial_sections(self) -> list[Section]:
-        """Generate tutorial structure."""
-        sections = []
-        
-        # Introduction
-        sections.append(Section(
-            heading="# Introduction",
-            level=1,
-            prompt=(
-                "Write a welcoming introduction (2-3 paragraphs) that explains what "
-                "this tool/project does and why it's useful. Set expectations for what "
-                "the reader will learn. Don't cover installation or usage details - "
-                "those are in sections below."
-            ),
-            sources=self._get_sources_for_section("overview"),
-            sections=[],
-        ))
-        
-        # Getting Started
-        sections.append(Section(
-            heading="# Getting Started",
-            level=1,
-            prompt=(
-                "Provide a high-level overview of getting started. "
-                "Introduce the subsections below but don't repeat their content. "
-                "Keep this brief (1-2 paragraphs)."
-            ),
-            sources=self._get_sources_for_section("getting_started"),
-            sections=[],
-        ))
-        
-        # Next Steps
-        sections.append(Section(
-            heading="# Next Steps",
-            level=1,
-            prompt=(
-                "Suggest what the reader should do next after completing this tutorial. "
-                "Point to additional resources or advanced topics. "
-                "If there are subsections below, introduce them briefly without covering their details."
-            ),
-            sources=self._get_sources_for_section("next_steps"),
-            sections=[],
-        ))
-        
-        return sections
-    
-    def _howto_sections(self) -> list[Section]:
-        """Generate how-to structure."""
-        return [
-            Section(
-                heading="# Overview",
-                level=1,
-                prompt="Brief overview of the problem and solution approach.",
-                sources=self._get_sources_for_section("overview"),
-                sections=[],
-            ),
-            Section(
-                heading="# Prerequisites",
-                level=1,
-                prompt="List what the reader needs before starting.",
-                sources=self._get_sources_for_section("prerequisites"),
-                sections=[],
-            ),
-            Section(
-                heading="# Steps",
-                level=1,
-                prompt="High-level overview. Details in subsections below.",
-                sources=self._get_sources_for_section("steps"),
-                sections=[],
-            ),
-        ]
-    
-    def _reference_sections(self) -> list[Section]:
-        """Generate reference structure."""
-        return [
-            Section(
-                heading="# Overview",
-                level=1,
-                prompt="Technical overview of the component or API.",
-                sources=self._get_sources_for_section("overview"),
-                sections=[],
-            ),
-            Section(
-                heading="# API Reference",
-                level=1,
-                prompt="Overview of API. Details in subsections below.",
-                sources=self._get_sources_for_section("api"),
-                sections=[],
-            ),
-        ]
-    
-    def _explanation_sections(self) -> list[Section]:
-        """Generate explanation structure."""
-        return [
-            Section(
-                heading="# Overview",
-                level=1,
-                prompt="High-level explanation of the concept or design.",
-                sources=self._get_sources_for_section("overview"),
-                sections=[],
-            ),
-            Section(
-                heading="# Design Rationale",
-                level=1,
-                prompt="Explain why things are designed this way.",
-                sources=self._get_sources_for_section("design"),
-                sections=[],
-            ),
-        ]
-    
-    def _default_sections(self) -> list[Section]:
-        """Generate default structure."""
-        return [
-            Section(
-                heading="# Overview",
-                level=1,
-                prompt="General overview of the topic.",
-                sources=self._get_sources_for_section("overview"),
-                sections=[],
-            ),
-        ]
-    
-    def _generate_subsections(self, parent: Section, doc_type: str) -> list[Section]:
-        """Generate subsections for a parent section."""
-        subsections = []
-        
-        # Generate subsections based on parent heading (exact matching)
-        # Only "Getting Started" section gets Installation/Quick Start
-        if parent.heading == "# Getting Started":
-            subsections.append(Section(
-                heading="## Installation",
-                level=parent.level + 1,
-                prompt=(
-                    "Provide step-by-step installation instructions. Include prerequisites, "
-                    "installation commands, and verification steps."
-                ),
-                sources=self._get_sources_for_section("installation"),
-                sections=[],
-            ))
-            
-            subsections.append(Section(
-                heading="## Quick Start",
-                level=parent.level + 1,
-                prompt=(
-                    "Show the simplest possible example to get users started. "
-                    "Include a complete working example with expected output."
-                ),
-                sources=self._get_sources_for_section("quickstart"),
-                sections=[],
-            ))
-        
-        # For how-to "Steps" section (not "Next Steps")
-        elif parent.heading == "# Steps":
-            # For how-to, generate step subsections
-            subsections.append(Section(
-                heading="## Step 1: Setup",
-                level=parent.level + 1,
-                prompt="Detailed instructions for the setup phase.",
-                sources=self._get_sources_for_section("step1"),
-                sections=[],
-            ))
-            
-            subsections.append(Section(
-                heading="## Step 2: Implementation",
-                level=parent.level + 1,
-                prompt="Detailed implementation instructions.",
-                sources=self._get_sources_for_section("step2"),
-                sections=[],
-            ))
-        
-        elif "API" in parent.heading:
-            # For reference, generate API subsections
-            subsections.append(Section(
-                heading="## Functions",
-                level=parent.level + 1,
-                prompt="Document all public functions with parameters and return values.",
-                sources=self._get_sources_for_section("functions"),
-                sections=[],
-            ))
-            
-            subsections.append(Section(
-                heading="## Classes",
-                level=parent.level + 1,
-                prompt="Document all public classes with methods and properties.",
-                sources=self._get_sources_for_section("classes"),
-                sections=[],
-            ))
-        
-        return subsections
-    
-    def _get_sources_for_section(self, section_type: str) -> list[SourceReference]:
-        """Get relevant sources for a section type."""
-        sources = []
-        
-        # Map section types to file relevance
-        if section_type in ["overview", "getting_started"]:
-            # Use documentation files
-            for rf in self.relevant_files[:3]:  # Top 3 most relevant
-                if "README" in rf.file_path or rf.file_path.endswith(".md"):
-                    sources.append(SourceReference(
-                        file=rf.file_path,
-                        reasoning=rf.reasoning,
-                    ))
-        
-        elif section_type in ["installation", "prerequisites"]:
-            # Use config files
-            for rf in self.relevant_files:
-                if any(name in rf.file_path for name in ["package.json", "pyproject.toml", "setup.py", "requirements"]):
-                    sources.append(SourceReference(
-                        file=rf.file_path,
-                        reasoning=rf.reasoning,
-                    ))
-        
-        elif section_type in ["quickstart", "step1", "step2"]:
-            # Use source code, examples, and README for context
-            # First, add README for overview
-            for rf in self.relevant_files:
-                if "README" in rf.file_path.upper():
-                    sources.append(SourceReference(
-                        file=rf.file_path,
-                        reasoning=rf.reasoning,
-                    ))
-                    break
-            
-            # Then add main source files (CLI entry points, main modules)
-            for rf in self.relevant_files[:5]:
-                if rf.file_path.endswith((".py", ".js", ".ts")) and "test" not in rf.file_path:
-                    if "cli" in rf.file_path.lower() or "main" in rf.file_path.lower():
-                        sources.append(SourceReference(
-                            file=rf.file_path,
-                            reasoning=rf.reasoning,
-                        ))
-                        break
-        
-        elif section_type in ["api", "functions", "classes"]:
-            # Use source code
-            for rf in self.relevant_files:
-                if rf.file_path.endswith((".py", ".js", ".ts")) and "test" not in rf.file_path:
-                    sources.append(SourceReference(
-                        file=rf.file_path,
-                        reasoning=rf.reasoning,
-                    ))
-        
-        else:
-            # Default: use top relevant files
-            for rf in self.relevant_files[:2]:
-                sources.append(SourceReference(
-                    file=rf.file_path,
-                    reasoning=rf.reasoning,
-                ))
-        
-        return sources
+
