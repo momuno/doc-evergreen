@@ -16,7 +16,7 @@
       {
         "heading": "# Introduction",
         "level": 1,
-        "prompt": "Provide a clear, beginner-friendly introduction to doc-evergreen. Explain what it is, what problem it solves, and what users will accomplish by the end of this tutorial. Focus on the core value proposition: turning repository code into documentation automatically.",
+        "prompt": "Provide a clear, beginner-friendly introduction to doc-evergreen. Explain what it is, what problem it solves, and what users will accomplish by the end of this tutorial. Focus on the core value proposition: turning repository code into documentation automatically. Keep it to a few sentences. We don't want to bog folks down in narrative when they are trying to get started.",
         "sources": [
           {
             "file": "README.md",
@@ -32,7 +32,7 @@
       {
         "heading": "# Prerequisites",
         "level": 1,
-        "prompt": "List the system requirements and prerequisites needed before installing doc-evergreen. Include Python version requirements, any necessary tools, and what users should have ready (like a repository to work with).",
+        "prompt": "List the system requirements and prerequisites needed before installing doc-evergreen. Include Python version requirements, any necessary tools, and what users should have ready (like a repository to work with). This should be concise and focused on what is strictly necessary to get started.",
         "sources": [
           {
             "file": "pyproject.toml",

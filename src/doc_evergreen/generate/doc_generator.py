@@ -23,7 +23,8 @@ class DocumentGenerator:
         """
         self.project_root = project_root
         self.llm_client = llm_client or self._create_llm_client()
-        self.section_context = []  # Stack of parent section content for context flow
+        self.section_context = []  # Stack of parent section content for DFS context flow
+        self.generated_document = []  # Full document content generated so far (for coherence)
         self.progress_callback = progress_callback
         self.sections_completed = 0
         self.total_sections = 0
@@ -106,9 +107,13 @@ class DocumentGenerator:
         # Add heading
         parts.append(section.heading)
         
-        # Generate content for this level using LLM with parent context
+        # Generate content for this level using LLM with full document context
         content = self._generate_section_content(section)
         parts.append(content)
+        
+        # Add this section to the generated document (for coherence in subsequent sections)
+        section_with_heading = f"{section.heading}\n\n{content}"
+        self.generated_document.append(section_with_heading)
         
         # Show completion
         if self.progress_callback:
@@ -210,7 +215,7 @@ class DocumentGenerator:
     def _generate_section_content(self, section: Section) -> str:
         """Generate content for a section using LLM.
         
-        Uses DFS approach: parent section context flows to child sections.
+        Passes full document generated so far for coherence and to avoid duplication.
         
         Args:
             section: Section to generate content for
@@ -218,18 +223,18 @@ class DocumentGenerator:
         Returns:
             Generated content
         """
-        # Build context from parent sections (DFS context flow)
-        context_info = ""
-        if self.section_context:
-            context_info = "\n\n**Context from parent sections:**\n"
-            for i, parent_content in enumerate(self.section_context[-2:], 1):  # Last 2 parents
-                preview = parent_content[:300] + "..." if len(parent_content) > 300 else parent_content
-                context_info += f"Parent level {i}: {preview}\n\n"
+        # Build context from the full document generated so far
+        document_so_far = ""
+        if self.generated_document:
+            document_so_far = "\n\n".join(self.generated_document)
+            # Truncate if too long (keep last 3000 chars for context)
+            if len(document_so_far) > 3000:
+                document_so_far = "...\n\n" + document_so_far[-3000:]
         
         # Read source files
         source_content = self._read_source_files(section)
         
-        # Build LLM prompt
+        # Build LLM prompt with document context
         prompt = f"""You are a technical documentation writer. Generate content for a documentation section.
 
 **Section Heading:** {section.heading}
@@ -239,16 +244,28 @@ class DocumentGenerator:
 
 **Source Files to Reference:**
 {source_content}
-{context_info}
 
-**Important Guidelines:**
+**IMPORTANT - Document Written So Far (for context only):**
+{document_so_far if document_so_far else "This is the first section."}
+
+**CRITICAL Guidelines for Using Document Context:**
+- The "Document Written So Far" is PROVIDED FOR CONTEXT ONLY
+- DO NOT duplicate or restate information already covered in previous sections
+- DO NOT copy content from earlier sections
+- DO NOT repeat prerequisites, installation steps, or concepts already explained
+- Reference previous sections briefly if needed (e.g., "As mentioned in the Installation section...")
+- Focus ONLY on NEW information for THIS specific section
+- Ensure this section flows naturally from what came before
+
+**Content Guidelines:**
 - Write clear, concise, beginner-friendly content
 - Use concrete examples from the source files
-- Focus on practical, actionable information
+- Focus on practical, actionable information that hasn't been covered yet
 - Use proper markdown formatting
 - Keep the tone professional but approachable
 - Do NOT include the section heading (it's already added)
 - Write 2-4 paragraphs for top-level sections, 1-3 for subsections
+- Ensure coherence with previous sections but avoid redundancy
 
 Generate the content now:"""
         
