@@ -223,21 +223,31 @@ def resolve_template_path(name: str) -> Path:
 
 @click.group()
 def cli():
-    """Generate documentation from templates organized by the Divio Documentation System.
+    """AI-powered documentation generation that keeps your docs in sync with your code.
 
     \b
     Quick Start:
-      # Interactive template selection (recommended)
+      # 1. Initialize (optional, creates .doc-evergreen/ directory)
       $ doc-evergreen init
       
-      # List all available templates
-      $ doc-evergreen init --list
+      # 2. Generate documentation (full pipeline)
+      $ doc-evergreen generate README.md \\
+          --purpose "Help developers get started with this project"
+    
+    \b
+    The generate command:
+      • Analyzes your repository
+      • Creates a custom outline tailored to your purpose
+      • Generates the documentation with LLM
+    
+    \b
+    Advanced Workflows:
+      # Create outline only (review/edit before generating)
+      $ doc-evergreen generate-outline README.md --purpose "..."
+      $ doc-evergreen generate-from-outline .doc-evergreen/outline.json
       
-      # Use a specific template
-      $ doc-evergreen init --template tutorial-quickstart
-      
-      # Generate documentation
-      $ doc-evergreen regen-doc <template-name>
+      # Reverse engineer template from existing docs
+      $ doc-evergreen reverse README.md
     """
     pass
 
@@ -799,7 +809,7 @@ def reverse(doc_path: str, output: str | None, dry_run: bool, verbose: bool, max
         
         click.echo("\nNext steps:")
         click.echo(f"1. Review: cat {output_path}")
-        click.echo(f"2. Test: doc-evergreen regen-doc {output_path}")
+        click.echo(f"2. Test: doc-evergreen generate-from-outline {output_path}")
         click.echo(f"3. Refine prompts and sources as needed")
         
     except click.Abort:
