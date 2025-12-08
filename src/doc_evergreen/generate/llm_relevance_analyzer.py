@@ -67,30 +67,11 @@ class LLMRelevanceAnalyzer:
         self.batch_size = batch_size
         
         # Create pydantic-ai agent for relevance analysis
+        # Let pydantic-ai discover ANTHROPIC_API_KEY from environment
         logger.info("  Creating pydantic-ai agent with Claude...")
         
-        # Get API key from environment
-        import os
-        api_key = os.getenv('ANTHROPIC_API_KEY')
-        logger.debug(f"  API key present: {bool(api_key)}")
-        
-        # Create Anthropic client with explicit API key
-        from anthropic import AsyncAnthropic
-        from pydantic_ai.models.anthropic import AnthropicModel
-        
-        client = AsyncAnthropic(api_key=api_key)
-        logger.debug(f"  Created Anthropic client: {client.base_url}")
-        
-        # Create model with explicit client
-        model = AnthropicModel(
-            model_name="claude-sonnet-4-5",
-            provider=client,
-        )
-        logger.debug(f"  Created AnthropicModel")
-        
-        # Create agent with the configured model
         self.agent = Agent(
-            model,
+            "claude-sonnet-4-5",
             output_type=FileRelevanceResponse,
             system_prompt=self._build_system_prompt(),
         )
