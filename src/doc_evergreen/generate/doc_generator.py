@@ -41,6 +41,9 @@ class DocumentGenerator:
         # Load outline
         outline = DocumentOutline.load(outline_path)
         
+        # Store outline for access in section generation
+        self.outline = outline
+        
         # Count total sections for progress
         self.total_sections = self._count_sections(outline.sections)
         self.sections_completed = 0
@@ -216,7 +219,7 @@ class DocumentGenerator:
             return "No source files provided for this section."
         
         source_parts = []
-        for source in section.sources[:5]:  # Limit to 5 sources to avoid token limits
+        for source in section.sources:  # NO LIMIT - include all sources
             file_path = self.project_root / source.file
             
             if not file_path.exists():
@@ -224,14 +227,18 @@ class DocumentGenerator:
                 continue
             
             try:
-                # Read file with size limit
+                # Read full file - NO TRUNCATION
                 content = file_path.read_text(encoding='utf-8', errors='ignore')
                 
-                # Truncate if too large (keep first 2000 chars)
-                if len(content) > 2000:
-                    content = content[:2000] + "\n\n[... truncated ...]"
+                # Build source entry with reasoning
+                source_entry_parts = [f"**File: {source.file}**"]
                 
-                source_parts.append(f"**File: {source.file}**\n```\n{content}\n```")
+                # Include reasoning for why this file is relevant
+                if hasattr(source, 'reasoning') and source.reasoning:
+                    source_entry_parts.append(f"**Why this file is relevant:** {source.reasoning}")
+                
+                source_entry_parts.append(f"```\n{content}\n```")
+                source_parts.append("\n".join(source_entry_parts))
             except Exception as e:
                 source_parts.append(f"**{source.file}** (error reading: {e})")
         
@@ -259,9 +266,17 @@ class DocumentGenerator:
         # Read source files
         source_content = self._read_source_files(section)
         
-        # Build LLM prompt with document context
-        prompt = f"""You are a technical documentation writer. Generate content for a documentation section.
+        # Build LLM prompt with user intent and document context
+        user_intent = ""
+        if hasattr(self, 'outline'):
+            user_intent = f"""
+**Document Purpose:** {self.outline.purpose}
+**Documentation Type:** {self.outline.doc_type}
 
+"""
+        
+        prompt = f"""You are a technical documentation writer. Generate content for a documentation section.
+{user_intent}
 **Section Heading:** {section.heading}
 
 **Content Instructions:**
