@@ -1055,6 +1055,92 @@ def _analyze_subsections(
 
 
 
+
+@cli.command("extract-intent")
+@click.argument("document_path", type=click.Path(exists=True))
+@click.option("--force", is_flag=True, help="Overwrite existing cached metadata")
+def extract_intent(document_path: str, force: bool):
+    """Extract intent and classification from existing documentation.
+
+    Analyzes a document and extracts:
+    • High-level intent/purpose/goal (what it accomplishes)
+    • Divio quadrant classification (tutorial/howto/reference/explanation)
+    • Confidence level and reasoning
+
+    Cached results can be used by generate-outline command.
+
+    \b
+    Examples:
+      $ doc-evergreen extract-intent README.md
+      $ doc-evergreen extract-intent docs/API.md --force
+    """
+    from doc_evergreen.config import find_project_root
+    from doc_evergreen.extract import extract_document_metadata, save_metadata, load_metadata
+
+    # Ensure API key is loaded
+    _ensure_api_key()
+
+    try:
+        # Find project root
+        project_root = find_project_root() or Path.cwd()
+        doc_path = Path(document_path)
+
+        # Check if cache already exists
+        existing = load_metadata(str(doc_path), project_root)
+        
+        if existing and not force:
+            click.echo()
+            click.echo(f"✓ Metadata already cached for {document_path}")
+            click.echo()
+            click.echo(f"  Intent: {existing.intent}")
+            click.echo(f"  Type: {existing.doc_type.value} (confidence: {existing.confidence})")
+            click.echo(f"  Reasoning: {existing.reasoning}")
+            click.echo()
+            click.echo(f"Use --force to regenerate")
+            click.echo()
+            return
+
+        # Extract metadata
+        click.echo()
+        click.echo(f"🔍 Analyzing {document_path}...")
+        click.echo()
+
+        metadata = extract_document_metadata(doc_path)
+
+        # Save to cache
+        cache_path = save_metadata(metadata, project_root, force=force)
+
+        # Success output
+        click.echo("✅ Intent extracted successfully!")
+        click.echo()
+        click.echo(f"📄 Document: {document_path}")
+        click.echo(f"  Intent: {metadata.intent}")
+        click.echo(f"  Type: {metadata.doc_type.value} (confidence: {metadata.confidence})")
+        click.echo(f"  Reasoning: {metadata.reasoning}")
+        click.echo()
+        click.echo(f"💾 Cached: {cache_path}")
+        click.echo()
+        click.echo("💡 Tip: Use this metadata with generate-outline:")
+        click.echo(f'   $ doc-evergreen generate-outline NEW_DOC.md --type {metadata.doc_type.value} --purpose "{metadata.intent}"')
+        click.echo()
+
+    except FileNotFoundError as e:
+        click.echo()
+        click.echo(f"❌ Error: {e}", err=True)
+        click.echo()
+        raise click.Abort()
+    except PermissionError as e:
+        click.echo()
+        click.echo(f"❌ Permission denied: {e}", err=True)
+        click.echo()
+        raise click.Abort()
+    except Exception as e:
+        click.echo()
+        click.echo(f"❌ Error extracting metadata: {e}", err=True)
+        click.echo()
+        raise click.Abort()
+
+
 @cli.command("generate-outline")
 @click.argument("output_path", type=click.Path())
 @click.option(
