@@ -1,8 +1,0 @@
-{
-  "version": "0.7.0",
-  "doc_type": "howto",
-  "purpose": "This document is to help someone brand new to the repository answer the questions 'how do i get started?'  think efficent to-the-point how to guide that answers this question, and not a learning tutorial journey that would include a bit more explanation of concepts. the audience for this is the person who just wants to get their hands dirty fast so needs to get the basic usage of doc-evergreen understand fast.  then they will likely go explore other stuff on their own -- they don't need a tutorial.",
-  "output_path": "DocEvergreenQuickStart.md",
-  "timestamp": "2025-12-08T20:37:48.008622+00:00",
-  "status": "intent_captured"
-}

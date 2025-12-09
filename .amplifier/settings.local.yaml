@@ -1,5 +1,5 @@
 profile:
-  active: convergent-dev
+  active: convergent-dev:convergent-dev
 config:
   providers:
   - module: provider-anthropic
