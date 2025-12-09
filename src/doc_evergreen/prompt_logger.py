@@ -10,9 +10,9 @@ class PromptLogger:
     """Logger for capturing all LLM API calls with full prompts.
     
     When enabled via --debug-prompts flag, logs every API call to:
-    .doc-evergreen/debug/prompts-YYYYMMDD-HHMMSS.jsonl
+    .doc-evergreen/debug/prompts-YYYYMMDD-HHMMSS.json
     
-    Each line is a JSON object with:
+    Creates a valid JSON array with comma-separated entries:
     - timestamp: ISO 8601 timestamp
     - model: Model identifier
     - temperature: Temperature setting
@@ -24,6 +24,7 @@ class PromptLogger:
     _enabled = False
     _log_file = None
     _log_path = None
+    _first_entry = True
     
     @classmethod
     def enable(cls, project_root: Path = None):
@@ -36,6 +37,7 @@ class PromptLogger:
             return  # Already enabled
         
         cls._enabled = True
+        cls._first_entry = True
         
         # Create log directory
         if project_root is None:
@@ -46,18 +48,22 @@ class PromptLogger:
         
         # Create log file with timestamp
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-        cls._log_path = log_dir / f"prompts-{timestamp}.jsonl"
+        cls._log_path = log_dir / f"prompts-{timestamp}.json"
         
         # Open file for writing
         cls._log_file = open(cls._log_path, "w", encoding="utf-8")
         
-        # Write header
+        # Write opening bracket for JSON array
+        cls._log_file.write("[\n")
+        
+        # Write session start as first entry
         cls._log_file.write(json.dumps({
             "type": "session_start",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "log_file": str(cls._log_path)
-        }) + "\n")
+        }, indent=2))
         cls._log_file.flush()
+        cls._first_entry = False
     
     @classmethod
     def is_enabled(cls) -> bool:
@@ -113,21 +119,30 @@ class PromptLogger:
         # Add any additional metadata
         log_entry.update(kwargs)
         
-        # Write to file
-        cls._log_file.write(json.dumps(log_entry) + "\n")
+        # Write to file with proper JSON array formatting
+        if not cls._first_entry:
+            cls._log_file.write(",\n")
+        cls._log_file.write(json.dumps(log_entry, indent=2))
         cls._log_file.flush()
+        cls._first_entry = False
     
     @classmethod
     def close(cls):
         """Close the log file."""
         if cls._log_file is not None:
+            # Write session end entry
+            if not cls._first_entry:
+                cls._log_file.write(",\n")
             cls._log_file.write(json.dumps({
                 "type": "session_end",
                 "timestamp": datetime.now(timezone.utc).isoformat()
-            }) + "\n")
+            }, indent=2))
+            # Close JSON array
+            cls._log_file.write("\n]\n")
             cls._log_file.close()
             cls._log_file = None
         cls._enabled = False
+        cls._first_entry = True
 
 
 def log_llm_call(location: str):

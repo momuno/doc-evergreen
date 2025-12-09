@@ -229,7 +229,7 @@ def cli(ctx, debug_prompts):
 
     \b
     Global Options:
-      --debug-prompts  Log all LLM API calls to .doc-evergreen/debug/prompts-*.jsonl
+      --debug-prompts  Log all LLM API calls to .doc-evergreen/debug/prompts-*.json
     
     \b
     Quick Start:
