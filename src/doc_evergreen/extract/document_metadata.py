@@ -230,13 +230,38 @@ def _create_llm_client():
 
         def generate(self, prompt: str, temperature: float = 0.0) -> str:
             """Generate response from Claude."""
+            from doc_evergreen.prompt_logger import PromptLogger
+            
+            # Log request
+            if PromptLogger.is_enabled():
+                PromptLogger.log_api_call(
+                    model=self.model,
+                    prompt=prompt,
+                    temperature=temperature,
+                    max_tokens=4096,
+                    location="extract/document_metadata.py:extract_document_metadata"
+                )
+            
             message = self.client.messages.create(
                 model=self.model,
                 max_tokens=4096,
                 temperature=temperature,
                 messages=[{"role": "user", "content": prompt}],
             )
-            return message.content[0].text
+            response = message.content[0].text
+            
+            # Log response
+            if PromptLogger.is_enabled():
+                PromptLogger.log_api_call(
+                    model=self.model,
+                    prompt=prompt,
+                    temperature=temperature,
+                    max_tokens=4096,
+                    location="extract/document_metadata.py:extract_document_metadata",
+                    response=response
+                )
+            
+            return response
 
     return SimpleLLMClient()
 

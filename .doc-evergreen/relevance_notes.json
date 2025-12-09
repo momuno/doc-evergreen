@@ -1,0 +1,160 @@
+{
+  "analyzed_at": "2025-12-09T17:48:05.493250+00:00",
+  "total_files_analyzed": 86,
+  "relevant_files_count": 25,
+  "threshold": 50,
+  "doc_type": "tutorial",
+  "purpose": "This document serves as a comprehensive introduction to doc-evergreen, explaining what it is, how to install it, and basic usage patterns to help users get started with AI-powered documentation generation.",
+  "relevant_files": [
+    {
+      "file": "README.md",
+      "score": 95,
+      "reasoning": "This README file is highly relevant for generating tutorial documentation about doc-evergreen. It directly addresses the documentation purpose by explaining what the tool is, its core functionality, and how it works. The file appears to contain installation instructions, usage patterns, and introductory material - all essential components for a comprehensive tutorial. As the primary project documentation file, it likely contains or references all key information needed to help users understand and get started with doc-evergreen.",
+      "key_material": "The file provides: (1) Clear definition of what doc-evergreen is - an AI-powered documentation generation tool; (2) Core functionality explanation - how it uses templates and AI to generate content from source code; (3) The workflow description (reading templates, analyzing source); (4) Likely contains installation steps and basic usage examples that are essential for tutorial documentation. This is the authoritative source for introducing the project to new users."
+    },
+    {
+      "file": "docs/USER_GUIDE.md",
+      "score": 95,
+      "reasoning": "This USER_GUIDE.md is highly relevant for generating tutorial documentation about doc-evergreen. It contains comprehensive introductory content including 'What is doc-evergreen?', 'Core Concepts', installation procedures, and basic usage patterns through CLI examples and workflows. This directly aligns with the documentation purpose of creating 'a comprehensive introduction to doc-evergreen, explaining what it is, how to install it, and basic usage patterns.' The guide structure follows the exact narrative arc needed for tutorial documentation.",
+      "key_material": "Critical sections include: (1) 'What is doc-evergreen?' section for product explanation, (2) Installation instructions and prerequisites, (3) 'Using the CLI' section for basic usage patterns, (4) 'Workflows' demonstrating practical usage scenarios, (5) 'Best Practices' to help users get started correctly, and (6) 'Examples' providing concrete use cases. The table of contents alone maps perfectly to tutorial documentation requirements."
+    },
+    {
+      "file": "docs/TEMPLATES.md",
+      "score": 95,
+      "reasoning": "This file is highly relevant for a tutorial introduction to doc-evergreen. While the system prompt describes creating 'comprehensive introduction' documentation, TEMPLATES.md directly addresses a core concept that beginners need to understand immediately - how templates work in doc-evergreen. The file explains what templates are, their purpose, structure, and how they enable consistent documentation regeneration. This is fundamental knowledge for users getting started, as templates are the primary mechanism through which doc-evergreen operates. Understanding templates is essential before users can effectively use the tool.",
+      "key_material": "Template definition and purpose (what templates are, why they're used), the four key aspects templates define (what/how/where documentation is generated), the value proposition of consistent regeneration as codebases evolve. This provides essential conceptual foundation that a tutorial introduction must cover to help users understand the tool's core workflow."
+    },
+    {
+      "file": "docs/INSTALLATION.md",
+      "score": 95,
+      "reasoning": "This file is highly relevant for the documentation purpose of creating a comprehensive introduction to doc-evergreen. The INSTALLATION.md file directly addresses one of the three core components mentioned in the purpose: 'how to install it'. It provides detailed installation instructions including the recommended pipx method, alternative pip installation, local installation options, and likely troubleshooting information. This is essential content that would be directly incorporated into or referenced by introductory tutorial documentation.",
+      "key_material": "Installation methods (pipx recommended approach, pip alternatives), installation commands and syntax, system requirements and compatibility notes (Debian/Ubuntu externally-managed Python mention), version information (v0.4.1+), repository URLs, and likely prerequisite information. This content would form the 'Getting Started' or 'Installation' section of the tutorial documentation."
+    },
+    {
+      "file": "src/doc_evergreen/cli.py",
+      "score": 95,
+      "reasoning": "This CLI file is extremely relevant for the tutorial documentation purpose. It contains the main entry points users will interact with to use doc-evergreen, which is essential for explaining 'how to install it, and basic usage patterns.' The file shows command-line arguments, options, and the primary workflows users will follow. Understanding the CLI interface is fundamental to teaching users how to get started with the tool. The file preview shows it's implementing Sprint 5 features for 'Template-Based Documentation Generation' which directly relates to showing users how to use the AI-powered documentation generation capabilities.",
+      "key_material": "Command-line interface definitions including commands, arguments, and options; usage patterns and workflow examples; entry points for basic operations like generating documentation; parameter names and their purposes; how users invoke the tool's core features; examples of section-by-section generation mentioned in the docstring; integration points between CLI and core functionality (ChunkedGenerator, template_schema, change_detection)."
+    },
+    {
+      "file": "src/doc_evergreen/templates/tutorial-quickstart.json",
+      "score": 95,
+      "reasoning": "This file is highly relevant because it IS the template that defines how tutorial documentation should be generated. It specifies the exact structure, sections, and prompting strategies for creating a 'Quick Start Guide' - which directly aligns with creating comprehensive introduction/tutorial documentation. The template defines metadata about being a 'tutorial-quickstart' for 'new users to get started in 5 minutes', sections for installation, basic usage, and getting started patterns. This is meta-level documentation about how to generate the exact type of documentation described in the purpose.",
+      "key_material": "Template structure showing: (1) document title 'Quick Start Guide' with output 'QUICKSTART.md', (2) quadrant classification as 'tutorial', (3) estimated scope of 200-400 lines, (4) section headings and prompts for a 5-minute getting started guide covering installation and basic usage, (5) use case definition targeting new users. This provides the blueprint for generating tutorial documentation and demonstrates the tool's capability to create introductory guides."
+    },
+    {
+      "file": "src/doc_evergreen/templates/tutorial-first-template.json",
+      "score": 95,
+      "reasoning": "This file is extremely relevant for the tutorial documentation purpose. It provides a concrete, real-world example of how doc-evergreen templates are structured, which is essential for teaching users how to use the tool. The template's meta information clearly identifies it as a tutorial-type document about creating templates, and the JSON structure demonstrates the actual format users will work with. This is exactly the kind of practical example that would be featured in a 'Getting Started' or 'Basic Usage' section of introductory documentation.",
+      "key_material": "Template structure and format (JSON schema with _meta, document, sections fields), practical example of a tutorial-type template, demonstrates the output path convention, shows how prompts are structured within sections, illustrates the metadata fields like name, description, use_case, quadrant, and estimated_lines. This file serves as both an explanation of template anatomy and a working example that users can reference or copy when creating their first template."
+    },
+    {
+      "file": "pyproject.toml",
+      "score": 92,
+      "reasoning": "This file is highly relevant for creating introductory tutorial documentation. It contains critical project metadata that answers key questions users need: the official project name ('doc-evergreen'), current version (0.5.0), a concise description of what it does ('AI-powered documentation generation from templates'), Python version requirements (>=3.11), and the license (MIT). These elements are fundamental for the 'what it is' section of the tutorial. The keywords also help clarify the project's scope and use cases.",
+      "key_material": "Project name and branding (doc-evergreen), version number for installation instructions, project description for explaining what the tool does, Python version requirements for installation prerequisites, license information for users evaluating adoption, and keywords that help frame the tool's purpose and capabilities in the introduction."
+    },
+    {
+      "file": "src/doc_evergreen/context.py",
+      "score": 92,
+      "reasoning": "This file is highly relevant for tutorial documentation as it reveals the core mechanism of how doc-evergreen gathers context for documentation generation. The SOURCES list shows which files the tool analyzes by default (README.md, amplifier/__init__.py, pyproject.toml, AGENTS.md), which is crucial information for users understanding what the tool does and how it works. The read_source_file function demonstrates the basic file-reading approach. This directly supports explaining 'how doc-evergreen works' and helps users understand what happens when they run the tool - it gathers context from specific project files to feed to AI for documentation generation.",
+      "key_material": "The hardcoded SOURCES list showing default files analyzed (README.md, amplifier/__init__.py, pyproject.toml, AGENTS.md); the context-gathering purpose described in the module docstring; the read_source_file function showing how files are ingested. This information helps explain the tool's workflow and default behavior in a tutorial context."
+    },
+    {
+      "file": "src/doc_evergreen/config.py",
+      "score": 92,
+      "reasoning": "This file is highly relevant for tutorial documentation because it defines the core configuration system that users need to understand. The .doc-evergreen.yaml configuration file is essential for users to customize their documentation generation, making this a critical component to explain in getting-started tutorials. The file shows configuration options, default behaviors, and fallback mechanisms - all practical information users need when setting up doc-evergreen.",
+      "key_material": "Configuration file structure (.doc-evergreen.yaml), FileConfig dataclass showing available configuration options (like 'template' field), graceful fallback behavior for missing/malformed configs, and the configuration loading mechanism. This directly supports explaining 'how to configure doc-evergreen' which is fundamental to the 'how to install it, and basic usage patterns' purpose."
+    },
+    {
+      "file": "src/doc_evergreen/chunked_generator.py",
+      "score": 92,
+      "reasoning": "This file implements the core chunked document generation functionality, which is central to understanding how doc-evergreen works. For a tutorial document explaining 'what doc-evergreen is, how to install it, and basic usage patterns', this file provides critical insights into the generation mechanism - specifically the stack-based DFS traversal approach and section-by-section generation. Understanding this architecture helps explain to users what happens when they run doc-evergreen commands and why it generates documentation in chunks rather than all at once. The presence of ContextManager, SourceValidator, and Agent integration shows the key components that work together during generation.",
+      "key_material": "The chunked generation approach (stack-based DFS traversal), section-by-section generation strategy, upfront source validation process, integration with ContextManager and pydantic_ai Agent, and the overall document generation workflow. These elements explain HOW doc-evergreen generates documentation, which is essential for the 'how it works' portion of an introductory tutorial."
+    },
+    {
+      "file": "src/doc_evergreen/generate/doc_type.py",
+      "score": 92,
+      "reasoning": "This file is highly relevant for tutorial documentation about doc-evergreen because it defines the core concept of DocType and explicitly references the Diataxis framework, including TUTORIAL as one of the primary documentation types. Since the documentation purpose is to create a tutorial introduction, understanding how doc-evergreen categorizes and implements the 'tutorial' doc type is essential. This file provides the foundational knowledge that users need to understand what type of documentation they're creating when they use doc-evergreen for tutorial generation.",
+      "key_material": "The DocType enum showing TUTORIAL as a valid documentation type, the Diataxis framework reference and explanation, the four documentation types (Tutorial, How-to, Reference, Explanation) with their purposes, and specifically the definition that Tutorial is 'Learning-oriented (getting started)' - which directly aligns with the tutorial documentation purpose being created. This helps explain to users what 'tutorial' means in doc-evergreen's context."
+    },
+    {
+      "file": "src/doc_evergreen/generate/doc_generator.py",
+      "score": 92,
+      "reasoning": "This file is highly relevant for tutorial documentation about doc-evergreen. The DocumentGenerator class is a core component that demonstrates the actual document generation process - one of the main features users need to understand. The file shows the depth-first traversal approach for generating content and how context flows from parent to child sections, which are key concepts for users to grasp. The class structure, initialization parameters (project_root, llm_client, progress_callback), and the methodology provide concrete examples of how the tool works internally. This helps explain the 'how it works' section of a tutorial and demonstrates the architecture that makes AI-powered documentation generation possible.",
+      "key_material": "The DocumentGenerator class definition and its purpose (generating complete documents from outlines using LLM); the depth-first traversal methodology for maintaining context; initialization parameters that show what users can configure; the relationship between outlines and final document generation; the progress_callback parameter suggesting incremental generation feedback. This material directly supports explaining the core workflow: outline \u2192 context-aware generation \u2192 complete document."
+    },
+    {
+      "file": "src/doc_evergreen/generate/relevance_analyzer.py",
+      "score": 92,
+      "reasoning": "This file is highly relevant as it implements the core relevance analysis system that doc-evergreen uses to intelligently select which files to analyze for documentation generation. For a tutorial introduction, understanding this component helps explain one of doc-evergreen's key differentiating features: how it automatically determines which files are important for a specific documentation task. The file contains the FilePreview class that extracts file previews (mentioned in the tutorial context), the relevance scoring logic, and the integration with IntentContext - all of which demonstrate the AI-powered intelligence behind the tool's file selection process.",
+      "key_material": "The FilePreview extraction mechanism (showing how doc-evergreen samples files), the relevance scoring system (0-100 scale for determining file importance), the integration between IntentContext and file analysis, and the JSON response format for LLM-based relevance determination. These details can illustrate in the tutorial how doc-evergreen intelligently filters repository files rather than processing everything blindly, which is a core value proposition for users."
+    },
+    {
+      "file": "src/doc_evergreen/reverse/intelligent_source_discoverer.py",
+      "score": 92,
+      "reasoning": "This file is highly relevant for tutorial documentation about doc-evergreen. It implements the IntelligentSourceDiscoverer class, which appears to be a core component of the tool's functionality - the multi-stage discovery pipeline for finding relevant source files. For a tutorial explaining 'how to get started with AI-powered documentation generation', understanding this three-stage discovery process (naive discovery, semantic search, LLM relevance scoring) is fundamental. The file name and imports directly relate to the AI-powered features advertised in the documentation purpose. This would help users understand how doc-evergreen intelligently discovers which files to document, which is a key differentiator and likely a primary feature users need to understand.",
+      "key_material": "The three-stage discovery pipeline architecture (NaiveSourceDiscoverer \u2192 SemanticSourceSearcher \u2192 LLMRelevanceScorer), how the intelligent source discovery works, the integration of AI/LLM components for relevance scoring, and the overall workflow of how doc-evergreen determines which files are relevant for documentation. This provides concrete details for explaining the 'AI-powered' aspect of the tool and helps users understand what happens when they run the tool."
+    },
+    {
+      "file": "src/doc_evergreen/generate/outline_generator.py",
+      "score": 75,
+      "reasoning": "This file implements the outline generation system which is a core part of how doc-evergreen works internally. For a tutorial/introduction document, it's moderately relevant because: (1) It demonstrates the AI-powered approach that makes doc-evergreen unique - showing users what happens behind the scenes when they run the tool, (2) The class names and structure (SourceReference, IntentContext integration) help explain the system's intelligent file selection and organization capabilities, (3) Understanding that there's a hierarchical outline generation step helps users grasp the workflow: analyze relevance \u2192 generate outline \u2192 produce documentation. However, it's not as critical as CLI entry points or configuration files since users don't directly interact with this code - they just benefit from its output.",
+      "key_material": "The existence of hierarchical outline generation as a distinct step in the process; how SourceReference tracks file selection with reasoning (transparency feature); integration with IntentContext and RelevanceScore showing the AI-driven decision making; the annotation '(Sprint 4-5 CORE INNOVATION)' which highlights this as a key differentiator of the tool worth mentioning in introductory docs."
+    },
+    {
+      "file": "src/doc_evergreen/reverse/semantic_source_searcher.py",
+      "score": 75,
+      "reasoning": "This file implements SemanticSourceSearcher, a key component for doc-evergreen's AI-powered documentation generation. For a tutorial explaining 'how to install and basic usage patterns,' this is moderately useful. It's not a core user-facing feature that beginners need to understand immediately, but it represents one of the important internal mechanisms that makes the tool work (content-based source file discovery). Including brief mentions of this capability helps users understand doc-evergreen's intelligent features - that it can semantically search and match source files to documentation sections. However, users don't need to interact with this class directly in basic usage, so it's supporting material rather than essential tutorial content.",
+      "key_material": "The class name and purpose ('Find source files relevant to documentation sections using content-based search') illustrates one of doc-evergreen's intelligent features. The initialization parameters (project_root, exclude_path) show configuration options. The docstrings explain the semantic matching capability, which helps users understand why doc-evergreen can intelligently discover relevant code. This is useful context for a 'what it does' section but not critical for basic installation/usage steps."
+    },
+    {
+      "file": "tests/test_llm_relevance_scorer.py",
+      "score": 72,
+      "reasoning": "This test file validates the LLMRelevanceScorer functionality, which is a core component of doc-evergreen's AI-powered documentation generation system. For tutorial documentation explaining how doc-evergreen works and how to use it, understanding the relevance scoring mechanism is moderately important. The tests demonstrate how doc-evergreen determines which files are important for documentation generation - a key concept users should understand. However, this is implementation-level testing rather than user-facing functionality, so it's more useful for explaining 'how it works internally' rather than 'how to use it'. The file shows concrete examples of relevance scoring scenarios (highly relevant files, irrelevant files) which could help explain the AI selection process to users.",
+      "key_material": "Test cases illustrating how doc-evergreen's LLM-based relevance scoring works in practice - shows examples of what makes files 'highly relevant' vs 'irrelevant' for documentation purposes, demonstrates the scoring mechanism that helps users understand how the tool intelligently selects which source files to include in generated documentation."
+    },
+    {
+      "file": "docs/TEMPLATE_QUALITY.md",
+      "score": 72,
+      "reasoning": "This file is moderately relevant for a tutorial/getting-started document. While it doesn't directly explain installation or basic usage, it provides important context about what users should expect from the templates they'll use when running doc-evergreen. The sections on 'Expected Behavior' and template validation help set realistic expectations for first-time users. However, it's more focused on template customization (advanced topic) rather than basic getting-started content. The file would be useful for explaining that doc-evergreen comes with pre-validated templates and what quality standards they meet, which builds user confidence during initial setup.",
+      "key_material": "The 'Expected Behavior' section explaining that bundled templates are validated starting points that generate successfully on typical Python projects. This information helps tutorial readers understand what to expect when they first run the tool. The validation checkmarks (generates successfully, includes expected sections, produces reasonable output) are useful for setting baseline expectations in a getting-started context."
+    },
+    {
+      "file": "docs/TEMPLATE_BEST_PRACTICES.md",
+      "score": 72,
+      "reasoning": "This file provides meta-guidance on how to create documentation templates within doc-evergreen, which is moderately relevant for tutorial documentation. While it doesn't directly explain what doc-evergreen is or basic installation/usage, it does provide insights into the system's template-based architecture and how users can customize their documentation generation. This information would be useful for a tutorial's 'Advanced Usage' or 'Customization' section, helping users understand how to tailor doc-evergreen to their needs. However, it's not essential for the core 'what is it, how to install, basic usage' tutorial purpose.",
+      "key_material": "The file explains doc-evergreen's template-based approach to documentation generation, including: how templates work (with explicit length guidance, scope constraints, source selections), the template library structure, and practical examples of customization. This information helps users understand that doc-evergreen uses templates to generate different types of documentation, which is useful context for a tutorial. Specific useful elements include: the concept of source selection strategies, how prompts guide AI generation, and the fact that templates can be customized for different documentation needs."
+    },
+    {
+      "file": "docs/BEST_PRACTICES.md",
+      "score": 72,
+      "reasoning": "This file provides valuable supplementary information about doc-evergreen's design philosophy and best practices, particularly around the .doc-evergreen/ convention and template organization. For a comprehensive introduction tutorial, this helps users understand the 'why' behind installation locations and usage patterns. However, it's secondary to more fundamental files like README, installation guides, or core usage documentation. It's useful for enriching the tutorial with context about conventions and rationale, but not essential for basic 'what is it, how to install, how to use' content.",
+      "key_material": "The .doc-evergreen/ convention explanation and its benefits (templates travel with project, clear ownership, zero configuration) - this helps users understand why they install/configure things in a specific way. This context would strengthen the 'how to install' and 'basic usage' sections of the tutorial by explaining the reasoning behind the tool's structure."
+    },
+    {
+      "file": "src/doc_evergreen/core/template_schema.py",
+      "score": 72,
+      "reasoning": "This file defines the core template schema that users need to understand when creating documentation templates with doc-evergreen. For a tutorial/getting started guide, users need to know how to structure their template.json files, which depends on understanding the Section dataclass structure (heading, prompt, sources, sections fields). However, this is implementation detail rather than user-facing API - users primarily interact with JSON templates, not this Python class directly. The file is moderately useful for explaining template structure and configuration options, but not essential since the tutorial would likely show JSON examples rather than Python implementation.",
+      "key_material": "The Section dataclass fields (heading, prompt, sources, sections) define the available configuration options users can use in their template.json files. The hierarchical nature (sections containing nested sections) explains how users can create multi-level documentation structures. This helps explain what properties are available when defining documentation sections in templates."
+    },
+    {
+      "file": "src/doc_evergreen/reverse/naive_source_discovery.py",
+      "score": 72,
+      "reasoning": "This file implements pattern-based source file discovery for different documentation sections, which is directly relevant to explaining how doc-evergreen automatically finds relevant files for documentation generation. The SECTION_PATTERNS dictionary showing mappings like 'installation' and 'api' to file patterns demonstrates the tool's intelligent file selection mechanism. This helps users understand what files the tool will analyze when generating documentation and why certain files are chosen for different documentation purposes. However, it's not core to basic installation and usage - it's more about the internal mechanism, making it moderately rather than highly relevant.",
+      "key_material": "The SECTION_PATTERNS mapping demonstrates how doc-evergreen automatically discovers relevant source files (e.g., package.json, setup.py for installation docs; src/**/*.py for API docs). This pattern-based discovery is a key feature that users should understand - it explains why the tool can automatically generate appropriate documentation without manual file specification. The class name 'NaiveSourceDiscoverer' and its purpose help explain the tool's intelligent file selection capabilities."
+    },
+    {
+      "file": "src/doc_evergreen/reverse/llm_relevance_scorer.py",
+      "score": 72,
+      "reasoning": "This file implements the LLMRelevanceScorer class, which is a core component of doc-evergreen's architecture for determining file relevance during documentation generation. While this is an internal implementation detail rather than user-facing functionality, it demonstrates how the tool works under the hood and could be valuable for explaining the AI-powered relevance scoring mechanism mentioned in the tutorial. The class shows how doc-evergreen intelligently filters source files based on documentation context, which is a key differentiator. However, it's not essential for basic 'what is it, install, and usage' tutorial content - users don't need to understand this implementation to get started.",
+      "key_material": "The LLMRelevanceScorer class name and its score_relevance method signature help explain how doc-evergreen uses AI to intelligently select relevant files for documentation. This supports describing the tool's smart file filtering capability in the 'what it is' section. The use of LLM client initialization shows the AI-powered nature of the tool. However, the detailed implementation logic is too technical for an introductory tutorial."
+    },
+    {
+      "file": "src/doc_evergreen/extract/document_metadata.py",
+      "score": 72,
+      "reasoning": "This file defines the DocumentMetadata dataclass and metadata extraction logic, which is directly relevant for explaining how doc-evergreen analyzes existing documentation. For a tutorial introduction, understanding that the tool extracts metadata like 'intent', 'doc_type', and document paths helps users grasp the underlying mechanism. However, this is internal implementation detail rather than user-facing API, so while useful for explaining 'how it works under the hood', it's not essential for basic installation and usage patterns. The file would support sections explaining the analysis phase and what information doc-evergreen extracts from existing docs.",
+      "key_material": "The DocumentMetadata dataclass structure (document_path, intent, doc_type attributes) explains what information the tool extracts. The module's purpose 'Core metadata extraction logic for document analysis' directly describes a key feature. The validate_doc_type import suggests type validation happens, which could be mentioned when explaining supported documentation types. This information helps document the tool's analytical capabilities and what users can expect during the analysis phase."
+    }
+  ]
+}

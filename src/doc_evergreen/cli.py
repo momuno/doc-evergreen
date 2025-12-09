@@ -222,9 +222,15 @@ def resolve_template_path(name: str) -> Path:
 
 
 @click.group()
-def cli():
+@click.option('--debug-prompts', is_flag=True, help='Log all LLM prompts and responses to .doc-evergreen/debug/')
+@click.pass_context
+def cli(ctx, debug_prompts):
     """AI-powered documentation generation that keeps your docs in sync with your code.
 
+    \b
+    Global Options:
+      --debug-prompts  Log all LLM API calls to .doc-evergreen/debug/prompts-*.jsonl
+    
     \b
     Quick Start:
       # 1. Initialize (optional, creates .doc-evergreen/ directory)
@@ -249,7 +255,21 @@ def cli():
       # Reverse engineer template from existing docs
       $ doc-evergreen reverse README.md
     """
-    pass
+    # Enable prompt logging if flag is set
+    if debug_prompts:
+        from doc_evergreen.prompt_logger import PromptLogger
+        from doc_evergreen.config import find_project_root
+        
+        project_root = find_project_root() or Path.cwd()
+        PromptLogger.enable(project_root)
+        
+        log_path = PromptLogger.get_log_path()
+        click.echo(f"🔍 Debug mode: Logging all prompts to {log_path}", err=True)
+        click.echo(err=True)
+    
+    # Store flag in context for subcommands
+    ctx.ensure_object(dict)
+    ctx.obj['debug_prompts'] = debug_prompts
 
 
 @cli.command("generate")
@@ -928,13 +948,38 @@ def _create_llm_client():
         
         def generate(self, prompt: str, temperature: float = 0.0) -> str:
             """Generate response from Claude."""
+            from doc_evergreen.prompt_logger import PromptLogger
+            
+            # Log request
+            if PromptLogger.is_enabled():
+                PromptLogger.log_api_call(
+                    model=self.model,
+                    prompt=prompt,
+                    temperature=temperature,
+                    max_tokens=1024,
+                    location="cli.py:_infer_doc_type"
+                )
+            
             message = self.client.messages.create(
                 model=self.model,
                 max_tokens=1024,
                 temperature=temperature,
                 messages=[{"role": "user", "content": prompt}]
             )
-            return message.content[0].text
+            response = message.content[0].text
+            
+            # Log response
+            if PromptLogger.is_enabled():
+                PromptLogger.log_api_call(
+                    model=self.model,
+                    prompt=prompt,
+                    temperature=temperature,
+                    max_tokens=1024,
+                    location="cli.py:_infer_doc_type",
+                    response=response
+                )
+            
+            return response
     
     return SimpleLLMClient()
 

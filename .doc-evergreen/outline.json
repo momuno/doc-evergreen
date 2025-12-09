@@ -1,0 +1,295 @@
+{
+  "_meta": {
+    "name": "generated-tutorial-20251209",
+    "description": "This document serves as a comprehensive introduction to doc-evergreen, explaining what it is, how to install it, and basic usage patterns to help users get started with AI-powered documentation generation.",
+    "use_case": "This document serves as a comprehensive introduction to doc-evergreen, explaining what it is, how to install it, and basic usage patterns to help users get started with AI-powered documentation generation.",
+    "quadrant": "tutorial",
+    "estimated_lines": "400-800 lines",
+    "generation_method": "forward",
+    "doc_type": "tutorial",
+    "user_intent": "This document serves as a comprehensive introduction to doc-evergreen, explaining what it is, how to install it, and basic usage patterns to help users get started with AI-powered documentation generation."
+  },
+  "document": {
+    "title": "Getting Started with doc-evergreen: AI-Powered Documentation Generation",
+    "output": "README.md",
+    "sections": [
+      {
+        "heading": "# Introduction",
+        "level": 1,
+        "prompt": "Provide a comprehensive introduction to doc-evergreen, explaining what it is, its core purpose, and key benefits. Include the project description, version information, and explain how it uses AI to generate documentation from templates. Set clear expectations for what users will learn in this tutorial.",
+        "sources": [
+          {
+            "file": "README.md",
+            "reasoning": "Contains the primary project introduction and overview of doc-evergreen's functionality"
+          },
+          {
+            "file": "pyproject.toml",
+            "reasoning": "Provides official project metadata including name, version, description, and requirements"
+          },
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Contains comprehensive introductory content including 'What is doc-evergreen?' section"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "## What is doc-evergreen?",
+            "level": 2,
+            "prompt": "Explain doc-evergreen's core concept as an AI-powered documentation generation tool. Describe how it uses templates and AI to create consistent, high-quality documentation. Include the key differentiators and use cases.",
+            "sources": [
+              {
+                "file": "docs/USER_GUIDE.md",
+                "reasoning": "Contains the 'What is doc-evergreen?' section with detailed explanations"
+              },
+              {
+                "file": "src/doc_evergreen/generate/doc_type.py",
+                "reasoning": "Defines the core DocType concept and references the Diataxis framework"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Core Concepts",
+            "level": 2,
+            "prompt": "Introduce the fundamental concepts users need to understand: templates, AI-powered file discovery, relevance analysis, and document generation workflow. Explain how these components work together to create documentation.",
+            "sources": [
+              {
+                "file": "docs/TEMPLATES.md",
+                "reasoning": "Explains what templates are, their purpose, structure, and how they enable consistent documentation"
+              },
+              {
+                "file": "src/doc_evergreen/reverse/intelligent_source_discoverer.py",
+                "reasoning": "Demonstrates the multi-stage discovery pipeline for finding relevant source files"
+              },
+              {
+                "file": "src/doc_evergreen/generate/relevance_analyzer.py",
+                "reasoning": "Shows how doc-evergreen intelligently selects which files to analyze for documentation"
+              }
+            ],
+            "sections": []
+          }
+        ]
+      },
+      {
+        "heading": "# Prerequisites",
+        "level": 1,
+        "prompt": "List the system requirements and prerequisites needed to install and use doc-evergreen. Include Python version requirements, any system dependencies, and recommended setup conditions.",
+        "sources": [
+          {
+            "file": "pyproject.toml",
+            "reasoning": "Contains Python version requirements (>=3.11) and project dependencies"
+          },
+          {
+            "file": "docs/INSTALLATION.md",
+            "reasoning": "Likely contains detailed prerequisite information and system requirements"
+          }
+        ],
+        "sections": []
+      },
+      {
+        "heading": "# Installation",
+        "level": 1,
+        "prompt": "Provide step-by-step installation instructions for doc-evergreen. Include the recommended pipx method, alternative pip installation, and verification steps to ensure successful installation.",
+        "sources": [
+          {
+            "file": "docs/INSTALLATION.md",
+            "reasoning": "Contains detailed installation instructions including pipx and pip methods"
+          },
+          {
+            "file": "README.md",
+            "reasoning": "Likely contains quick installation instructions and getting started information"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "## Recommended Installation (pipx)",
+            "level": 2,
+            "prompt": "Explain the recommended pipx installation method with step-by-step commands and explain why pipx is preferred for CLI tools like doc-evergreen.",
+            "sources": [
+              {
+                "file": "docs/INSTALLATION.md",
+                "reasoning": "Contains the recommended pipx installation method and explanations"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Alternative Installation Methods",
+            "level": 2,
+            "prompt": "Provide alternative installation options including pip installation and local development installation for users who cannot use pipx.",
+            "sources": [
+              {
+                "file": "docs/INSTALLATION.md",
+                "reasoning": "Contains alternative pip installation and local installation options"
+              }
+            ],
+            "sections": []
+          }
+        ]
+      },
+      {
+        "heading": "# Quick Start",
+        "level": 1,
+        "prompt": "Guide users through their first successful use of doc-evergreen. Include basic CLI commands, configuration setup, and a complete example of generating documentation. Focus on getting users to complete their first documentation generation task.",
+        "sources": [
+          {
+            "file": "src/doc_evergreen/cli.py",
+            "reasoning": "Contains the main CLI entry points and command-line arguments users will interact with"
+          },
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Contains CLI examples and basic usage workflows"
+          },
+          {
+            "file": "src/doc_evergreen/config.py",
+            "reasoning": "Defines the configuration system and .doc-evergreen.yaml setup"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "## Basic Configuration",
+            "level": 2,
+            "prompt": "Explain how to set up the basic .doc-evergreen.yaml configuration file, including essential settings and default behaviors. Show a minimal working configuration example.",
+            "sources": [
+              {
+                "file": "src/doc_evergreen/config.py",
+                "reasoning": "Defines the configuration system, default behaviors, and .doc-evergreen.yaml structure"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Your First Documentation Generation",
+            "level": 2,
+            "prompt": "Walk users through generating their first document using doc-evergreen. Include the complete command, expected output, and what happens during the generation process. Use a simple, practical example.",
+            "sources": [
+              {
+                "file": "src/doc_evergreen/cli.py",
+                "reasoning": "Shows the CLI commands and options users will use for document generation"
+              },
+              {
+                "file": "src/doc_evergreen/templates/tutorial-quickstart.json",
+                "reasoning": "Provides a concrete example template that users can reference for their first generation"
+              },
+              {
+                "file": "src/doc_evergreen/chunked_generator.py",
+                "reasoning": "Explains what happens during the generation process with chunked document creation"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Understanding the Output",
+            "level": 2,
+            "prompt": "Explain what doc-evergreen produces, how to interpret the generated documentation, and what users should expect from their first run. Include information about file discovery and relevance scoring.",
+            "sources": [
+              {
+                "file": "src/doc_evergreen/context.py",
+                "reasoning": "Shows which files the tool analyzes by default and how context is gathered"
+              },
+              {
+                "file": "tests/test_llm_relevance_scorer.py",
+                "reasoning": "Demonstrates how relevance scoring works with concrete examples"
+              }
+            ],
+            "sections": []
+          }
+        ]
+      },
+      {
+        "heading": "# Working with Templates",
+        "level": 1,
+        "prompt": "Introduce users to doc-evergreen's template system. Explain how to use existing templates and provide a foundation for understanding template structure and customization.",
+        "sources": [
+          {
+            "file": "docs/TEMPLATES.md",
+            "reasoning": "Comprehensive explanation of templates, their structure, and how they work"
+          },
+          {
+            "file": "src/doc_evergreen/templates/tutorial-first-template.json",
+            "reasoning": "Concrete example of template structure that users can examine and understand"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "## Using Built-in Templates",
+            "level": 2,
+            "prompt": "Show users how to discover and use the templates that come with doc-evergreen. Include examples of different template types and when to use each one.",
+            "sources": [
+              {
+                "file": "src/doc_evergreen/templates/tutorial-quickstart.json",
+                "reasoning": "Example of a built-in tutorial template with clear structure and purpose"
+              },
+              {
+                "file": "src/doc_evergreen/templates/tutorial-first-template.json",
+                "reasoning": "Another example template showing the JSON structure users will work with"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Template Structure Basics",
+            "level": 2,
+            "prompt": "Explain the basic structure of doc-evergreen templates, including metadata, sections, and prompts. Help users understand how templates guide the AI generation process.",
+            "sources": [
+              {
+                "file": "docs/TEMPLATES.md",
+                "reasoning": "Detailed explanation of template structure and components"
+              },
+              {
+                "file": "docs/TEMPLATE_QUALITY.md",
+                "reasoning": "Explains template validation and what users should expect from quality templates"
+              }
+            ],
+            "sections": []
+          }
+        ]
+      },
+      {
+        "heading": "# Next Steps",
+        "level": 1,
+        "prompt": "Guide users on what to do after completing their first documentation generation. Include links to advanced topics, customization options, and additional resources for continued learning.",
+        "sources": [
+          {
+            "file": "docs/USER_GUIDE.md",
+            "reasoning": "Contains comprehensive guidance and advanced usage patterns"
+          },
+          {
+            "file": "docs/TEMPLATE_BEST_PRACTICES.md",
+            "reasoning": "Provides guidance on template customization and advanced usage"
+          },
+          {
+            "file": "README.md",
+            "reasoning": "Contains links to additional documentation and resources"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "## Customizing Your Workflow",
+            "level": 2,
+            "prompt": "Introduce users to customization options including configuration tweaks, template modifications, and workflow optimization. Point to relevant advanced documentation.",
+            "sources": [
+              {
+                "file": "docs/TEMPLATE_BEST_PRACTICES.md",
+                "reasoning": "Provides guidance on how to customize templates and workflows"
+              }
+            ],
+            "sections": []
+          },
+          {
+            "heading": "## Additional Resources",
+            "level": 2,
+            "prompt": "Provide links to comprehensive documentation, community resources, and support channels. Include references to the full user guide and advanced features.",
+            "sources": [
+              {
+                "file": "README.md",
+                "reasoning": "Contains project links, documentation references, and community information"
+              }
+            ],
+            "sections": []
+          }
+        ]
+      }
+    ]
+  }
+}
