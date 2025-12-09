@@ -1323,8 +1323,8 @@ def generate_outline(output_path: str, doc_type: str | None, purpose: str, outli
         total_sections = count_sections(outline.sections)
         click.echo(f"   {total_sections} total sections (including subsections)")
         
-        # Save outline
-        outline_path = Path(".doc-evergreen/outline.json")
+        # Save outline with custom name
+        outline_path = Path(".doc-evergreen") / outline_name
         outline.save(outline_path)
         
         # Success message
