@@ -1202,7 +1202,8 @@ def extract_intent(document_path: str, force: bool):
     )
 )
 @click.option("--purpose", required=True, help="What should this documentation accomplish?")
-def generate_outline(output_path: str, doc_type: str | None, purpose: str):
+@click.option("--outline-name", default="outline.json", help="Name for the generated outline file (default: outline.json)")
+def generate_outline(output_path: str, doc_type: str | None, purpose: str, outline_name: str):
     """Generate documentation outline without creating the document.
     
     This command runs the complete analysis pipeline and creates an outline.json
