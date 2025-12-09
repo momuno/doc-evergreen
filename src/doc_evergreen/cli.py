@@ -1145,18 +1145,19 @@ def extract_intent(document_path: str, force: bool):
 @click.argument("output_path", type=click.Path())
 @click.option(
     "--type", 
-    "doc_type", 
-    required=True, 
+    "doc_type",
+    default=None,
     help=(
         "Documentation type (Diataxis framework):\n"
         "  tutorial     - Learning-oriented (getting started guides)\n"
         "  howto        - Goal-oriented (problem-solving guides)\n"
         "  reference    - Information-oriented (API/command docs)\n"
-        "  explanation  - Understanding-oriented (concepts/design)"
+        "  explanation  - Understanding-oriented (concepts/design)\n"
+        "If not provided, will be inferred from your purpose using LLM."
     )
 )
 @click.option("--purpose", required=True, help="What should this documentation accomplish?")
-def generate_outline(output_path: str, doc_type: str, purpose: str):
+def generate_outline(output_path: str, doc_type: str | None, purpose: str):
     """Generate documentation outline without creating the document.
     
     This command runs the complete analysis pipeline and creates an outline.json
