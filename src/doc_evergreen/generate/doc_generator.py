@@ -1,6 +1,7 @@
 """Document generation from outline (Sprint 6)."""
 
 import os
+import subprocess
 from pathlib import Path
 
 from doc_evergreen.generate.outline_generator import DocumentOutline, Section
@@ -15,7 +16,7 @@ class DocumentGenerator:
     
     def __init__(self, project_root: Path = Path.cwd(), llm_client=None, progress_callback=None):
         """Initialize generator.
-        
+
         Args:
             project_root: Project root directory for reading source files
             llm_client: LLM client for content generation (optional, will create if None)
@@ -28,50 +29,58 @@ class DocumentGenerator:
         self.progress_callback = progress_callback
         self.sections_completed = 0
         self.total_sections = 0
+        self.outline_updated = False  # Track if outline was modified with new commit hashes
     
     def generate_from_outline(self, outline_path: Path) -> str:
         """Generate complete document from outline.
-        
+
         Args:
             outline_path: Path to outline.json file
-            
+
         Returns:
             Generated document content as string
         """
         # Load outline
         outline = DocumentOutline.load(outline_path)
-        
+
         # Store outline for access in section generation
         self.outline = outline
-        
+        self.outline_path = outline_path
+
         # Count total sections for progress
         self.total_sections = self._count_sections(outline.sections)
         self.sections_completed = 0
-        
+
         if self.progress_callback:
             self.progress_callback(f"📝 Generating {self.total_sections} sections...\n")
-        
+
         # Generate content for all sections (top-down DFS)
         document_parts = []
-        
+
         # Add title
         document_parts.append(f"# {outline.title}\n")
-        
+
         # Generate sections
         for section in outline.sections:
             section_content = self._generate_section(section)
             document_parts.append(section_content)
-        
+
+        # Save updated outline if any commit hashes were updated
+        if self.outline_updated:
+            if self.progress_callback:
+                self.progress_callback(f"\n💾 Updating outline with current commit hashes...\n")
+            outline.save(outline_path)
+
         # Assemble complete document
         full_document = "\n\n".join(document_parts)
-        
+
         # Write to output file
         output_path = self.project_root / outline.output_path
         output_path.write_text(full_document)
-        
+
         if self.progress_callback:
             self.progress_callback(f"\n✅ Document written to: {outline.output_path}\n")
-        
+
         return full_document
     
     def _count_sections(self, sections: list) -> int:
@@ -205,43 +214,77 @@ class DocumentGenerator:
                 return response
         
         return SimpleLLMClient()
-    
+
+    def _get_file_commit_hash(self, file_path: Path) -> str | None:
+        """Get the current commit hash for a file using git.
+
+        Args:
+            file_path: Path to the file
+
+        Returns:
+            Commit hash string, or None if file is not in git or git is not available
+        """
+        try:
+            result = subprocess.run(
+                ['git', 'log', '-1', '--format=%H', '--', str(file_path)],
+                cwd=self.project_root,
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                return result.stdout.strip()
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            # git not available or timeout
+            pass
+        return None
+
     def _read_source_files(self, section: Section) -> str:
         """Read and format source files for a section.
-        
+
+        Also checks and updates commit hashes for version tracking.
+
         Args:
             section: Section with source file references
-            
+
         Returns:
             Formatted source file content
         """
         if not section.sources:
             return "No source files provided for this section."
-        
+
         source_parts = []
         for source in section.sources:  # NO LIMIT - include all sources
             file_path = self.project_root / source.file
-            
+
             if not file_path.exists():
                 source_parts.append(f"**{source.file}** (file not found)")
                 continue
-            
+
+            # Check and update commit hash if specified in outline
+            if source.commit is not None:
+                current_commit = self._get_file_commit_hash(file_path)
+                if current_commit and current_commit != source.commit:
+                    # File has changed - update the outline with new commit hash
+                    source.commit = current_commit
+                    self.outline_updated = True
+
             try:
                 # Read full file - NO TRUNCATION
                 content = file_path.read_text(encoding='utf-8', errors='ignore')
-                
+
                 # Build source entry with reasoning
                 source_entry_parts = [f"**File: {source.file}**"]
-                
+
                 # Include reasoning for why this file is relevant
                 if hasattr(source, 'reasoning') and source.reasoning:
                     source_entry_parts.append(f"**Why this file is relevant:** {source.reasoning}")
-                
+
                 source_entry_parts.append(f"```\n{content}\n```")
                 source_parts.append("\n".join(source_entry_parts))
             except Exception as e:
                 source_parts.append(f"**{source.file}** (error reading: {e})")
-        
+
         return "\n\n".join(source_parts)
     
     def _generate_section_content(self, section: Section) -> str:

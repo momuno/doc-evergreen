@@ -12,16 +12,21 @@ from doc_evergreen.generate.relevance_analyzer import RelevanceScore
 @dataclass
 class SourceReference:
     """Source file reference with reasoning."""
-    
+
     file: str
     reasoning: str
-    
+    commit: str | None = None  # Optional commit hash for tracking file version
+
     def to_dict(self) -> dict:
         """Convert to dictionary."""
-        return {
+        result = {
             "file": self.file,
             "reasoning": self.reasoning,
         }
+        # Only include commit if it's set (for cleaner JSON)
+        if self.commit is not None:
+            result["commit"] = self.commit
+        return result
 
 
 @dataclass
@@ -131,8 +136,11 @@ class DocumentOutline:
                 heading=s_data["heading"],
                 level=s_data["level"],
                 prompt=s_data["prompt"],
-                sources=[SourceReference(src["file"], src["reasoning"]) 
-                        for src in s_data["sources"]],
+                sources=[SourceReference(
+                    file=src["file"],
+                    reasoning=src["reasoning"],
+                    commit=src.get("commit")  # Optional commit hash
+                ) for src in s_data["sources"]],
                 sections=[parse_section(sub) for sub in s_data["sections"]],
             )
         
