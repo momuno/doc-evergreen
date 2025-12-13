@@ -58,7 +58,11 @@ class DocumentGenerator:
         document_parts = []
 
         # Add title
-        document_parts.append(f"# {outline.title}\n")
+        title_text = f"# {outline.title}"
+        document_parts.append(title_text + "\n")
+
+        # Also add title to generated_document so LLM sees it in context
+        self.generated_document.append(title_text)
 
         # Generate sections
         for section in outline.sections:
@@ -118,14 +122,17 @@ class DocumentGenerator:
         
         # Add heading
         parts.append(section.heading)
-        
+
+        # Add heading to generated document BEFORE generating content
+        # This ensures the LLM sees the heading in context and won't duplicate it
+        self.generated_document.append(section.heading)
+
         # Generate content for this level using LLM with full document context
         content = self._generate_section_content(section)
         parts.append(content)
-        
-        # Add this section to the generated document (for coherence in subsequent sections)
-        section_with_heading = f"{section.heading}\n\n{content}"
-        self.generated_document.append(section_with_heading)
+
+        # Add the content to generated document (heading already added above)
+        self.generated_document.append(content)
         
         # Show completion
         if self.progress_callback:
