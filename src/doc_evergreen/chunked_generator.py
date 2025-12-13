@@ -16,6 +16,7 @@ from doc_evergreen.core.source_validator import SourceValidationError
 from doc_evergreen.core.source_validator import validate_all_sources
 from doc_evergreen.core.template_schema import Section
 from doc_evergreen.core.template_schema import Template
+from doc_evergreen.prompt_logger import PromptLogger
 
 logger = logging.getLogger(__name__)
 
@@ -202,32 +203,66 @@ class ChunkedGenerator:
         if section.sections:
             subsection_headings = [s.heading for s in section.sections]
             subsection_guidance = f"""
-## Important: Subsection Structure
 
-This section has the following subsections already defined in the outline:
-{chr(10).join(f"- {h}" for h in subsection_headings)}
+==============================================================================
+CRITICAL: SUBSECTION STRUCTURE CONSTRAINT
+==============================================================================
+
+This section has the following subsections ALREADY DEFINED in the outline:
+{chr(10).join(f"  • {h}" for h in subsection_headings)}
 
 DO NOT create these subsections in your output. They will be generated separately.
-Your output should ONLY contain:
-1. The section heading ({section.heading})
-2. Introductory/overview text for this section
-3. NO additional subsections or headings beyond what's listed above
 
-If you need to mention the subsections, reference them by name but do not write their content."""
+Your output MUST ONLY contain:
+  1. The section heading: {section.heading}
+  2. Introductory/overview text for this section
+  3. NO additional headings or subsections
 
-        # Build user prompt
-        user_prompt = f"""Generate content for this section:
+If you reference these subsections, mention them by name but DO NOT write their content.
 
-## Section Prompt
+=============================================================================="""
+
+        # Build context section with clear boundaries
+        context_section = ""
+        if context:
+            context_section = f"""
+==============================================================================
+PREVIOUSLY WRITTEN CONTENT (for context and continuity)
+==============================================================================
+
+{context}
+
+==============================================================================
+END OF PREVIOUSLY WRITTEN CONTENT
+==============================================================================
+"""
+        else:
+            context_section = "\n(This is the first section - no previous content exists yet.)\n"
+
+        # Build user prompt with clear section boundaries
+        user_prompt = f"""You are a technical documentation writer. Generate content for the following section.
+
+==============================================================================
+YOUR TASK
+==============================================================================
+
 {section.prompt}
 
-## Source Materials
+==============================================================================
+SOURCE MATERIALS (reference these for accurate information)
+==============================================================================
+
 {source_content}
+{context_section}{subsection_guidance}
 
-## Context from Previous Sections
-{context if context else "This is the first section."}{subsection_guidance}
+==============================================================================
+OUTPUT INSTRUCTIONS
+==============================================================================
 
-Write in clear markdown. Include the section heading at the start."""
+Write in clear, well-structured markdown.
+Include the section heading at the start: {section.heading}
+Be accurate to the source materials.
+Maintain consistency with previously written content."""
 
         # Log context sizes
         prompt_size = len(section.prompt)
@@ -241,15 +276,41 @@ Write in clear markdown. Include the section heading at the start."""
         logger.info(f"    • Total to LLM: {total_prompt_size:,} chars (~{total_prompt_size // 4:,} tokens)")
         logger.info(f"  Calling LLM (this may take 10-30 seconds)...")
 
+        # Log prompt if debug enabled
+        if PromptLogger.is_enabled():
+            PromptLogger.log_api_call(
+                model=self.model,
+                prompt=user_prompt,
+                temperature=0.0,
+                location=f"chunked_generator.py:generate_section (heading={section.heading})",
+                section_heading=section.heading,
+                has_subsections=len(section.sections) > 0,
+                subsection_count=len(section.sections),
+            )
+
         # Call LLM with timing
         import time
         llm_start = time.time()
         content = await self._call_llm(user_prompt)
         llm_duration = time.time() - llm_start
-        
+
         output_size = len(content)
         logger.info(f"  ✓ LLM response received ({llm_duration:.1f}s)")
         logger.info(f"    • Generated: {output_size:,} chars (~{output_size // 4:,} tokens)")
+
+        # Log response if debug enabled
+        if PromptLogger.is_enabled():
+            PromptLogger.log_api_call(
+                model=self.model,
+                prompt=user_prompt,
+                temperature=0.0,
+                location=f"chunked_generator.py:generate_section (heading={section.heading})",
+                response=content,
+                section_heading=section.heading,
+                has_subsections=len(section.sections) > 0,
+                subsection_count=len(section.sections),
+                generation_time_seconds=llm_duration,
+            )
 
         return content
 
