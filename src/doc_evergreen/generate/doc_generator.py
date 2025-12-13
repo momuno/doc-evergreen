@@ -312,27 +312,68 @@ class DocumentGenerator:
         # Read source files
         source_content = self._read_source_files(section)
 
-        # Build subsection guidance if this section has children
-        subsection_guidance = ""
+        # Build comprehensive subsection structure visibility
+        def collect_all_subsection_headings(sections, depth=0):
+            """Recursively collect ALL subsection headings with hierarchy."""
+            headings = []
+            for s in sections:
+                indent = "  " * depth
+                headings.append(f"{indent}{s.heading}")
+                if s.sections:
+                    headings.extend(collect_all_subsection_headings(s.sections, depth + 1))
+            return headings
+
+        # Always show subsection constraints (even if no subsections)
         if section.sections:
-            subsection_headings = [s.heading for s in section.sections]
+            all_subsection_headings = collect_all_subsection_headings(section.sections)
+            subsection_count = len(all_subsection_headings)
+
             subsection_guidance = f"""
 
 ==============================================================================
-CRITICAL: SUBSECTION STRUCTURE CONSTRAINT
+CRITICAL: EXACT SUBSECTION STRUCTURE - NO DEVIATIONS ALLOWED
 ==============================================================================
 
-This section has the following subsections ALREADY DEFINED in the outline:
-{chr(10).join(f"  • {h}" for h in subsection_headings)}
+The section "{section.heading}" has EXACTLY {subsection_count} subsection(s) defined in the outline.
+These are THE ONLY subsections that will exist. They are shown below with full hierarchy:
 
-DO NOT create these subsections in your output. They will be generated separately.
+COMPLETE SUBSECTION STRUCTURE (these will be generated separately):
+{chr(10).join(all_subsection_headings)}
 
-Your output MUST ONLY contain:
-  1. Content for the section: {section.heading}
-  2. NO additional headings or subsections below {section.heading}
+ABSOLUTE RULES:
+  ✗ DO NOT write content for ANY of the subsections listed above
+  ✗ DO NOT create ANY subsections beyond those listed above
+  ✗ DO NOT add extra sections like "Overview", "Introduction", "Key Concepts", etc.
+  ✗ DO NOT include ANY markdown headings at or below the {section.heading[:2]} level
+  ✗ The subsections shown above are COMPLETE - no additions allowed
 
-The subsections listed above will appear AFTER your content is generated.
-If you reference these subsections, mention them by name but DO NOT write their content.
+YOUR OUTPUT MUST CONTAIN:
+  ✓ ONLY introductory/explanatory content for "{section.heading}" itself
+  ✓ NO markdown headings of any kind (the {subsection_count} subsections above will appear automatically)
+  ✓ Plain text, tables, code blocks, lists - but NO headings
+
+The {subsection_count} subsection(s) above will appear AFTER your content in the exact order shown.
+
+==============================================================================
+"""
+        else:
+            subsection_guidance = f"""
+
+==============================================================================
+CRITICAL: NO SUBSECTIONS FOR THIS SECTION
+==============================================================================
+
+The section "{section.heading}" has NO subsections defined in the outline.
+
+ABSOLUTE RULES:
+  ✗ DO NOT create ANY subsections of any kind
+  ✗ DO NOT add headings like "Overview", "Examples", "Usage", etc.
+  ✗ DO NOT include ANY markdown headings at or below the {section.heading[:2]} level
+
+YOUR OUTPUT MUST CONTAIN:
+  ✓ ONLY content for "{section.heading}" itself
+  ✓ NO markdown headings of any kind
+  ✓ Plain text, tables, code blocks, lists - but NO headings
 
 ==============================================================================
 """
