@@ -197,6 +197,24 @@ class ChunkedGenerator:
 
         source_content = "\n\n".join(source_content_parts) if source_content_parts else "No source files."
 
+        # Build subsection guidance if this section has children
+        subsection_guidance = ""
+        if section.sections:
+            subsection_headings = [s.heading for s in section.sections]
+            subsection_guidance = f"""
+## Important: Subsection Structure
+
+This section has the following subsections already defined in the outline:
+{chr(10).join(f"- {h}" for h in subsection_headings)}
+
+DO NOT create these subsections in your output. They will be generated separately.
+Your output should ONLY contain:
+1. The section heading ({section.heading})
+2. Introductory/overview text for this section
+3. NO additional subsections or headings beyond what's listed above
+
+If you need to mention the subsections, reference them by name but do not write their content."""
+
         # Build user prompt
         user_prompt = f"""Generate content for this section:
 
@@ -207,7 +225,7 @@ class ChunkedGenerator:
 {source_content}
 
 ## Context from Previous Sections
-{context if context else "This is the first section."}
+{context if context else "This is the first section."}{subsection_guidance}
 
 Write in clear markdown. Include the section heading at the start."""
 
