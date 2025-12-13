@@ -57,12 +57,8 @@ class DocumentGenerator:
         # Generate content for all sections (top-down DFS)
         document_parts = []
 
-        # Add title
-        title_text = f"# {outline.title}"
-        document_parts.append(title_text + "\n")
-
-        # Also add title to generated_document so LLM sees it in context
-        self.generated_document.append(title_text)
+        # Don't add title to document - sections provide their own headings
+        # Title is only used as metadata in the outline
 
         # Generate sections
         for section in outline.sections:
