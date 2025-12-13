@@ -353,8 +353,6 @@ class DocumentGenerator:
 - Focus on practical, actionable information that hasn't been covered yet
 - Use proper markdown formatting
 - Keep the tone professional but approachable
-- Do NOT include the section heading (it's already added)
-- Write 2-4 paragraphs for top-level sections, 1-3 for subsections
 - Ensure coherence with previous sections but avoid redundancy
 
 Generate the content now:"""
