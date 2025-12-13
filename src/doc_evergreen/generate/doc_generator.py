@@ -292,12 +292,12 @@ class DocumentGenerator:
     
     def _generate_section_content(self, section: Section) -> str:
         """Generate content for a section using LLM.
-        
+
         Passes full document generated so far for coherence and to avoid duplication.
-        
+
         Args:
             section: Section to generate content for
-            
+
         Returns:
             Generated content
         """
@@ -308,10 +308,62 @@ class DocumentGenerator:
             # Truncate if too long (keep last 3000 chars for context)
             if len(document_so_far) > 3000:
                 document_so_far = "...\n\n" + document_so_far[-3000:]
-        
+
         # Read source files
         source_content = self._read_source_files(section)
-        
+
+        # Build subsection guidance if this section has children
+        subsection_guidance = ""
+        if section.sections:
+            subsection_headings = [s.heading for s in section.sections]
+            subsection_guidance = f"""
+
+==============================================================================
+CRITICAL: SUBSECTION STRUCTURE CONSTRAINT
+==============================================================================
+
+This section has the following subsections ALREADY DEFINED in the outline:
+{chr(10).join(f"  • {h}" for h in subsection_headings)}
+
+DO NOT create these subsections in your output. They will be generated separately.
+
+Your output MUST ONLY contain:
+  1. Content for the section: {section.heading}
+  2. NO additional headings or subsections below {section.heading}
+
+The subsections listed above will appear AFTER your content is generated.
+If you reference these subsections, mention them by name but DO NOT write their content.
+
+==============================================================================
+"""
+
+        # Build context section with clear boundaries
+        context_section = ""
+        if document_so_far:
+            context_section = f"""
+
+==============================================================================
+PREVIOUSLY WRITTEN CONTENT (for context and continuity)
+==============================================================================
+
+{document_so_far}
+
+==============================================================================
+END OF PREVIOUSLY WRITTEN CONTENT
+==============================================================================
+
+CRITICAL Guidelines for Using Previous Content:
+- The content above is PROVIDED FOR CONTEXT ONLY
+- DO NOT duplicate or restate information already covered
+- DO NOT copy content from earlier sections
+- DO NOT repeat prerequisites, installation steps, or concepts already explained
+- Reference previous sections briefly if needed (e.g., "As mentioned earlier...")
+- Focus ONLY on NEW information for THIS specific section
+- Ensure this section flows naturally from what came before
+"""
+        else:
+            context_section = "\n(This is the first section - no previous content exists yet.)\n"
+
         # Build LLM prompt with user intent and document context
         user_intent = ""
         if hasattr(self, 'outline'):
@@ -320,37 +372,42 @@ class DocumentGenerator:
 **Documentation Type:** {self.outline.doc_type}
 
 """
-        
-        prompt = f"""You are a technical documentation writer. Generate content for a documentation section.
+
+        prompt = f"""You are a technical documentation writer. Generate content for the following section.
+
+==============================================================================
+DOCUMENT METADATA
+==============================================================================
 {user_intent}
 **Section Heading:** {section.heading}
 
-**Content Instructions:**
+==============================================================================
+YOUR TASK
+==============================================================================
+
 {section.prompt}
 
-**Source Files to Reference:**
+==============================================================================
+SOURCE MATERIALS (reference these for accurate information)
+==============================================================================
+
 {source_content}
+{context_section}{subsection_guidance}
 
-**IMPORTANT - Document Written So Far (for context only):**
-{document_so_far if document_so_far else "This is the first section."}
+==============================================================================
+IMPORTANT: EXCLUDE DEPRECATED CODE
+==============================================================================
 
-**CRITICAL Guidelines for Using Document Context:**
-- The "Document Written So Far" is PROVIDED FOR CONTEXT ONLY
-- DO NOT duplicate or restate information already covered in previous sections
-- DO NOT copy content from earlier sections
-- DO NOT repeat prerequisites, installation steps, or concepts already explained
-- Reference previous sections briefly if needed (e.g., "As mentioned in the Installation section...")
-- Focus ONLY on NEW information for THIS specific section
-- Ensure this section flows naturally from what came before
-
-**CRITICAL: Exclude Deprecated/Outdated Code:**
 - DO NOT document any code, features, or commands marked as DEPRECATED
 - DO NOT document any code with comments indicating it's outdated or replaced
 - If you discover deprecated code in source files, IGNORE IT completely
 - Only document current, active, non-deprecated functionality
 - If a feature has been superseded by a newer approach, document ONLY the new approach
 
-**Content Guidelines:**
+==============================================================================
+OUTPUT INSTRUCTIONS
+==============================================================================
+
 - Write clear, concise, beginner-friendly content
 - Use concrete examples from the source files (excluding deprecated code)
 - Focus on practical, actionable information that hasn't been covered yet
@@ -359,8 +416,8 @@ class DocumentGenerator:
 - Ensure coherence with previous sections but avoid redundancy
 
 Generate the content now:"""
-        
+
         # Generate content using LLM
         content = self.llm_client.generate(prompt, temperature=0.3)
-        
+
         return content.strip()
